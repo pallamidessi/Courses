@@ -6,38 +6,39 @@
 
 int main()
 {
-int interrupteur=0;
 int x=2,y=2;
+int decalX=0,decalY=0;
 //int n,m;
 initscr();
 keypad(stdscr,1);
 cbreak();
-//noecho();
+noecho();
 int entree;
 
 initscr();
 //scanf("%d",&n);
 //scanf("%d",&m);
-grille l=alloue_grille(5,5);
-grille test=alloue_grille(5,5);
+grille l=alloue_grille(5,50);
+grille test=alloue_grille(5,50);
+int tab_col[test->N];          //Pour la func cocher ligne
+int tab_lig[test->M];          //Pour la func cocher colonne
 
-affiche_grille(l);
-printw("\n\n");
-
-refresh();
 
 l=charger_grille(l, "toto.txt", "r");
-affiche_grille(l);
+grille valL=compter_ligne(l);
+grille valC=compter_colonne(l);
 
-refresh();
-clear();
+decalX=count_decalX(valL);
+decalY=count_decalY(valC);
+
 
 while  ((entree=getch())!='a'){
     clear();
-       //compter_colonne(l);
-       //compter_ligne(l);
-       //affiche_grille(test);
-       test2(l);
+       afficheCountCol(valC,decalX+2,0);
+       afficheCountLigne(valL,0,decalY);
+       affiche_grille(l,decalX+2,decalY+2);
+       //test2(l);
+				refresh();
        if (entree==KEY_DOWN && y<(l->M)){
            y+=1;
            mvprintw(y,x,"O");
@@ -67,24 +68,12 @@ while  ((entree=getch())!='a'){
 	    else (mvprintw(15,10,"Perdu"));
 	   }
         else if (entree=='l'){
-          if (interrupteur==0){
-           cocher_ligne(test,y-1,interrupteur);
-           interrupteur=1;
-           }
-           else {
-           cocher_ligne(test,y-1,interrupteur);
-           interrupteur=0;
-           }
-        } 
+        cocher_colonne(test,y,tab_col);
+				}
+         
         else if (entree=='c'){
-          if (interrupteur==0){
-           cocher_ligne(test,x,interrupteur);
-           interrupteur=1;
-           }
-           else {
-           cocher_ligne(test,x,interrupteur);
-           interrupteur=0;
-           }
+           
+        cocher_ligne(test,x,tab_lig);
          }   
          
   }

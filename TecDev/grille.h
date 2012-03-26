@@ -14,14 +14,18 @@ int M;
 
 
 grille alloue_grille(int,int);
-void affiche_grille(grille);
+void affiche_grille(grille,int,int);
 void desalloue_grille(grille);
 grille charger_grille(grille,char* ,char* );
 int EstRempli(grille);
 int compare(grille,grille);
-void compter_colonne(grille);
-void compter_ligne(grille);
-void cocher_ligne(grille ,int ,int );
-void cocher_colonne(grille ,int ,int );
+grille compter_colonne(grille);
+grille compter_ligne(grille);
+void cocher_ligne(grille ,int ,int* );
+void cocher_colonne(grille ,int ,int* );
 void test2(grille);
+int count_decalX(grille);
+int count_decalY(grille);
+void afficheCountLigne(grille, int,int);
+void afficheCountCol(grille, int,int);
 #endif
