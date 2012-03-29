@@ -10,3 +10,7 @@ grille.o:grille.c grille.h
 	
 clean:
 	rm -r *.o main
+	rm main
+	
+doxy: 
+	doxygen 
