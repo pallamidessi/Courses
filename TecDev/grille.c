@@ -1,5 +1,14 @@
-#include<stdio.h>
-#include<stdlib.h>
+/**
+ * \file       grille.c
+ * \author     Pallamidessi joseph
+ * \version    1.0
+ * \date       4 mars 2012
+ * \brief      grille.c 
+ *
+ * \details    Contient les fonction relative au logigraphe(grille) ou a leurs traitements.
+ *
+ */
+ 
 #include"grille.h"
 #include<ncurses.h>
 
@@ -27,20 +36,7 @@ return L;
 }
 
 
-void affiche_grille(grille L,int decalX,int decalY){
-int i, v ;
-int originX=decalX;
 
-  for(i=0;i<L->N;i++){
-		decalX=originX;
-    for(v=0;v<L->M;v++){
-      mvprintw(decalY-1,decalX,"%c", (L->matrice[i][v]));
-			decalX++;
-      }
-    decalY++;
-}
-
-}
 
 void desalloue_grille(grille L){
 int i=0;
@@ -49,6 +45,9 @@ for(i=0;i<L->N;i++)
 	free(L->matrice[i]);
 	free(L);
 }
+
+
+
 
 grille charger_grille(grille L, char* nom,char* mode){
 int i=0,v=0;
@@ -72,16 +71,26 @@ fichier = fopen(nom, mode);
 return charge;
 }
 
-int EstRempli(grille l){
-int i=0,v=0;
 
-for(i=0;i<l->N;i++)
-	for(v=0;v<l->M;v++){
-	  if (l->matrice[i][v] ==' ')
-	    return 1;				
-	}
-return 0;
+
+void affiche_grille(grille L,int decalX,int decalY){
+int i, v ;
+int originX=decalX;
+
+  for(i=0;i<L->N;i++){
+		decalX=originX;
+    for(v=0;v<L->M;v++){
+      mvprintw(decalY-1,decalX,"%c", (L->matrice[i][v]));
+			decalX++;
+      }
+    decalY++;
 }
+
+}
+
+
+
+				
 				
 int compare(grille l1,grille l2){
 int i=0,v=0;
@@ -93,6 +102,7 @@ for(i=0;i<l1->N;i++)
 	}
 return 0;
 }
+
 
 
 grille compter_ligne(grille l){
@@ -117,35 +127,7 @@ int x=0;
 return valeur;
 }
 
-int count_decalX(grille l){
-int i=0,v=0,tmp=0,valeur=0;
 
-for(i=0;i<l->N;i++){
-	if (tmp<valeur)
-		tmp=valeur;
-		valeur=0;
-	for(v=0;v<l->M;v++){
-	  	if (l->matrice[i][v]!=0)
-	    valeur++;
-	}
-}	
-return tmp;
-
-}
-int count_decalY(grille l){
-int i=0,v=0,tmp=0,valeur=0;
-
-for(i=0;i<l->M;i++){
-	if (tmp<valeur)
-		tmp=valeur;
-		valeur=0;
-	for(v=0;v<l->N;v++){
-	  	if (l->matrice[v][i]!=0)
-	    valeur++;
-	}
-}	
-return tmp;
-	}
 
 grille compter_colonne(grille l){
 grille valeur=alloue_grille(l->N,l->M);
@@ -186,6 +168,9 @@ int originX=decalX;
 	}
 }
 
+
+
+
 void afficheCountCol(grille l , int decalX ,int decalY){
 int i=0,v=0;
 int originY=decalY;
@@ -203,6 +188,8 @@ for(i=0;i<l->M;i++){
 }
 }
 
+
+
 void cocher_colonne(grille l,int y,int* tab){
 int i;
 
@@ -217,6 +204,8 @@ int i;
 		tab[y]=0;	
 }
 }
+
+
 
 void cocher_ligne(grille l,int y,int* tab){
 int i;
@@ -233,10 +222,98 @@ int i;
 }
 }
 
-void test2(grille l){
-int i;
 
-    for(i=0;i<(l->M);i++)
-  	printw("%c",l->matrice[1][i]);
+
+
+int count_decalX(grille l){
+int i=0,v=0,tmp=0,valeur=0;
+
+for(i=0;i<l->N;i++){
+	if (tmp<valeur)
+		tmp=valeur;
+		valeur=0;
+	for(v=0;v<l->M;v++){
+	  	if (l->matrice[i][v]!=0)
+	    valeur++;
+	}
+}	
+return tmp;
+
+
+
+
 }
+int count_decalY(grille l){
+int i=0,v=0,tmp=0,valeur=0;
 
+for(i=0;i<l->M;i++){
+	if (tmp<valeur)
+		tmp=valeur;
+		valeur=0;
+	for(v=0;v<l->N;v++){
+	  	if (l->matrice[v][i]!=0)
+	    valeur++;
+	}
+}	
+return tmp;
+	}
+	
+	
+void deplacement(int entree,int* tab_col,int* tab_lig,int* x,int* y,int decalX,int decalY,grille test,grille l){
+       if (entree==KEY_DOWN && (*y)<(test->N)-1){
+           (*y)+=1;
+           mvprintw(((*y)+decalY)+1,(*x)+decalX+2,"O");
+           }
+       else if (entree == KEY_UP && (*y)>0){
+           (*y)-=1;
+           mvprintw(((*y)+decalY)+1,(*x)+decalX+2,"O");
+					 }
+       else if (entree == KEY_RIGHT && (*x)<(test->M)-1){
+           (*x)++;
+           mvprintw(((*y)+decalY)+1, (*x)+decalX+2,"O");
+	   
+           }
+       else if (entree == KEY_LEFT && (*x)>0){
+           (*x)-=1;
+           mvprintw((*y)+decalY+1,(*x)+decalX+2,"O");
+            }
+       else if (entree=='+')
+           test->matrice[(*y)][(*x)]='+';
+       else if (entree=='.')
+           test->matrice[(*y)][(*x)]='.';
+       else if (entree=='q'){
+	      	  if (compare(l,test)==0)
+	      			(mvprintw(15,10,"Gagne !!!"));
+	    			else (mvprintw(15,10,"Perdu"));
+	   	}
+       else if (entree=='l'){
+           cocher_ligne(test,(*y),tab_col);
+			}
+       else if (entree=='c'){
+           cocher_colonne(test,(*x),tab_lig);
+         }   
+}	
+	
+/*
+grille charger_grille(grille L, char* nom,char* mode){
+int i=0,v=0;
+int histogramme[255];
+grille charge=alloue_grille(L->N,L->M);
+FILE* fichier = NULL;
+char chaine[TAILLE_MAX] = "";
+
+fichier = fopen(nom, mode);
+
+	if (fichier != NULL)
+  {
+     	 chaine[i]==P2 
+ 		 while (fgets(chaine, TAILLE_MAX, fichier) != NULL )
+			 for(i=0;i<L->M;i++)
+       =chaine[i];
+			 v++;
+	   }
+
+  	 fclose(fichier);
+  }
+return charge;
+*/
