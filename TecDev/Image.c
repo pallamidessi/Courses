@@ -1,43 +1,56 @@
+/**
+ * \file       grille.h
+ * \author     Pallamidessi joseph
+ * \version    1.0
+ * \date       4 mars 2012
+ * \brief       header de grille.c
+ *
+ * \details    Contient les prototype des fonction relative au logigraphe(grille) ou a leurs traitements.
+ *
+ */
+
+#include "grille.h"
+#include"Image.h"
 
 
-char* ModePPM(char* nom_du_fichier){
-
-char szMode[2];
+int Seuil(char* nom_du_fichier){
+int i=0;
 FILE* fichier = NULL;
-fichier = fopen(nom_du_fichier,"r")
+int sizeImageH=0,int sizeImageV=0;
+char R=0,V=0,B=0;
+int total=0,seuil=0;
+int ValMax=0;
 
-	if (fichier != NULL)
+fichier = fopen(nom_du_fichier, "r");
+
+  if (fichier != NULL)
   {
-fgets(chaine, TAILLE_MAX, fichier);
-               szMode=chaine;
+    fgets(mode,TAILLE_MAX,fichier);
+    fgets(chaine,TAILLE_MAX,fichier);
+    fscanf(fichier,"%s %s", &sizeImageH,&sizeImageV);
+    fscanf(fichier,"%d", &ValMax);
+
+     for(i=0;i<(sizeImageV*sizeImageH);i++){
+                 fscanf(fichier,"%c", &R);
+                 fscanf(fichier,"%c", &V);
+                 fscanf(fichier,"%c", &B);
+            total+=R*0.299+V*0.587+B*0.114;
+     }
+  }
+seuil=total/(sizeImageV*sizeImageH);
+return seuil;
   }
 
-  return szMode;
-}
-
-int* SizePPM(char* nom_du_fichier){
-int sizeHV[1];
-FILE* fichier = NULL;
-fichier = fopen(nom_du_fichier,"r")
-
-	if (fichier != NULL)
-  {
-fgets(chaine, TAILLE_MAX, fichier);
-               szMode=chaine;
-  }
-
-  return szMode;
-}
 
 
-grille charger_grille(grille L, char* nom,char* mode){
+
+grille charger_image(grille L, char* nom_du_fichier,char* mode,int seuil){
 int i=0,v=0;
-grille charge=alloue_grille(L->N,L->M);
+char R=0,V=0,B=0;
 FILE* fichier = NULL;
-
-char sizeImage[100];
-int sizeImageH;
-int sizeImageV;
+int ValMax=0;
+char modeImage[2];
+int sizeImageH=0,int sizeImageV=0;
 char chaine[TAILLE_MAX] = "";
 
 fichier = fopen(nom, mode);
@@ -45,25 +58,32 @@ fichier = fopen(nom, mode);
 	if (fichier != NULL)
   {
 
+fgets(modeImage,TAILLE_MAX,fichier);             //1er ligne le mode
+fgets(chaine,TAILLE_MAX,fichier);                 //2eme ligne meta donnee de creation de l'image -> On passe simplement a la ligne suivante
+fscanf(fichier,"%s %s", &sizeImageH,&sizeImageV); //3eme ligne recuperation de la taille de l'image
+fscanf(fichier,"%d", &ValMax);                     //4eme valeurs max des composantes
 
-          fgets(chaine, TAILLE_MAX, fichier);
-            if chaine=="P3"
-               szMode=chaine;
+if (sizeImageH>70)                                 // tronque l'image si elle est plus grande que 70 colonneS
+    sizeImageH=70;
 
-            fgets(chaine, TAILLE_MAX, fichier);
-            sizeImage=chaine
+grille charge=alloue_grille(sizeImageH,sizeImageV);     // creer un logigraphe a la taille de l'image
 
-            while(chaine[i]!='\0'){
+ if (modeImage=="P3"){
 
-            }
-      }
+    for(i=0;i<sizeImageV;i++){
+        for(v=0;v<sizeImageH;v++){
+            fscanf(fichier,"%c", &R);
+            fscanf(fichier,"%c", &V);
+            fscanf(fichier,"%c", &B);
 
- 		 while (fgets(chaine, TAILLE_MAX, fichier) != NULL )
-     {
-     	 for(i=0;i<L->M;i++)
-       charge->matrice[v][i]=chaine[i];
-			 v++;
-	   }
+            if((R*0.299+V*0.587+B*0.114)>=seuil)
+                charge[i][v]='+';
+            else
+                charge[i][v]='.';
+
+        }
+    }
+ }
 
   	 fclose(fichier);
   }
