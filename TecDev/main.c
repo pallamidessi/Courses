@@ -16,33 +16,58 @@
 #include <stdlib.h>
 #include <ncurses.h>
 #include "grille.h"
+#include "Image.h"
 
 
 int main()
 {
 int x=2,y=2;
-//int n=0,m=0;
+int n=0,m=0;
 int decalX=0,decalY=0;
 initscr();
 keypad(stdscr,1);
 cbreak();
 noecho();
-int entree;
-
+int entree=0,choix=0;
+char nom_fichier[20];
+grille test,l;
 initscr();
 
-//printw("taille du logigraphe dans le fichier (ligne x colonne)");
-//scanf("%d",&n);
-//refresh();
-//scanf("%d",&m);
-//refresh();
-grille l=alloue_grille(5,50);
-grille test=alloue_grille(5,50);
+while(choix==0){
+	printw("F:charger un fichier\n");
+	printw("I:charger une image\n");
+	refresh();
+  entree=getch();
+	if (entree==('f')){
+		printw("Nom du fichier(defaut : toto.txt)\n");
+		refresh();
+		scanf("%s",nom_fichier);
+
+		printw("Taille du fichier (largeur hauteur)\n");
+		refresh();
+		scanf("%d %d",&n,&m);
+
+		l=alloue_grille(n,m);
+		test=alloue_grille(n,m);
+		
+		l=charger_grille(l, nom_fichier, "r");
+	  choix=1;
+	}else 
+		if (entree==('i')){
+		printw("Nom de image(defaut : couleur.ppm)\n");
+		refresh();
+		scanf("%s",nom_fichier);
+    
+		l=charger_image(nom_fichier,"r",Seuil(nom_fichier));
+		test=alloue_grille(l->N,l->M);
+		refresh();
+		choix=1;
+		}
+}		
 int tab_col[test->N];          //Pour la func cocher ligne
 int tab_lig[test->M];          //Pour la func cocher colonne
 
 
-l=charger_grille(l, "toto.txt", "r");
 grille valL=compter_ligne(l);
 grille valC=compter_colonne(l);
 
