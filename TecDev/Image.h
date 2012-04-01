@@ -12,5 +12,5 @@
 #include<stdlib.h>
 #include "grille.h"
 
-grille charger_image(grille L, char* nom_du_fichier,char* mode,int seuil);
+grille charger_image( char* nom_du_fichier,char* mode,int seuil);
 int Seuil(char* nom_du_fichier);
