@@ -14,6 +14,7 @@
 
 
 grille alloue_grille(int n,int m){
+
 int i,v;
 
 grille L=NULL;
@@ -72,7 +73,7 @@ return charge;
 }
 
 
-
+/*
 void affiche_grille(grille L,int decalX,int decalY){
 int i, v ;
 int originX=decalX;
@@ -87,7 +88,7 @@ int originX=decalX;
 }
 
 }
-
+*/
 
 
 				
@@ -152,7 +153,7 @@ for(i=0;i<l->M;i++){
 return valeur;
 }	    
 
-
+/*
 void afficheCountLigne(grille l , int decalX ,int decalY){
 int i=0,v=0;	
 int originX=decalX;
@@ -167,10 +168,10 @@ int originX=decalX;
 	   }  
 	}
 }
+*/
 
 
-
-
+/*
 void afficheCountCol(grille l , int decalX ,int decalY){
 int i=0,v=0;
 int originY=decalY;
@@ -187,7 +188,7 @@ for(i=0;i<l->M;i++){
 	decalX++;
 }
 }
-
+*/
 
 
 void cocher_colonne(grille l,int y,int* tab){
@@ -258,7 +259,7 @@ for(i=0;i<l->M;i++){
 return tmp;
 	}
 	
-	
+/*	
 void deplacement(int entree,int* tab_col,int* tab_lig,int* x,int* y,int decalX,int decalY,grille test,grille l){
        if (entree==KEY_DOWN && (*y)<(test->N)-1){
            (*y)+=1;
@@ -293,27 +294,4 @@ void deplacement(int entree,int* tab_col,int* tab_lig,int* x,int* y,int decalX,i
            cocher_colonne(test,(*x),tab_lig);
          }   
 }	
-	
-/*
-grille charger_grille(grille L, char* nom,char* mode){
-int i=0,v=0;
-int histogramme[255];
-grille charge=alloue_grille(L->N,L->M);
-FILE* fichier = NULL;
-char chaine[TAILLE_MAX] = "";
-
-fichier = fopen(nom, mode);
-
-	if (fichier != NULL)
-  {
-     	 chaine[i]==P2 
- 		 while (fgets(chaine, TAILLE_MAX, fichier) != NULL )
-			 for(i=0;i<L->M;i++)
-       =chaine[i];
-			 v++;
-	   }
-
-  	 fclose(fichier);
-  }
-return charge;
-*/
+*/	

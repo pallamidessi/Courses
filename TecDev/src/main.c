@@ -17,35 +17,43 @@
 #include <ncurses.h>
 #include "grille.h"
 #include "Image.h"
+#include "compteur.h"
 
 
 int main()
 {
 int x=2,y=2;
 int n=0,m=0;
+int deja=0;
 int decalX=0,decalY=0;
 initscr();
 keypad(stdscr,1);
 cbreak();
-noecho();
+//noecho();
 int entree=0,choix=0;
 char nom_fichier[20];
 grille test,l;
 initscr();
 
+//compteur(decalY,decalX);
+
 while(choix==0){
+	if(deja==0){
 	printw("F:charger un fichier\n");
 	printw("I:charger une image\n");
-	refresh();
+	deja=1;
+	}
+
+	//refresh();
   entree=getch();
 	if (entree==('f')){
 		printw("Nom du fichier(defaut : toto.txt)\n");
 		refresh();
-		scanf("%s",nom_fichier);
+		scanw("%s",nom_fichier);
 
 		printw("Taille du fichier (largeur hauteur)\n");
 		refresh();
-		scanf("%d %d",&n,&m);
+		scanw("%d %d",&n,&m);
 
 		l=alloue_grille(n,m);
 		test=alloue_grille(n,m);
@@ -56,7 +64,7 @@ while(choix==0){
 		if (entree==('i')){
 		printw("Nom de image(defaut : couleur.ppm)\n");
 		refresh();
-		scanf("%s",nom_fichier);
+		scanw("%s",nom_fichier);
     
 		l=charger_image(nom_fichier,"r",Seuil(nom_fichier));
 		test=alloue_grille(l->N,l->M);

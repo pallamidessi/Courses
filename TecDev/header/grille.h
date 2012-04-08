@@ -10,11 +10,10 @@
  */
  
  
- 
-#include<stdio.h>
-#include<stdlib.h>
 #ifndef grille_h
 #define grille_h
+#include<stdio.h>
+#include<stdlib.h>
 #define TAILLE_MAX 512
 
 /**
