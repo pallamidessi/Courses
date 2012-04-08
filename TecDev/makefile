@@ -1,23 +1,39 @@
-CC=gcc
+VPATH = src:header:obj
+OBJ = obj/
+SRC = src/
+CC = gcc
 TARGET = logigraphe
-CFLAGS= -Wall -g
-LDFLAGS=
+CFLAGS = -Wall -g
+LDFLAGS = -lncurses
+LDFLAGS2 = -lcairo -lX11
+INC =-Iheader -I/usr/include/cairo -I/usr/local/include -L/usr/local/lib -lX11
 
-ALL= 
+ALL=$(TARGET)_ncurses $(TARGET)_cairo 
 
-$(TARGET): main.o grille.o Image.o
-	$(CC)  -o main main.o grille.o Image.o -lncurses
+$(TARGET)_cairo: main_cairo.o grille_cairo.o Image.o compteur.o
+	$(CC) -o $@ $(OBJ)main_cairo.o $(OBJ)grille_cairo.o $(OBJ)Image.o $(OBJ)compteur $$(LDFLAGS2)
 
-main.o: main.c grille.h 
-	$(CC) -Wall -g -c main.c $(CFLAGS)
+$(TARGET)_ncurses: main.o grille.o Image.o compteur.o
+	$(CC) -o $@  $(OBJ)main.o $(OBJ)grille.o $(OBJ)Image.o $(OBJ)compteur.o $(LDFLAGS)
+
+main.o: main.c grille.h Image.h 
+	$(CC) -c  $< -o $(OBJ)$@ $(CFLAGS) 
+
+main_cairo.o: main_cairo.c grille.h Image.h 
+	$(CC) -c  $< $(INC) -o $(OBJ)$@ $(CFLAGS) 
 	
+grille.o:grille.c grille.h 
+	$(CC) -c  $< -o $(OBJ)$@ $(CFLAGS)
 
-grille.o:grille.c  
-	$(CC) -Wall -g -c grille.c $(CFLAGS)
+grille_cairo.o:grille_cairo.c grille.h 
+	$(CC) -c  $< $(INC) -o $(OBJ)$@ $(CFLAGS)
 	
-Image.o:Image.c
-	$(CC) -Wall -g -c Image.c $(CFLAGS)
+Image.o:Image.c Image.h grille.h
+	$(CC) -c  $< -o $(OBJ)$@ $(CFLAGS)
 
+compteur.o:compteur.c compteur.h
+	$(CC) -c  $< -o $(OBJ)$@ $(CFLAGS)
+	
 clean:
 	rm -r *.o main
 	
