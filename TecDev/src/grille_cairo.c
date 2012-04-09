@@ -9,8 +9,7 @@
  *
  */
  
-#include"grille.h"
-#include<ncurses.h>
+#include"grille_cairo.h"
 
 
 grille alloue_grille(int n,int m){
@@ -73,22 +72,26 @@ return charge;
 }
 
 
-/*
-void affiche_grille(grille L,int decalX,int decalY){
-int i, v ;
-int originX=decalX;
 
-  for(i=0;i<L->N;i++){
+void affiche_grille(cairo_t* mask,grille l,int decalX,int decalY){
+int i, v ;
+int originX=decalX*20+25;
+
+ cairo_select_font_face(mask, "Purisa", CAIRO_FONT_SLANT_NORMAL,CAIRO_FONT_WEIGHT_BOLD);
+ cairo_set_font_size(mask, 13);
+	 decalY=decalY*20+25;
+	 for(i=0;i<l->N;i++){
 		decalX=originX;
-    for(v=0;v<L->M;v++){
-      mvprintw(decalY-1,decalX,"%c", (L->matrice[i][v]));
+    for(v=0;v<l->M;v++){
+      cairo_move_to(mask,decalX*50,decalY*50);
+			cairo_show_text(mask,l->matrice[i][v]);
 			decalX++;
       }
     decalY++;
 }
-
+cairo_destroy(mask);
 }
-*/
+
 
 
 				
@@ -97,7 +100,7 @@ int compare(grille l1,grille l2){
 int i=0,v=0;
 
 for(i=0;i<l1->N;i++)
-	for(v=0;v<l1->M;v++){
+	for(v=0;v<l1->M;v){
 	  if (l1->matrice[i][v] !=l2->matrice[i][v])
 	    return 1;				
 	}
