@@ -6,5 +6,5 @@ void compteur(int decalY,int decalX){
 	time(&start);
 	time(&end);
 	diff=difftime(end,start);
-	mvprintw(decalY+10,decalX+5,"%.2lf",diff);
+//	mvprintw(decalY+10,decalX+5,"%.2lf",diff);
 	}
