@@ -68,28 +68,40 @@ fichier = fopen(nom, mode);
 
   	 fclose(fichier);
   }
+	else
+		exit(1);
+
 return charge;
 }
 
 
 
 void affiche_grille(cairo_t* mask,grille l,int decalX,int decalY){
-int i, v ;
+int i=0, v=0 ;
 int originX=decalX*20+25;
+ 
+  cairo_set_source_rgb(mask,0.1,0.1,0.1);
+	cairo_select_font_face(mask, "sans-serif", CAIRO_FONT_SLANT_NORMAL,CAIRO_FONT_WEIGHT_BOLD);
+	cairo_set_font_size(mask, 13);
+	
+	decalY=decalY*20+25;
 
- cairo_select_font_face(mask, "Purisa", CAIRO_FONT_SLANT_NORMAL,CAIRO_FONT_WEIGHT_BOLD);
- cairo_set_font_size(mask, 13);
-	 decalY=decalY*20+25;
-	 for(i=0;i<l->N;i++){
-		decalX=originX;
-    for(v=0;v<l->M;v++){
-      cairo_move_to(mask,decalX*50,decalY*50);
-			cairo_show_text(mask,l->matrice[i][v]);
-			decalX++;
-      }
+		for(i=0;i<l->N;i++){
+			decalX=originX;
+    	for(v=0;v<l->M;v++){
+				if (l->matrice[i][v]=='.'){
+      		cairo_move_to(mask,decalX+i*50,decalY+v*50);
+					cairo_show_text(mask,".");
+				}
+				else {
+      		cairo_move_to(mask,decalX+i*50,decalY+v*50);
+					cairo_show_text(mask,"+");
+				}
+				decalX++;
+			}
     decalY++;
-}
-cairo_destroy(mask);
+		}
+	//cairo_destroy(mask);
 }
 
 
@@ -100,7 +112,7 @@ int compare(grille l1,grille l2){
 int i=0,v=0;
 
 for(i=0;i<l1->N;i++)
-	for(v=0;v<l1->M;v){
+	for(v=0;v<l1->M;v++){
 	  if (l1->matrice[i][v] !=l2->matrice[i][v])
 	    return 1;				
 	}
@@ -156,42 +168,52 @@ for(i=0;i<l->M;i++){
 return valeur;
 }	    
 
-/*
+
 void afficheCountLigne(grille l , int decalX ,int decalY){
 int i=0,v=0;	
-int originX=decalX;
+char val[4];
+
+decalY=decalY*20+25;
+  cairo_set_source_rgb(mask,0.1,0.1,0.1);
+	cairo_select_font_face(mask, "sans-serif", CAIRO_FONT_SLANT_NORMAL,CAIRO_FONT_WEIGHT_BOLD);
+	cairo_set_font_size(mask, 13);
 
 	for(i=0;i<l->N;i++){
-		decalY++;
-		decalX=originX;
    	for(v=0;v<l->M;v++){
-	  	if (l->matrice[i][v]!=0)
-	    	mvprintw(decalY,decalX,"%d",l->matrice[i][v]);
-				decalX++;
-	   }  
-	}
-}
-*/
-
-
-/*
-void afficheCountCol(grille l , int decalX ,int decalY){
-int i=0,v=0;
-int originY=decalY;
-
-for(i=0;i<l->M;i++){
-  refresh();
-	for(v=0;v<l->N;v++){
-	  if (l->matrice[v][i]!=0){
-			mvprintw(decalY,decalX,"%d",l->matrice[v][i]);
-			decalY++;
+	  	if (l->matrice[i][v]!=0){
+					sprintf(val,"%d",l->matrice[i][v]);
+      		cairo_move_to(mask,v*10,decalY+i*50);
+					cairo_show_text(mask,val);
+			}
 		}
 	}
-	decalY=originY;
-	decalX++;
 }
+	
+
+
+
+
+
+void afficheCountCol(grille l , int decalX ,int decalY){
+int i=0,v=0;
+char val[4];
+
+  cairo_set_source_rgb(mask,0.1,0.1,0.1);
+	cairo_select_font_face(mask, "sans-serif", CAIRO_FONT_SLANT_NORMAL,CAIRO_FONT_WEIGHT_BOLD);
+	cairo_set_font_size(mask, 13);
+
+decalX=decalX*20+25;
+	for(i=0;i<l->M;i++){
+		for(v=0;v<l->N;v++){
+	  	if (l->matrice[v][i]!=0){
+						sprintf(val,"%d",l->matrice[v][i]);
+      			cairo_move_to(mask,decalX+i*50,v*10);
+						cairo_show_text(mask,val);
+			}
+		}
+	}
 }
-*/
+
 
 
 void cocher_colonne(grille l,int y,int* tab){

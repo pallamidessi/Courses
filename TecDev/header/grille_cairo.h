@@ -52,7 +52,7 @@ grille alloue_grille(int,int);                  //allocation en memoire d'une gr
  * @param     M Un int de decalage vertical (X)
  */
  
-void affiche_grille(cairo_t* mask,grille l,int decalX,int decalY);           //affiche une grille avec un decalage X et Y
+void affiche_grille(cairo_t* surface,grille l,int decalX,int decalY);           //affiche une grille avec un decalage X et Y
 
 
 /**

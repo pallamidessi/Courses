@@ -45,25 +45,21 @@ KeySym keysym;
 cairo_t* test2;
 
 if(!(dpy=XOpenDisplay(NULL))) {
-			fprintf(stderr, "ERROR: Could not open display\n");
-					exit(1);
-						}
+fprintf(stderr, "ERROR: Could not open display\n");
+exit(1);
+}
 
-							scr=DefaultScreen(dpy);
-								rootwin=RootWindow(dpy, scr);
+scr=DefaultScreen(dpy);
+rootwin=RootWindow(dpy, scr);
+win=XCreateSimpleWindow(dpy, rootwin, 1, 1, SIZEX, SIZEY, 0, BlackPixel(dpy, scr), BlackPixel(dpy, scr));
 
-									win=XCreateSimpleWindow(dpy, rootwin, 1, 1, SIZEX, SIZEY, 0, 
-												BlackPixel(dpy, scr), BlackPixel(dpy, scr));
+XStoreName(dpy, win, "Logigraphe");
+XSelectInput(dpy, win, ExposureMask|ButtonPressMask);
+XMapWindow(dpy, win);
 
-										XStoreName(dpy, win, "Logigraphe");
-											XSelectInput(dpy, win, ExposureMask|ButtonPressMask);
-												XMapWindow(dpy, win);
-													
-														// create cairo surface
-															cairo_surface_t *cs; 
-																cs=cairo_xlib_surface_create(dpy, win, DefaultVisual(dpy,
-																0), SIZEX, SIZEY);
-//compteur(decalY,decalX);
+	// create cairo surface
+cairo_surface_t *cs; 
+cs=cairo_xlib_surface_create(dpy, win, DefaultVisual(dpy,0), SIZEX, SIZEY);
 
 /*
 while(choix==0){
@@ -117,16 +113,22 @@ grille valC=compter_colonne(l);
 
 decalX=count_decalX(valL);
 decalY=count_decalY(valC);
-n=0;
 
 
 while(1) {
-			XNextEvent(dpy, &e);
-					if(e.type==Expose && e.xexpose.count<1) {
-								test2=tracer_grille(cs,l,decalX,decalY);
-									affiche_grille(test2,l,decalX,decalY);
-											} else if(e.type==ButtonPress) break;
-												}//while  ((entree=getch())!='a'){
+	XNextEvent(dpy, &e);
+	if (e.type==Expose && e.xexpose.count<1){
+		test2=tracer_grille(cs,l,decalX,decalY);
+		//printf("test");
+		//getchar();
+		affiche_grille(cs,l,decalX,decalY);
+	}
+	else 
+		if (e.type==ButtonPress) 
+			break;
+}
+												
+	//while  ((entree=getch())!='a'){
     //clear();
       // afficheCountCol(valC,decalX+2,0);
       // afficheCountLigne(valL,0,decalY);
