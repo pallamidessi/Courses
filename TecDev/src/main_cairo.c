@@ -118,14 +118,13 @@ decalY=count_decalY(valC);
 while(1) {
 	XNextEvent(dpy, &e);
 	if (e.type==Expose && e.xexpose.count<1){
-		test2=tracer_grille(cs,l,decalX,decalY);
-		//printf("test");
-		//getchar();
-		affiche_grille(cs,l,decalX,decalY);
+		Affiche_jeu(cs,l,valL,valC,decalX,decalY,1,1);
 	}
 	else 
-		if (e.type==ButtonPress) 
-			break;
+		if (e.type==ButtonPress)	
+			printf("test");
+		  printf("You pushed the mouse button (%d,%d)\n", e.xbutton.x, e.xbutton.y);
+			Affiche_jeu(cs,l,valL,valC,decalX,decalY,e.xbutton.x,e.xbutton.y); 
 }
 												
 	//while  ((entree=getch())!='a'){
