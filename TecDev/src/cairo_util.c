@@ -10,11 +10,11 @@ decalY,int Sx,int Sy,int bouton){
 	char val[4];
 	int originX=decalX*20+25;
 
-carreSelection(mask,Sx,Sy,l,decalX,decalY,bouton);
+
 //tracer le cadre  
 	cairo_set_source_rgb(mask,1 ,1 ,1); 
   cairo_paint(mask);
-
+carreSelection(mask,Sx,Sy,l,decalX,decalY,bouton);
 	tracer_grille(mask,l,decalX,decalY);	
 
 	//affiche_grille
