@@ -102,8 +102,36 @@ void Affiche_jeu(cairo_surface_t *surface,grille l,grille Ligne,grille Col,int d
 			}
 		}	
 
+  decalX=resetX;
+	decalY=resetY;
 
-carreSelection(mask,Sx,Sy,l,decalX,decalY);
+rectangle_t tab[l->N][l->M];
+rectangle_t r;
+
+	for(i=0;i<l->N;i++){
+   	for(v=0;v<l->M;v++){
+     r.x=decalX*20+v*50;
+	 	 r.y=decalY*20+i*50;
+   	 r.width=50;
+	 	 r.height=50;
+   	 tab[i][v]=r;
+		}
+	}
+
+cairo_set_source_rgba (mask,1,0.1,0.1,0.5);
+	for(i=0;i<l->N;i++){
+   	for(v=0;v<l->M;v++){
+			if (Sx<=tab[i][v].x+tab[i][v].width && Sx>=tab[i][v].x && 
+					Sy<=tab[i][v].y+tab[i][v].height && Sy>=tab[i][v].y){
+						cairo_rectangle(mask,tab[i][v].x,tab[i][v].y,tab[i][v].width,tab[i][v].height);
+						cairo_fill(mask);
+							if (l->matrice[i][v]=='.')						
+								l->matrice[i][v]='+';
+							else 
+								l->matrice[i][v]='.';
+			}
+		}
+	}
 
  cairo_destroy(mask);
 }
