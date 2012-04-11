@@ -63,7 +63,8 @@ fichier = fopen(nom, mode);
      {
      	 for(i=0;i<L->M;i++)
        charge->matrice[v][i]=chaine[i];
-			 v++;
+			 
+				v++;
 	   }
 
   	 fclose(fichier);
@@ -75,7 +76,7 @@ return charge;
 }
 
 
-
+/*
 void affiche_grille(cairo_t* mask,grille l,int decalX,int decalY){
 int i=0, v=0 ;
 int originX=decalX*20+25;
@@ -103,7 +104,7 @@ int originX=decalX*20+25;
 		}
 	//cairo_destroy(mask);
 }
-
+*/
 
 
 				
@@ -151,7 +152,6 @@ int i=0,v=0;
 int x=0;
 
 
-
 for(i=0;i<l->N;i++)
 	for(v=0;v<l->M;v++)
 	  valeur->matrice[i][v]=0;
@@ -168,8 +168,8 @@ for(i=0;i<l->M;i++){
 return valeur;
 }	    
 
-
-void afficheCountLigne(grille l , int decalX ,int decalY){
+/*
+void afficheCountLigne( grille l , int decalX ,int decalY){
 int i=0,v=0;	
 char val[4];
 
@@ -213,7 +213,7 @@ decalX=decalX*20+25;
 		}
 	}
 }
-
+*/
 
 
 void cocher_colonne(grille l,int y,int* tab){
