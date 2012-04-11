@@ -54,7 +54,7 @@ rootwin=RootWindow(dpy, scr);
 win=XCreateSimpleWindow(dpy, rootwin, 1, 1, SIZEX, SIZEY, 0, BlackPixel(dpy, scr), BlackPixel(dpy, scr));
 
 XStoreName(dpy, win, "Logigraphe");
-XSelectInput(dpy, win, ExposureMask|ButtonPressMask);
+XSelectInput(dpy, win, ExposureMask|ButtonPressMask|PointerMotionMask);
 XMapWindow(dpy, win);
 
 	// create cairo surface
@@ -99,8 +99,8 @@ while(choix==0){
 }	
 */
 
-		l=alloue_grille(5,5);
-		test=alloue_grille(5,5);
+		l=alloue_grille(5,10);
+		test=alloue_grille(5,10);
 
 		l=charger_grille(l,"toto.txt", "r");
 
@@ -118,13 +118,16 @@ decalY=count_decalY(valC);
 while(1) {
 	XNextEvent(dpy, &e);
 	if (e.type==Expose && e.xexpose.count<1){
-		Affiche_jeu(cs,l,valL,valC,decalX,decalY,1,1);
+		Affiche_jeu(cs,test,valL,valC,decalX,decalY,-1,-1,-1);
 	}
 	else 
-		if (e.type==ButtonPress)	
-			printf("test");
-		  printf("You pushed the mouse button (%d,%d)\n", e.xbutton.x, e.xbutton.y);
-			Affiche_jeu(cs,l,valL,valC,decalX,decalY,e.xbutton.x,e.xbutton.y); 
+		if (e.type==ButtonPress){	
+			Affiche_jeu(cs,test,valL,valC,decalX,decalY,e.xbutton.x,e.xbutton.y,1); 
+		}
+	else	
+		if (e.type==MotionNotify){	
+			Affiche_jeu(cs,test,valL,valC,decalX,decalY,e.xmotion.x,e.xmotion.y,0); 
+		}
 }
 												
 	//while  ((entree=getch())!='a'){
@@ -142,10 +145,8 @@ while(1) {
 //}
 
 
-
-//desalloue_grille(l);
-//desalloue_grille(test);
-//clear();
-//endwin();
+cairo_surface_destroy(cs);
+desalloue_grille(l);
+desalloue_grille(test);
 return 0;
 }

@@ -1,7 +1,8 @@
 #include<cairo_util.h>
 
 
-void Affiche_jeu(cairo_surface_t *surface,grille l,grille Ligne,grille Col,int decalX,int decalY,int Sx,int Sy){
+void Affiche_jeu(cairo_surface_t *surface,grille l,grille Ligne,grille Col,int decalX,int
+decalY,int Sx,int Sy,int bouton){
 	cairo_t* mask;
   mask=cairo_create(surface);
 	int resetX=decalX,resetY=decalY;
@@ -9,26 +10,12 @@ void Affiche_jeu(cairo_surface_t *surface,grille l,grille Ligne,grille Col,int d
 	char val[4];
 	int originX=decalX*20+25;
 
+carreSelection(mask,Sx,Sy,l,decalX,decalY,bouton);
 //tracer le cadre  
 	cairo_set_source_rgb(mask,1 ,1 ,1); 
   cairo_paint(mask);
-	
-	cairo_set_source_rgb(mask,0.0,0.0,0.0); 
-	cairo_set_line_width (mask, 0.5);
 
-		 for ( i=0;i<=l->N;i++){
-			 cairo_move_to(mask,decalX*20,decalY*20+i*50);
-		   cairo_line_to(mask,decalX*20+l->N*50, decalY*20+i*50);
-			 cairo_stroke_preserve(mask);
-				}
-																				   
-		 for ( i=0;i<=l->M;i++){
-			 cairo_move_to(mask,decalX*20+i*50,decalY*20);
-		   cairo_line_to(mask,decalX*20+i*50, decalY*20+l->M*50);
-			 cairo_stroke_preserve(mask);
-				}
-
-
+	tracer_grille(mask,l,decalX,decalY);	
 
 	//affiche_grille
 	decalX=resetX;
@@ -48,7 +35,7 @@ void Affiche_jeu(cairo_surface_t *surface,grille l,grille Ligne,grille Col,int d
 					cairo_show_text(mask,".");
 				}
 				else {
-      		cairo_move_to(mask,decalX+v*50,decalY+i*50);
+      		cairo_move_to(mask,decalX+v*50-3,decalY+i*50-3);
 					cairo_show_text(mask,"+");
 				}
 				decalX++;
@@ -102,71 +89,51 @@ void Affiche_jeu(cairo_surface_t *surface,grille l,grille Ligne,grille Col,int d
 			}
 		}	
 
-  decalX=resetX;
-	decalY=resetY;
-
-rectangle_t tab[l->N][l->M];
-rectangle_t r;
-
-	for(i=0;i<l->N;i++){
-   	for(v=0;v<l->M;v++){
-     r.x=decalX*20+v*50;
-	 	 r.y=decalY*20+i*50;
-   	 r.width=50;
-	 	 r.height=50;
-   	 tab[i][v]=r;
-		}
-	}
-
-cairo_set_source_rgba (mask,1,0.1,0.1,0.5);
-	for(i=0;i<l->N;i++){
-   	for(v=0;v<l->M;v++){
-			if (Sx<=tab[i][v].x+tab[i][v].width && Sx>=tab[i][v].x && 
-					Sy<=tab[i][v].y+tab[i][v].height && Sy>=tab[i][v].y){
-						cairo_rectangle(mask,tab[i][v].x,tab[i][v].y,tab[i][v].width,tab[i][v].height);
-						cairo_fill(mask);
-							if (l->matrice[i][v]=='.')						
-								l->matrice[i][v]='+';
-							else 
-								l->matrice[i][v]='.';
-			}
-		}
-	}
-
  cairo_destroy(mask);
 }
 
- //carre de selection
-void carreSelection(cairo_t* mask,int Sx,int Sy,grille l,int decalX,int decalY){
-int i=0,v=0;
-rectangle_t tab[l->N][l->M];
-rectangle_t r;
+void tracer_grille(cairo_t* mask,grille l,int decalX,int decalY){
+int i=0;
 
-	for(i=0;i<l->N;i++){
-   	for(v=0;v<l->M;v++){
-     r.x=decalX*20+v*50;
-	 	 r.y=decalY*20+i*50;
-   	 r.width=50;
-	 	 r.height=50;
-   	 tab[i][v]=r;
-		}
-	}
+	cairo_set_source_rgb(mask,0.0,0.0,0.0); 
+	cairo_set_line_width (mask, 1.0);
 
-cairo_set_source_rgba (mask,1,0.1,0.1,0.5);
-	for(i=0;i<l->N;i++){
-   	for(v=0;v<l->M;v++){
-			if (Sx<=tab[i][v].x+tab[i][v].width && Sx>=tab[i][v].x && 
-					Sx<=tab[i][v].y+tab[i][v].height && Sx>=tab[i][v].y){
-						cairo_rectangle(mask,tab[i][v].x,tab[i][v].y,tab[i][v].width,tab[i][v].height);
-						cairo_fill(mask);
-							if (l->matrice[i][v]=='.')						
-								l->matrice[i][v]='+';
-							else 
-								l->matrice[i][v]='.';
-			}
+		for ( i=0;i<=l->N;i++){
+			cairo_move_to(mask,decalX*20,decalY*20+i*50);
+		  cairo_line_to(mask,decalX*20+l->M*50, decalY*20+i*50);
+			cairo_stroke(mask);
 		}
-	}
+																				   
+		for ( i=0;i<=l->M;i++){
+			cairo_move_to(mask,decalX*20+i*50,decalY*20);
+		  cairo_line_to(mask,decalX*20+i*50, decalY*20+l->N*50);
+			cairo_stroke(mask);
+		}
 }
 
 
+ //carre de selection
+void carreSelection(cairo_t* mask,int Sx,int Sy,grille l,int decalX,int decalY,int bouton){
 
+cairo_set_source_rgba (mask,1,0.1,0.1,0.5);
+
+if (bouton==0){
+	if (Sx>decalX*20 && Sx<decalX*20+50*l->M &&
+			Sy>decalY*20 && Sy<decalY*20+50*l->N){
+				cairo_rectangle(mask,((Sx-decalX*20)/50)*50+decalX*20,((Sy-decalY*20)/50)*50+decalY*20,50,50);
+				cairo_fill(mask);
+	}
+}
+else
+	if (bouton==1){
+		if (Sx>decalX*20 && Sx<decalX*20+50*l->M &&
+				Sy>decalY*20 && Sy<decalY*20+50*l->N){
+					cairo_rectangle(mask,((Sx-decalX*20)/50)*50+decalX*20,((Sy-decalY*20)/50)*50+decalY*20,50,50);
+					cairo_fill(mask);
+					if (l->matrice[(Sy-decalY*20)/50][(Sx-decalX*20)/50]=='.')						
+							l->matrice[(Sy-decalY*20)/50][(Sx-decalX*20)/50]='+';
+					else 
+							l->matrice[(Sy-decalY*20)/50][(Sx-decalX*20)/50]='.';
+ 		}
+	}
+}
