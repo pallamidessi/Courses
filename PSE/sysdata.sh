@@ -52,40 +52,36 @@ NOMVAL4=`grep $PID4 test1.txt | grep Name |expand | tr -s ' '  | cut -f 2 -d' '`
 PID5=`grep $VAL5 test1.txt |expand |  tr -s " " | cut -f 3 -d "/"`
 NOMVAL5=`grep $PID5 test1.txt | grep Name |expand | tr -s ' '  | cut -f 2 -d' '`
 
-NOMVAL2=0
-NOMVAL3=0
-NOMVAL4=0
-NOMVAL5=0
 
 if [ "$NOMVAL1" =  "0" ]
 	then 
-		echo " $PID1 $VAL1 "
+		echo " [$PID1]: $VAL1 "
 	else 
-		echo " $NOMVAL1 $VAL1 "
+		echo " $NOMVAL1: $VAL1 "
 fi		
 if [ "$NOMVAL2" =  "0" ]
 	then 
-		echo " $PID2 $VAL2 "
+		echo " [$PID2]: $VAL2 "
 	else 
-		echo " $NOMVAL2 $VAL2 "
+		echo " $NOMVAL2: $VAL2 "
 fi
 if [ "$NOMVAL3" =  "0" ]
 	then 
-		echo " $PID3 $VAL3 "
+		echo " [$PID3]: $VAL3 "
 	else 
-		echo " $NOMVAL3 $VAL3 "
+		echo " $NOMVAL3: $VAL3 "
 fi
 if [ "$NOMVAL4" =  "0" ]
 	then 
-		echo " $PID4 $VAL4 "
+		echo " [$PID4]: $VAL4 "
 	else 
-		echo " $NOMVAL4 $VAL4 "
+		echo " $NOMVAL4: $VAL4 "
 fi
 if [ "$NOMVAL5" =  "0" ]
 	then 
-		echo " $PID5 $VAL5 "
+		echo " [$PID5]: $VAL5 "
 	else 
-		echo " $NOMVAL5 $VAL5 "
+		echo " $NOMVAL5: $VAL5 "
 fi
 }
 
@@ -110,7 +106,7 @@ NAME=`grep Name /proc/$PID/status | expand | tr -s ' ' | cut -f 2 -d ' '`
 	fi		
 
 
-echo "instant      taille en kiloctet"
+echo "\033[32m instant      taille en kiloctet \033[0m "
 
 if [ -d /proc/$PID  ]
 	then
