@@ -70,7 +70,7 @@ if [ "$NOMVAL3" =  "0" ]
 	then 
 		echo " [$PID3]: $VAL3 "
 	else 
-		echo " $NOMVAL3 $VAL3 "
+		echo " $NOMVAL3: $VAL3 "
 fi
 if [ "$NOMVAL4" =  "0" ]
 	then 
@@ -107,7 +107,9 @@ NAME=`grep Name /proc/$PID/status | expand | tr -s ' ' | cut -f 2 -d ' '`
 	fi		
 
 
-echo "\033[32m instant taille en kiloctet \033[0m "
+
+echo "\033[32m instant      taille en kiloctet \033[0m "
+
 
 if [ -d /proc/$PID  ]
 	then
