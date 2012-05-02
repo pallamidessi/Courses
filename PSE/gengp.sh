@@ -1,19 +1,19 @@
 #! /bin/sh
 
 sleep 0.1
-
-trap 'PID.dat PID.dat2 info.0 gnuplot.spl tmp.000 label.txt >/dev/null; echo "marche";exit ' HUP INT TERM QUIT
-ValminmPax(){
-sed s/' '/'\n'/g PID.dat > PID.dat2 
-echo e >> PID.dat2
-nbrVAL=`wc -l PID.dat2 | cut -f 1 -d " "`
-min=`sed -n "1 p" PID.dat2|  tr  " " "\n"`
-max=`sed -n "1 p" PID.dat2|  tr  " " "\n"`
+NOMSCRIPT="gnuplot.spl"
+trap 'rm /tmp/PID.dat /tmp/PID.dat2 /tmp/info.0  /tmp/tmp.000 /tmp/label.txt 2>/dev/null;mv gnuplot.spl $NOMSCRIPT 2>/dev/null;exit ' HUP INT TERM QUIT
+Valminmax(){
+sed s/' '/'\n'/g /tmp/PID.dat > /tmp/PID.dat2 
+echo e >> /tmp/PID.dat2
+nbrVAL=`wc -l /tmp/PID.dat2 | cut -f 1 -d " "`
+min=`sed -n "1 p" /tmp/PID.dat2|  tr  " " "\n"`
+max=`sed -n "1 p" /tmp/PID.dat2|  tr  " " "\n"`
 val=0
 
 for i in `seq 1 $nbrVAL`
 	do
-		val=`sed -n "$i p" PID.dat2`
+		val=`sed -n "$i p" /tmp/PID.dat2`
 		if [ $val = "e" ]
 			then break
 		else
@@ -39,22 +39,29 @@ fi
 
 
 Creergnuscript(){
-titre=`sed -n "2 p" info.0`
-temps=`sed -n "3 p" info.0`
+temps=`sed -n "3 p" /tmp/info.0`
 Min=`Valminmax min`
 Max=`Valminmax max`
 Min=`expr $Min - 50`
 Max=`expr $Max + 50`
+
+if [ "$3" = "0" ]
+	then 
+		xlab="Temps par $temps secondes"
+	else 
+		xlab="$3"
+fi
+
 echo "
 reset
-set ylabel 'memoire en KB'
-set xlabel 'Temps par $temps secondes'
-set terminal x11
+set ylabel '$2'
+set xlabel '$xlab'
+set terminal $4
 set yrange [$Min:$Max] 
-set xrange [0:`wc -l PID.dat2 |  cut -f 1 -d " "`] 
+set xrange [0:`wc -l /tmp/PID.dat2 |  cut -f 1 -d " "`] 
 
 
-plot \"PID.dat2\"  using 1 title '$titre' with linespoint 
+plot \"/tmp/PID.dat2\"  using 1 title '$1' with linespoint 
  
 " > gnuplot.spl
 }
@@ -65,16 +72,16 @@ GnuSuivrePID(){
 while [ 1 -eq 1 ]
 	do
 	sleep $1
-  Creergnuscript 
+  Creergnuscript "$2" "$3" "$4" "$5"
 	
 	cat gnuplot.spl gnuplot.spl
 done | gnuplot -persist
 
 }
 Max(){
-nbrVAL=`wc -l info.0 | cut -f 1 -d " "`
+nbrVAL=`wc -l /tmp/info.0 | cut -f 1 -d " "`
 
-max=`sed -n "2 p" info.0 | tr -s " " | cut -f 2 -d' '`
+max=`sed -n "2 p" /tmp/info.0 | tr -s " " | cut -f 2 -d' '`
 val=0
 
 for i in `seq 2  $nbrVAL`
@@ -83,7 +90,7 @@ for i in `seq 2  $nbrVAL`
 			then 
 				break
 		else
-			val=`sed -n "$i p" info.0 | cut -f 2 -d' '`
+			val=`sed -n "$i p" /tmp/info.0 | cut -f 2 -d' '`
 		
 			if [ $val -ge $max ]
 				then max=$val
@@ -94,37 +101,36 @@ for i in `seq 2  $nbrVAL`
 }
 GnuCpu(){
 
-sl=`sed -n "2 p" info.0 `
+sl=`sed -n "2 p" /tmp/info.0 `
 sl=`expr $sl + 3`
 sleep $sl
-nbrC=`wc -l info.0 | cut -f 1 -d' '`
+nbrC=`wc -l /tmp/info.0 | cut -f 1 -d' '`
 nbrC=` expr $nbrC - 2 `
-titre=`sed -n "1 p" info.0`
-sed '1d' info.0 > tmp.000
-cat tmp.000 > info.0
-sed '1d' info.0 > tmp.000
-cat tmp.000 > info.0
+sed '1d' /tmp/info.0 > /tmp/tmp.000
+cat /tmp/tmp.000 > /tmp/info.0
+sed '1d' /tmp/info.0 > /tmp/tmp.000
+cat /tmp/tmp.000 > /tmp/info.0
 
-if [ -e label.txt ]
-	then rm label.txt
+if [ -e /tmp/label.txt ]
+	then rm /tmp/label.txt
 fi
 
 for i in `seq 1 $nbrC`
 			do 
 			val=`expr $i - 1 `
-			echo "set label \"`sed -n "$i p" info.0 | tr -s " " | cut -f 1 -d' '`\" at  $val , 97" >> label.txt
+			echo "set label \"`sed -n "$i p" /tmp/info.0 | tr -s " " | cut -f 1 -d' '`\" at  $val , 97" >> /tmp/label.txt
 done 
 
 
 echo "
 reset
-set ylabel 'pourcentage Cpu'
-set terminal x11
+set ylabel '$2'
+set terminal $3
 set yrange [0:100] 
 set xrange [0:$nbrC] 
 set style fill solid border -1
-`cat label.txt`  
-plot \"info.0\"  using 2 title '$titre' with boxes
+`cat /tmp/label.txt`  
+plot \"/tmp/info.0\"  using 2 title '$1' with boxes
  
 " > gnuplot.spl
 
@@ -132,45 +138,107 @@ cat gnuplot.spl | gnuplot -p
 }
 
 GnuPlusGros(){
-titre="les cinq plus gros programmes en memoire"
+titre=
 
 Max=`Max max`
 Max=`expr $Max + 5000`
 echo "
 reset
-set ylabel 'memoire en KB'
-set terminal x11
+set ylabel '$2'
+set terminal $3
 set yrange [0:$Max] 
 set xrange [0:6] 
-set label \"`sed -n "2 p" info.0 | tr -s " " | cut -f 1 -d' '| tr : ' '`\" at 0.7,15000
-set label \"`sed -n "3 p" info.0 | tr -s " " | cut -f 1 -d' '| tr : ' '`\" at 1.7,15000
-set label \"`sed -n "4 p" info.0 | tr -s " " | cut -f 1 -d' '| tr : ' '`\" at 2.7,15000
-set label \"`sed -n "5 p" info.0 | tr -s " " | cut -f 1 -d' '| tr : ' '`\" at 3.7,15000
-set label \"`sed -n "6 p" info.0 | tr -s " " | cut -f 1 -d' '| tr : ' '`\" at 4.7,15000
-plot \"info.0\"  using 2 title '$titre' with boxes
+set label \"`sed -n "2 p" /tmp/info.0 | tr -s " " | cut -f 1 -d' '| tr : ' '`\" at 0.7,15000
+set label \"`sed -n "3 p" /tmp/info.0 | tr -s " " | cut -f 1 -d' '| tr : ' '`\" at 1.7,15000
+set label \"`sed -n "4 p" /tmp/info.0 | tr -s " " | cut -f 1 -d' '| tr : ' '`\" at 2.7,15000
+set label \"`sed -n "5 p" /tmp/info.0 | tr -s " " | cut -f 1 -d' '| tr : ' '`\" at 3.7,15000
+set label \"`sed -n "6 p" /tmp/info.0 | tr -s " " | cut -f 1 -d' '| tr : ' '`\" at 4.7,15000
+plot \"/tmp/info.0\"  using 2 title '$1' with boxes
 
 " > gnuplot.spl
 
 cat gnuplot.spl gnuplot.spl | gnuplot -p
 
 }
-if [ -e info.0 ]
+
+AfficheHelp(){
+echo "NAME \n"
+echo "\t gengp - Affichage avec Gnuplot d'information issue du script sysdata\n"		
+echo "SYNOPSIS\n"
+echo "\t ./sysdata [OPTION] ... | ./gengp [OPTION]\n"
+echo "DESCRIPTION\n"
+echo "\t Affiche le suivi de la consommation memoire a intervalle regulier defini \n \t ou non par l'utilisateur (defaut 5 secondes) d'un processus.\n \t Affiche un histogramme des 5 plus gros consommateurs en memoire au lancement du script. \n \t Fait un histogramme de l'utilisation processeur global et par unites (cores) en se basant dans un intervalle defini (defaut 5 secondes)\n"
+echo "\t -t"
+echo "\t\t Changer le titre du graphique.\n"
+echo "\t -x"
+echo "\t\t Changer le nom de l'abscisse.\n"
+echo "\t -y"
+echo "\t\t Changer le nom de l'ordonnee.\n"
+echo "\t -h"
+echo "\t\t Aide.\n"
+echo "\t -o "
+echo "\t\t changer le terminal de sortie (wxt,x11,png ...)\n"
+echo "\t -f"
+echo "\t\t Changer le nom du script gnuplot obtenu (par defaut gnuplot.spl).\n"
+echo "\t -i"
+echo "\t\t Changer le nom de l'image obtenu du graphique.\n"
+}
+
+if [ "`sed -n "1 p" /tmp/info.0`" = "5plusgros" ]
+	then 
+				TITRE="les cinq plus gros programmes en memoire"
+				YLAB="memoire en KB"
+			  TERM=x11
+else if [ "`sed -n "1 p" /tmp/info.0`" = "suivre" ]
+	then 
+				TITRE=`sed -n "2 p" /tmp/info.0`
+				YLAB="memoire en KB"
+				XLAB=0
+			  TERM="x11"
+else if [ "`sed -n "1 p" /tmp/info.0`" = "cpu" ] 
+	then 
+				TITRE=`sed -n "1 p" /tmp/info.0 `
+				YLAB="pourcentage Cpu"
+			  TERM="x11"
+fi fi fi 
+
+
+while getopts t:x:y:o:f:i:h p
+	do	
+		case "$p" in
+			t)	TITRE=$OPTARG ;;
+			x)	XLAB=$OPTARG ;;
+			y)	YLAB=$OPTARG ;;
+			o)  TERM=$OPTARG;;
+			f)  NOMSCRIPT=$OPTARG ;;
+			i)	NOMIMAGE=$OPTARG;;
+			h)	AfficheHelp ;;
+			[?])	echo "Usage: $0 [OPTION] ..."
+		exit 1;;
+	esac
+done
+
+
+
+if [ -e /tmp/info.0 ]
 	then
-		if [ "`sed -n "1 p" info.0`" = "5plusgros" ]
+		if [ "`sed -n "1 p" /tmp/info.0`" = "5plusgros" ]
 			then 
-				GnuPlusGros
+						GnuPlusGros "$TITRE" "$YLAB" $TERM
 		else 
-			if [ "`sed -n "1 p" info.0`" = "suivre" ]
+			if [ "`sed -n "1 p" /tmp/info.0`" = "suivre" ]
 				then 
-					GnuSuivrePID 5
+					GnuSuivrePID 5 "$TITRE" "$YLAB" "$XLAB" "$TERM"
 					exit 0 
 			else
-				if [ "`sed -n "1 p" info.0`" = "cpu" ] 
+				if [ "`sed -n "1 p" /tmp/info.0`" = "cpu" ] 
 					then 
-						GnuCpu
+						GnuCpu "$TITRE" "$YLAB" $TERM
 			fi fi fi
 	else
 		echo "USAGE: rediriger ./sysdata vers $0"
 		exit 1
 fi
-rm PID.dat PID.dat2 info.0 gnuplot.spl tmp.000 label.txt >/dev/null
+
+mv gnuplot.spl $NOMSCRIPT 2>/dev/null
+rm /tmp/PID.dat /tmp/PID.dat2 /tmp/info.0  /tmp/tmp.000 /tmp/label.txt 2>/dev/null

@@ -5,7 +5,7 @@
 # debugger ce bousin
 # reste la troisieme question theoriquement
 
-trap 'rm taillememoire.txt taillememoiretrie.txt info.0 util.cpu cpu.1 cpu.2 PID.dat 2>/dev/null; echo "marche"; exit ' HUP INT TERM QUIT
+trap 'rm /tmp/taillememoire.txt /tmp/taillememoiretrie.txt /tmp/info.0 /tmp/util.cpu /tmp/cpu.1 /tmp/cpu.2 /tmp/PID.dat 2>/dev/null; exit ' HUP INT TERM QUIT
 
 #Affiche les 5 plus gros consommateur memoire avec leurs nom. ou leurs PID si pas de nom
 
@@ -13,8 +13,8 @@ INTERVALLE=5
 
 CinqPlusGros() 
 {
-rm test1.txt taillememoire.txt taillememoiretrie.txt info.0 2>/dev/null
-echo "5plusgros">info.0
+rm test1.txt /tmp/taillememoire.txt /tmp/taillememoiretrie.txt /tmp/info.0 /tmp/PID.dat 2>/dev/null
+echo "5plusgros">/tmp/info.0
 VAL1=0
 VAL2=0
 VAL3=0
@@ -29,15 +29,15 @@ NOMVAL5=0
 
 grep "Name\|VmSize" /proc/[0-9]*/status >> test1.txt
 
-grep  VmSize test1.txt |expand |  tr -s " " | cut -f 2 -d " ">> taillememoire.txt
+grep  VmSize test1.txt |expand |  tr -s " " | cut -f 2 -d " ">> /tmp/taillememoire.txt
 
-sort -g -r taillememoire.txt > taillememoiretrie.txt
+sort -g -r /tmp/taillememoire.txt > /tmp/taillememoiretrie.txt
 
-	VAL1=`sed -n "1 p" taillememoiretrie.txt`
-	VAL2=`sed -n "2 p" taillememoiretrie.txt`
-	VAL3=`sed -n "3 p" taillememoiretrie.txt`
-	VAL4=`sed -n "4 p" taillememoiretrie.txt`
-	VAL5=`sed -n "5 p" taillememoiretrie.txt`
+	VAL1=`sed -n "1 p" /tmp/taillememoiretrie.txt`
+	VAL2=`sed -n "2 p" /tmp/taillememoiretrie.txt`
+	VAL3=`sed -n "3 p" /tmp/taillememoiretrie.txt`
+	VAL4=`sed -n "4 p" /tmp/taillememoiretrie.txt`
+	VAL5=`sed -n "5 p" /tmp/taillememoiretrie.txt`
 
 
 
@@ -58,50 +58,50 @@ NOMVAL5=`grep $PID5 test1.txt | grep Name |expand | tr -s ' '  | cut -f 2 -d' '`
 if [ "$NOMVAL1" =  "0" ]
 	then 
 		echo "[$PID1]: $VAL1 "
-		echo "[$PID1]: $VAL1 " >> info.0
+		echo "[$PID1]: $VAL1 " >> /tmp/info.0
 	else 
 		echo "$NOMVAL1: $VAL1 "
-		echo "$NOMVAL1: $VAL1 " >> info.0
+		echo "$NOMVAL1: $VAL1 " >> /tmp/info.0
 fi		
 if [ "$NOMVAL2" =  "0" ]
 	then 
 		echo "[$PID2]: $VAL2 "
-		echo "[$PID2]: $VAL2 " >> info.0
+		echo "[$PID2]: $VAL2 " >> /tmp/info.0
 	else 
 		echo "$NOMVAL2: $VAL2 "
-		echo "$NOMVAL2: $VAL2 " >> info.0
+		echo "$NOMVAL2: $VAL2 " >> /tmp/info.0
 fi
 if [ "$NOMVAL3" =  "0" ]
 	then 
 		echo "[$PID3]: $VAL3 "
-		echo "[$PID3]: $VAL3 " >> info.0
+		echo "[$PID3]: $VAL3 " >> /tmp/info.0
 	else 
 		echo "$NOMVAL3: $VAL3 "
-		echo "$NOMVAL3: $VAL3 " >> info.0
+		echo "$NOMVAL3: $VAL3 " >> /tmp/info.0
 fi
 if [ "$NOMVAL4" =  "0" ]
 	then 
 		echo "[$PID4]: $VAL4 "
-		echo "[$PID4]: $VAL4 " >> info.0
+		echo "[$PID4]: $VAL4 " >> /tmp/info.0
 	else 
 		echo "$NOMVAL4: $VAL4 "
-		echo "$NOMVAL4: $VAL4 " >> info.0
+		echo "$NOMVAL4: $VAL4 " >> /tmp/info.0
 fi
 if [ "$NOMVAL5" =  "0" ]
 	then 
 		echo "[$PID5]: $VAL5 "
-		echo "[$PID5]: $VAL5 " >> info.0
+		echo "[$PID5]: $VAL5 " >> /tmp/info.0
 	else 
 		echo "$NOMVAL5: $VAL5 "
-		echo "$NOMVAL5: $VAL5 " >> info.0
+		echo "$NOMVAL5: $VAL5 " >> /tmp/info.0
 fi
 }
 
 #affiche et monitore un PID precis s'il existe
 SuivrePID() 
 {
-rm info.0 2>/dev/null
-echo "suivre" >> info.0
+rm /tmp/info.0 2>/dev/null
+echo "suivre" >> /tmp/info.0
 PID="$1"
 NAME=0
 TMP=0
@@ -118,8 +118,8 @@ NAME=`grep Name /proc/$PID/status | expand | tr -s ' ' | cut -f 2 -d ' '`
 		else
 			echo "NOM:$NAME"
 	fi		
-echo "$NAME" >> info.0
-echo "$2" >> info.0
+echo "$NAME" >> /tmp/info.0
+echo "$2" >> /tmp/info.0
 
 echo "\033[32m instant      taille en kiloctet \033[0m "
 
@@ -130,7 +130,7 @@ if [ -d /proc/$PID  ]
 			do
 				echo "T$TMP 		$VALTMP"
 				VALTMP="$VALTMP `grep VmSize /proc/$PID/status|expand|tr -s ' '|cut -f 2 -d' '`" 
-				echo $VALTMP > PID.dat
+				echo $VALTMP > /tmp/PID.dat
 				TMP=`expr $TMP + 1`
 				sleep $2
 			done 
@@ -141,26 +141,26 @@ fi
 
 AfficheCPU()
 {
-rm info.0 util.cpu cpu.1 cpu.2 2>/dev/null
-echo "cpu" > info.0
-echo "$1" >> info.0
+rm /tmp/info.0 /tmp/util.cpu /tmp/cpu.1 /tmp/cpu.2 2>/dev/null
+echo "cpu" > /tmp/info.0
+echo "$1" >> /tmp/info.0
 echo "Veuillez patientez $1 secondes ..."
-grep cpu /proc/stat	> cpu.1
+grep cpu /proc/stat	> /tmp/cpu.1
 sleep $1
-grep cpu /proc/stat	> cpu.2
-nbrp=`wc -l cpu.1|cut -f 1 -d' '`
+grep cpu /proc/stat	> /tmp/cpu.2
+nbrp=`wc -l /tmp/cpu.1|cut -f 1 -d' '`
 
 for i in `seq 1 $nbrp`
 	do
 
-VAL1=`sed -n "$i p" cpu.1 |expand |tr -s " "|cut -f 2 -d' '`
-VAL2=`sed -n "$i p" cpu.2 |expand |tr -s " "|cut -f 2 -d' '`
-VAL3=`sed -n "$i p" cpu.1 |expand |tr -s " "|cut -f 3 -d' '`
-VAL4=`sed -n "$i p" cpu.2 |expand |tr -s " "|cut -f 3 -d' '`
-VAL5=`sed -n "$i p" cpu.1 |expand |tr -s " "|cut -f 4 -d' '`
-VAL6=`sed -n "$i p" cpu.2 |expand |tr -s " "|cut -f 4 -d' '`
-VAL7=`sed -n "$i p" cpu.1 |expand |tr -s " "|cut -f 5 -d' '`
-VAL8=`sed -n "$i p" cpu.2 |expand |tr -s " "|cut -f 5 -d' '`
+VAL1=`sed -n "$i p" /tmp/cpu.1 |expand |tr -s " "|cut -f 2 -d' '`
+VAL2=`sed -n "$i p" /tmp/cpu.2 |expand |tr -s " "|cut -f 2 -d' '`
+VAL3=`sed -n "$i p" /tmp/cpu.1 |expand |tr -s " "|cut -f 3 -d' '`
+VAL4=`sed -n "$i p" /tmp/cpu.2 |expand |tr -s " "|cut -f 3 -d' '`
+VAL5=`sed -n "$i p" /tmp/cpu.1 |expand |tr -s " "|cut -f 4 -d' '`
+VAL6=`sed -n "$i p" /tmp/cpu.2 |expand |tr -s " "|cut -f 4 -d' '`
+VAL7=`sed -n "$i p" /tmp/cpu.1 |expand |tr -s " "|cut -f 5 -d' '`
+VAL8=`sed -n "$i p" /tmp/cpu.2 |expand |tr -s " "|cut -f 5 -d' '`
 
 
 EXP1=`expr $VAL2 - $VAL1  `  
@@ -175,27 +175,27 @@ EXP7=`expr $EXP5 + $EXP6`
 
 EXP8=`expr $EXP5 + $EXP3`
 
-echo "$EXP7 $EXP8" >>util.cpu
+echo "$EXP7 $EXP8" >>/tmp/util.cpu
 
 	done
 
-  TotalCPU=`sed -n "1  p" util.cpu |cut -f 1 -d' '`
-	TotalUtil=`sed -n "1  p" util.cpu |cut -f 2 -d' '`
+  TotalCPU=`sed -n "1  p" /tmp/util.cpu |cut -f 1 -d' '`
+	TotalUtil=`sed -n "1  p" /tmp/util.cpu |cut -f 2 -d' '`
 	pourcentageCPU=`expr \( $TotalUtil \* 200 \) / $TotalCPU `
 	
 	echo "\"cpus\" $pourcentageCPU"
-	echo "cpus $pourcentageCPU" >> info.0
+	echo "cpus $pourcentageCPU" >> /tmp/info.0
 
 
 	for i in `seq 2 $nbrp`
 		do
-		  TotalCPU=`sed -n "$i  p" util.cpu |cut -f 1 -d' '`
-			TotalUtil=`sed -n "$i  p" util.cpu |cut -f 2 -d' '`
+		  TotalCPU=`sed -n "$i  p" /tmp/util.cpu |cut -f 1 -d' '`
+			TotalUtil=`sed -n "$i  p" /tmp/util.cpu |cut -f 2 -d' '`
 			pourcentageCPU=`expr  \( $TotalUtil \* 200 \) / $TotalCPU` 
 			CPUid=`sed -n "$i  p" /proc/stat |cut -f 1 -d' '`
 			
 			echo "\"$CPUid\" `expr $pourcentageCPU  `"
-			echo "$CPUid `expr $pourcentageCPU  `" >> info.0 
+			echo "$CPUid `expr $pourcentageCPU  `" >> /tmp/info.0 
 			
 		done 
 		
@@ -235,4 +235,4 @@ while getopts i:cmhp: o
 	esac
 done
 
-rm taillememoire.txt taillememoiretrie.txt util.cpu cpu.1 cpu.2 >/dev/null
+rm test1.txt /tmp/taillememoire.txt /tmp/taillememoiretrie.txt /tmp/util.cpu /tmp/cpu.1 /tmp/cpu.2 2>/dev/null
