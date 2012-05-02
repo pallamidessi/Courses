@@ -5,7 +5,7 @@
 # debugger ce bousin
 # reste la troisieme question theoriquement
 
-#trap "rm test1.txt taillememoire.txt taillememoiretrie.txt test2; exit" SIGHUP SIGTERM SIGINT
+trap 'rm taillememoire.txt taillememoiretrie.txt info.0 util.cpu cpu.1 cpu.2 PID.dat 2>/dev/null; echo "marche"; exit ' HUP INT TERM QUIT
 
 #Affiche les 5 plus gros consommateur memoire avec leurs nom. ou leurs PID si pas de nom
 
@@ -13,7 +13,8 @@ INTERVALLE=5
 
 CinqPlusGros() 
 {
-rm test1.txt taillememoire.txt taillememoiretrie.txt 
+rm test1.txt taillememoire.txt taillememoiretrie.txt info.0 2>/dev/null
+echo "5plusgros">info.0
 VAL1=0
 VAL2=0
 VAL3=0
@@ -56,39 +57,51 @@ NOMVAL5=`grep $PID5 test1.txt | grep Name |expand | tr -s ' '  | cut -f 2 -d' '`
 
 if [ "$NOMVAL1" =  "0" ]
 	then 
-		echo " [$PID1]: $VAL1 "
+		echo "[$PID1]: $VAL1 "
+		echo "[$PID1]: $VAL1 " >> info.0
 	else 
-		echo " $NOMVAL1: $VAL1 "
+		echo "$NOMVAL1: $VAL1 "
+		echo "$NOMVAL1: $VAL1 " >> info.0
 fi		
 if [ "$NOMVAL2" =  "0" ]
 	then 
-		echo " [$PID2]: $VAL2 "
+		echo "[$PID2]: $VAL2 "
+		echo "[$PID2]: $VAL2 " >> info.0
 	else 
-		echo " $NOMVAL2: $VAL2 "
+		echo "$NOMVAL2: $VAL2 "
+		echo "$NOMVAL2: $VAL2 " >> info.0
 fi
 if [ "$NOMVAL3" =  "0" ]
 	then 
-		echo " [$PID3]: $VAL3 "
+		echo "[$PID3]: $VAL3 "
+		echo "[$PID3]: $VAL3 " >> info.0
 	else 
-		echo " $NOMVAL3: $VAL3 "
+		echo "$NOMVAL3: $VAL3 "
+		echo "$NOMVAL3: $VAL3 " >> info.0
 fi
 if [ "$NOMVAL4" =  "0" ]
 	then 
-		echo " [$PID4]: $VAL4 "
+		echo "[$PID4]: $VAL4 "
+		echo "[$PID4]: $VAL4 " >> info.0
 	else 
-		echo " $NOMVAL4: $VAL4 "
+		echo "$NOMVAL4: $VAL4 "
+		echo "$NOMVAL4: $VAL4 " >> info.0
 fi
 if [ "$NOMVAL5" =  "0" ]
 	then 
-		echo " [$PID5]: $VAL5 "
+		echo "[$PID5]: $VAL5 "
+		echo "[$PID5]: $VAL5 " >> info.0
 	else 
-		echo " $NOMVAL5: $VAL5 "
+		echo "$NOMVAL5: $VAL5 "
+		echo "$NOMVAL5: $VAL5 " >> info.0
 fi
 }
 
 #affiche et monitore un PID precis s'il existe
 SuivrePID() 
 {
+rm info.0 2>/dev/null
+echo "suivre" >> info.0
 PID="$1"
 NAME=0
 TMP=0
@@ -105,8 +118,8 @@ NAME=`grep Name /proc/$PID/status | expand | tr -s ' ' | cut -f 2 -d ' '`
 		else
 			echo "NOM:$NAME"
 	fi		
-
-
+echo "$NAME" >> info.0
+echo "$2" >> info.0
 
 echo "\033[32m instant      taille en kiloctet \033[0m "
 
@@ -128,8 +141,10 @@ fi
 
 AfficheCPU()
 {
+rm info.0 util.cpu cpu.1 cpu.2 2>/dev/null
+echo "cpu" > info.0
+echo "$1" >> info.0
 echo "Veuillez patientez $1 secondes ..."
-rm util.cpu cpu.1 cpu.2
 grep cpu /proc/stat	> cpu.1
 sleep $1
 grep cpu /proc/stat	> cpu.2
@@ -168,9 +183,10 @@ echo "$EXP7 $EXP8" >>util.cpu
 	TotalUtil=`sed -n "1  p" util.cpu |cut -f 2 -d' '`
 	pourcentageCPU=`expr \( $TotalUtil \* 200 \) / $TotalCPU `
 	
-	
-	echo "cpus $pourcentageCPU" 
-	
+	echo "\"cpus\" $pourcentageCPU"
+	echo "cpus $pourcentageCPU" >> info.0
+
+
 	for i in `seq 2 $nbrp`
 		do
 		  TotalCPU=`sed -n "$i  p" util.cpu |cut -f 1 -d' '`
@@ -178,7 +194,8 @@ echo "$EXP7 $EXP8" >>util.cpu
 			pourcentageCPU=`expr  \( $TotalUtil \* 200 \) / $TotalCPU` 
 			CPUid=`sed -n "$i  p" /proc/stat |cut -f 1 -d' '`
 			
-			echo "$CPUid `expr $pourcentageCPU  `"
+			echo "\"$CPUid\" `expr $pourcentageCPU  `"
+			echo "$CPUid `expr $pourcentageCPU  `" >> info.0 
 			
 		done 
 		
@@ -203,13 +220,7 @@ echo "\t\t Aide.\n"
 echo "\t -p "
 echo "\t\t Suivre la consommation memoire d'un PID donne\n"
 }
-#while getops i: s
-	#do 
-		#case "$s" in
-			#i) INTERVALLE=$OPTARG ;;
-			#[?]) break ;; 
-  #esac
-#done 
+
 
 while getopts i:cmhp: o
 	do	
@@ -223,3 +234,5 @@ while getopts i:cmhp: o
 		exit 1;;
 	esac
 done
+
+rm taillememoire.txt taillememoiretrie.txt util.cpu cpu.1 cpu.2 >/dev/null
