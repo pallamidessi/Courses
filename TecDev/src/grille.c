@@ -295,26 +295,3 @@ void deplacement(int entree,int* tab_col,int* tab_lig,int* x,int* y,int decalX,i
          }   
 }	
 	
-/*
-grille charger_grille(grille L, char* nom,char* mode){
-int i=0,v=0;
-int histogramme[255];
-grille charge=alloue_grille(L->N,L->M);
-FILE* fichier = NULL;
-char chaine[TAILLE_MAX] = "";
-
-fichier = fopen(nom, mode);
-
-	if (fichier != NULL)
-  {
-     	 chaine[i]==P2 
- 		 while (fgets(chaine, TAILLE_MAX, fichier) != NULL )
-			 for(i=0;i<L->M;i++)
-       =chaine[i];
-			 v++;
-	   }
-
-  	 fclose(fichier);
-  }
-return charge;
-*/

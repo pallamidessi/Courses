@@ -5,7 +5,7 @@
  * \date       4 mars 2012
  * \brief       header de grille.c 
  *
- * \details    Contient les prototype des fonction relative au logigraphe(grille) ou a leurs traitements.
+ * \details    Contient les prototypes des fonctions relatives au logigraphe(grille) ou a leurs traitements.
  *
  */
  

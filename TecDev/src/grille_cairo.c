@@ -1,9 +1,9 @@
 /**
- * \file       grille.c
+ * \file       grille_cairo.c
  * \author     Pallamidessi joseph
  * \version    1.0
  * \date       4 mars 2012
- * \brief      grille.c 
+ * \brief      grille_cairo.c 
  *
  * \details    Contient les fonction relative au logigraphe(grille) ou a leurs traitements.
  *
@@ -61,6 +61,10 @@ fichier = fopen(nom, mode);
   {
  		 while (fgets(chaine, TAILLE_MAX, fichier) != NULL )
      {
+
+			 if(v==L->N)
+				 break;
+
      	 for(i=0;i<L->M;i++)
        charge->matrice[v][i]=chaine[i];
 			 
@@ -75,36 +79,6 @@ fichier = fopen(nom, mode);
 return charge;
 }
 
-
-/*
-void affiche_grille(cairo_t* mask,grille l,int decalX,int decalY){
-int i=0, v=0 ;
-int originX=decalX*20+25;
- 
-  cairo_set_source_rgb(mask,0.1,0.1,0.1);
-	cairo_select_font_face(mask, "sans-serif", CAIRO_FONT_SLANT_NORMAL,CAIRO_FONT_WEIGHT_BOLD);
-	cairo_set_font_size(mask, 13);
-	
-	decalY=decalY*20+25;
-
-		for(i=0;i<l->N;i++){
-			decalX=originX;
-    	for(v=0;v<l->M;v++){
-				if (l->matrice[i][v]=='.'){
-      		cairo_move_to(mask,decalX+i*50,decalY+v*50);
-					cairo_show_text(mask,".");
-				}
-				else {
-      		cairo_move_to(mask,decalX+i*50,decalY+v*50);
-					cairo_show_text(mask,"+");
-				}
-				decalX++;
-			}
-    decalY++;
-		}
-	//cairo_destroy(mask);
-}
-*/
 
 
 				
@@ -168,69 +142,6 @@ for(i=0;i<l->M;i++){
 return valeur;
 }	    
 
-/*
-void afficheCountLigne( grille l , int decalX ,int decalY){
-int i=0,v=0;	
-char val[4];
-
-decalY=decalY*20+25;
-  cairo_set_source_rgb(mask,0.1,0.1,0.1);
-	cairo_select_font_face(mask, "sans-serif", CAIRO_FONT_SLANT_NORMAL,CAIRO_FONT_WEIGHT_BOLD);
-	cairo_set_font_size(mask, 13);
-
-	for(i=0;i<l->N;i++){
-   	for(v=0;v<l->M;v++){
-	  	if (l->matrice[i][v]!=0){
-					sprintf(val,"%d",l->matrice[i][v]);
-      		cairo_move_to(mask,v*10,decalY+i*50);
-					cairo_show_text(mask,val);
-			}
-		}
-	}
-}
-	
-
-
-
-
-
-void afficheCountCol(grille l , int decalX ,int decalY){
-int i=0,v=0;
-char val[4];
-
-  cairo_set_source_rgb(mask,0.1,0.1,0.1);
-	cairo_select_font_face(mask, "sans-serif", CAIRO_FONT_SLANT_NORMAL,CAIRO_FONT_WEIGHT_BOLD);
-	cairo_set_font_size(mask, 13);
-
-decalX=decalX*20+25;
-	for(i=0;i<l->M;i++){
-		for(v=0;v<l->N;v++){
-	  	if (l->matrice[v][i]!=0){
-						sprintf(val,"%d",l->matrice[v][i]);
-      			cairo_move_to(mask,decalX+i*50,v*10);
-						cairo_show_text(mask,val);
-			}
-		}
-	}
-}
-*/
-
-
-void cocher_colonne(grille l,int y,int* tab){
-int i;
-
-  if (tab[y]==0){
-    for(i=0;i<l->N;i++)
-  		l->matrice[i][y]='.';
-		tab[y]=1;	
-  } 	
-  else {  
-  for(i=0;i<l->N;i++)
-  	l->matrice[i][y]='+';
-		tab[y]=0;	
-}
-}
-
 
 
 void cocher_ligne(grille l,int y,int* tab){
@@ -266,7 +177,16 @@ for(i=0;i<l->N;i++){
 return tmp;
 
 
+int compare(grille l1,grille l2){
+int i=0,v=0;
 
+for(i=0;i<l1->N;i++)
+	for(v=0;v<l1->M;v++){
+	  if (l1->matrice[i][v] !=l2->matrice[i][v])
+	    return 1;				
+	}
+return 0;
+}
 
 }
 int count_decalY(grille l){
@@ -284,39 +204,3 @@ for(i=0;i<l->M;i++){
 return tmp;
 	}
 	
-/*	
-void deplacement(int entree,int* tab_col,int* tab_lig,int* x,int* y,int decalX,int decalY,grille test,grille l){
-       if (entree==KEY_DOWN && (*y)<(test->N)-1){
-           (*y)+=1;
-           mvprintw(((*y)+decalY)+1,(*x)+decalX+2,"O");
-           }
-       else if (entree == KEY_UP && (*y)>0){
-           (*y)-=1;
-           mvprintw(((*y)+decalY)+1,(*x)+decalX+2,"O");
-					 }
-       else if (entree == KEY_RIGHT && (*x)<(test->M)-1){
-           (*x)++;
-           mvprintw(((*y)+decalY)+1, (*x)+decalX+2,"O");
-	   
-           }
-       else if (entree == KEY_LEFT && (*x)>0){
-           (*x)-=1;
-           mvprintw((*y)+decalY+1,(*x)+decalX+2,"O");
-            }
-       else if (entree=='+')
-           test->matrice[(*y)][(*x)]='+';
-       else if (entree=='.')
-           test->matrice[(*y)][(*x)]='.';
-       else if (entree=='q'){
-	      	  if (compare(l,test)==0)
-	      			(mvprintw(15,10,"Gagne !!!"));
-	    			else (mvprintw(15,10,"Perdu"));
-	   	}
-       else if (entree=='l'){
-           cocher_ligne(test,(*y),tab_col);
-			}
-       else if (entree=='c'){
-           cocher_colonne(test,(*x),tab_lig);
-         }   
-}	
-*/	

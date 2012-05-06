@@ -27,12 +27,7 @@
 
 int main(int argc, char *argv[])
 {
-int x=2,y=2;
-int n=0,m=0;
-//int deja=0;
 int decalX=0,decalY=0;
-//int entree=0,choix=0;
-//char nom_fichier[20];
 grille test,l;
 
 Display *dpy;
@@ -41,7 +36,6 @@ Window win;
 XEvent e;
 int scr;
 KeySym keysym;
-cairo_t* test2;
 char buffer[100];
 
 if(!(dpy=XOpenDisplay(NULL))) {
@@ -63,16 +57,8 @@ cs=cairo_xlib_surface_create(dpy, win, DefaultVisual(dpy,0), SIZEX, SIZEY);
 
 
 
-l=menu(cs,e,dpy,keysym,l,test);
+l=menu(cs,e,dpy,keysym);
 test=alloue_grille(l->N,l->M);
-
-		//l=alloue_grille(5,10);
-		//test=alloue_grille(5,10);
-
-		//l=charger_grille(l,"toto.txt", "r");
-
-int tab_col[test->N];          //Pour la func cocher ligne
-int tab_lig[test->M];          //Pour la func cocher colonne
 
 
 grille valL=compter_ligne(l);
@@ -89,7 +75,11 @@ while(1) {
 	}
 	else 
 		if (e.type==ButtonPress){	
-			Affiche_jeu(cs,test,valL,valC,decalX,decalY,e.xbutton.x,e.xbutton.y,1); 
+			Affiche_jeu(cs,test,valL,valC,decalX,decalY,e.xbutton.x,e.xbutton.y,1);
+			if(compare(test,l)==0){
+				printf("bravo reussi !!!\n");
+				break;
+			}
 		}
 	else	
 		if (e.type==MotionNotify){	
@@ -101,20 +91,6 @@ while(1) {
 		}
 }
 												
-	//while  ((entree=getch())!='a'){
-    //clear();
-      // afficheCountCol(valC,decalX+2,0);
-      // afficheCountLigne(valL,0,decalY);
-       //affiche_grille(test,decalX+2,decalY+2);
-			//refresh();
-      //deplacement(entree,tab_col,tab_lig,&x,&y,decalX,decalY,test,l);
-      //mvprintw(5+decalY+(l->N),5+decalX,"q : pour verifie son logigraphe");
-			//mvprintw(6+decalY+(l->N),5+decalX,"c : coche/decoche la colonne courante");
-			//mvprintw(7+decalY+(l->N),5+decalX,"l : coche/decoche la ligne courante");
-			//mvprintw(8+decalY+(l->N),5+decalX,"a : pour quitter le programme");
-			//mvprintw(9+decalY+(l->N),5+decalX," + ou . : rentre + ou . ");
-//}
-
 
 cairo_surface_destroy(cs);
 desalloue_grille(l);
