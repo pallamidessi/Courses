@@ -137,3 +137,121 @@ else
  		}
 	}
 }
+
+
+grille menu(cairo_surface_t *surface,XEvent e,Display* dpy,KeySym keysym,grille l,grille
+test){
+	int i=0,n=0,m=0;
+	char buffer[100];
+	char* nom;
+	int choix=0,deja=0,swt=0;
+
+nom=(char*) malloc (15*sizeof(char));
+cairo_t* mask=cairo_create(surface);
+
+	cairo_set_source_rgb(mask,1,1,1);
+	cairo_paint(mask);
+while(choix==0){
+
+	cairo_set_source_rgb(mask,0.1,0.1,0.1);
+	cairo_select_font_face(mask,"sans-serif",CAIRO_FONT_SLANT_NORMAL,CAIRO_FONT_WEIGHT_NORMAL);
+	cairo_set_font_size(mask,13);
+
+	if(deja==0){
+		cairo_move_to(mask,10,20);
+		cairo_show_text(mask,"F:charger un fichier");
+		cairo_move_to(mask,10,35);
+		cairo_show_text(mask,"I:charger une image");
+		deja=1;
+	}
+
+XNextEvent(dpy,&e);
+if (e.type==KeyPress && XLookupString(&e,buffer,100,keysym,0)==1){
+	if (buffer[0]=='f'){
+		cairo_set_source_rgb(mask,1,1,1);
+		cairo_paint(mask);
+
+		cairo_set_source_rgb(mask,0.1,0.1,0.1);
+		cairo_move_to(mask,10,20);
+		cairo_show_text(mask,"Nom du fichier(defaut : toto.txt)");
+		
+		while(buffer[0]!='\r'){
+			XNextEvent(dpy,&e);
+			if (e.type==KeyPress && XLookupString(&e,buffer,100,keysym,0)==1){
+				nom[i]=buffer[0];
+				cairo_move_to(mask,10+(i*6),35);
+				cairo_show_text(mask,(char*)&buffer[0]);
+				i++;
+			}
+		}
+
+		nom[i-1]='\0';
+		printf("le nom %s",nom);
+		cairo_set_source_rgb(mask,1,1,1);
+		cairo_paint(mask);
+		cairo_set_source_rgb(mask,0.1,0.1,0.1);
+		cairo_move_to(mask,10,20);
+		cairo_show_text(mask,"Taille du fichier (largeur hauteur)(maximun 9*9)");
+
+
+		cairo_set_source_rgb(mask,0.1,0.1,0.1);
+		while(0){
+			XNextEvent(dpy,&e);
+			if (e.type==KeyPress && XLookupString(&e,buffer,100,keysym,0)==1){
+				if(swt==0){
+					if (buffer[0]==8)
+						swt=1;
+					else{
+						n*=10;
+						n+=buffer[0]-48;
+						cairo_move_to(mask,10,35);
+						cairo_show_text(mask,(char*)&buffer[0]);
+					}
+				} else
+				if (buffer[0]=='\r')
+					break;
+				else{
+						m*=10;
+						m=buffer[0]-48;
+						cairo_move_to(mask,25,35);
+						cairo_show_text(mask,(char*)&buffer[0]);
+					}
+				}
+			}
+		}
+		l=alloue_grille(n-48,m-48);
+		
+		l=charger_grille(l, nom, "r");
+	  choix=1;
+
+		//if (l==NULL)
+		//	exit(1);
+	}
+ else 
+	if (buffer[0]=='i'){
+		cairo_set_source_rgb(mask,1,1,1);
+		cairo_paint(mask);
+
+		cairo_move_to(mask,10,20);
+		cairo_show_text(mask,"Nom du fichier(defaut : couleur.ppm)");
+		
+		cairo_set_source_rgb(mask,0.1,0.1,0.1);
+		while(buffer[0]!='\r'){
+			XNextEvent(dpy,&e);
+			if (e.type==KeyPress && XLookupString(&e,buffer,100,keysym,0)==1){
+				nom[i]=buffer[0];
+				cairo_move_to(mask,10+i,21);
+				cairo_show_text(mask,(char*)&buffer[0]);
+				i++;
+			}
+		}
+
+    
+		l=charger_image(nom,"r",Seuil(nom));
+
+		choix=1;
+		}
+	}	
+}
+return l;
+}

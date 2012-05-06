@@ -20,7 +20,6 @@
 #include <X11/keysym.h>
 #include "grille_cairo.h"
 #include "cairo_util.h"
-#include "Image.h"
 #include "compteur.h"
 
 #define SIZEX 800
@@ -43,6 +42,7 @@ XEvent e;
 int scr;
 KeySym keysym;
 cairo_t* test2;
+char buffer[100];
 
 if(!(dpy=XOpenDisplay(NULL))) {
 fprintf(stderr, "ERROR: Could not open display\n");
@@ -54,55 +54,22 @@ rootwin=RootWindow(dpy, scr);
 win=XCreateSimpleWindow(dpy, rootwin, 1, 1, SIZEX, SIZEY, 0, BlackPixel(dpy, scr), BlackPixel(dpy, scr));
 
 XStoreName(dpy, win, "Logigraphe");
-XSelectInput(dpy, win, ExposureMask|ButtonPressMask|PointerMotionMask);
+XSelectInput(dpy, win, ExposureMask|KeyPressMask|ButtonPressMask|PointerMotionMask);
 XMapWindow(dpy, win);
 
 	// create cairo surface
 cairo_surface_t *cs; 
 cs=cairo_xlib_surface_create(dpy, win, DefaultVisual(dpy,0), SIZEX, SIZEY);
 
-/*
-while(choix==0){
-	if(deja==0){
-	//printw("F:charger un fichier\n");
-	//printw("I:charger une image\n");
-	deja=1;
-	}
 
-	//refresh();
- // entree=getch();
-	if (entree==('f')){
-		//printw("Nom du fichier(defaut : toto.txt)\n");
-		//refresh();
-		//scanw("%s",nom_fichier);
 
-		//printw("Taille du fichier (largeur hauteur)\n");
-		//refresh();
-		//scanw("%d %d",&n,&m);
+l=menu(cs,e,dpy,keysym,l,test);
+test=alloue_grille(l->N,l->M);
 
-		l=alloue_grille(n,m);
-		test=alloue_grille(n,m);
-		
-		l=charger_grille(l, nom_fichier, "r");
-	  choix=1;
-	}else 
-		if (entree==('i')){
-		//printw("Nom de image(defaut : couleur.ppm)\n");
-		//refresh();
-		//scanw("%s",nom_fichier);
-    
-		l=charger_image(nom_fichier,"r",Seuil(nom_fichier));
-		test=alloue_grille(l->N,l->M);
-		//refresh();
-		choix=1;
-		}
-}	
-*/
+		//l=alloue_grille(5,10);
+		//test=alloue_grille(5,10);
 
-		l=alloue_grille(5,10);
-		test=alloue_grille(5,10);
-
-		l=charger_grille(l,"toto.txt", "r");
+		//l=charger_grille(l,"toto.txt", "r");
 
 int tab_col[test->N];          //Pour la func cocher ligne
 int tab_lig[test->M];          //Pour la func cocher colonne
@@ -114,7 +81,7 @@ grille valC=compter_colonne(l);
 decalX=count_decalX(valL);
 decalY=count_decalY(valC);
 
-
+Affiche_jeu(cs,test,valL,valC,decalX,decalY,-1,-1,-1);
 while(1) {
 	XNextEvent(dpy, &e);
 	if (e.type==Expose && e.xexpose.count<1){
@@ -127,6 +94,10 @@ while(1) {
 	else	
 		if (e.type==MotionNotify){	
 			Affiche_jeu(cs,test,valL,valC,decalX,decalY,e.xmotion.x,e.xmotion.y,0); 
+		}
+	else if (e.type==KeyPress && XLookupString(&e,buffer,100,&keysym,0)==1){
+	  if (buffer[0]==27)
+			break;
 		}
 }
 												
