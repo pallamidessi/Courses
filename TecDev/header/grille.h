@@ -14,19 +14,20 @@
 #define grille_h
 #include<stdio.h>
 #include<stdlib.h>
-#define TAILLE_MAX 512
+#define TAILLE_MAX 512 /**< nombre de charactere maximum par ligne,dans la lecture d'un fichier*/
+
 
 /**
  * \struct    str_grille
  * \brief     Structure contenant uniquement une matrice de char,avec un int indiquant le nombre de lignes et un int indiquant le nombre de colonnes  
  * \details   grille est un pointeur sur cette structure.
  */
- 
 typedef struct {
-char ** matrice ;
-int N;
-int M;
-} str_grille,*grille;
+char ** matrice ;  /*!< Matrice de caractere. */
+int N;             /*!< Nombre de lignes. */
+int M;             /*!< Nombre de colonnes. */
+} str_grille,*grille; /*!< Pointeur sur la structure grille. */
+
 
 
 /**
@@ -37,8 +38,8 @@ int M;
  * @param     M int pour le nombre de colonne
  * @return    L Le pointeur sur la grille alloue.
  */
- 
-grille alloue_grille(int,int);                  //allocation en memoire d'une grille N x M
+grille alloue_grille(int N,int M);                  //allocation en memoire d'une grille N x M
+
 
 
 /**
@@ -49,8 +50,8 @@ grille alloue_grille(int,int);                  //allocation en memoire d'une gr
  * @param     N Un int de decalage horizontal (X)
  * @param     M Un int de decalage vertical (X)
  */
- 
-void affiche_grille(grille,int,int);           //affiche une grille avec un decalage X et Y
+ void affiche_grille(grille l,int N,int M);           //affiche une grille avec un decalage X et Y
+
 
 
 /**
@@ -58,8 +59,7 @@ void affiche_grille(grille,int,int);           //affiche une grille avec un deca
  *
  * @param     l Le logigraphe a liberer.
  */
-
-void desalloue_grille(grille);                 //free une grille
+void desalloue_grille(grille l);                 //free une grille
 
 
 
@@ -71,7 +71,8 @@ void desalloue_grille(grille);                 //free une grille
  * @param    mode pointeur sur char pour le mode.
  * @return   charge Le logigraphe nouvellement creer et initialiser selon le fichier.
  */
-grille charger_grille(grille,char* ,char* );   //charge une grille depuis un fichier
+grille charger_grille(grille l,char* nom,char* mode);   //charge une grille depuis un fichier
+
 
 
 /**
@@ -82,7 +83,7 @@ grille charger_grille(grille,char* ,char* );   //charge une grille depuis un fic
  * @param     L2 une grille
  * @return    I un int 0 pour vrai 1 pour faux.
  */
-int compare(grille,grille);                 // compare la grille de l'utilisateur a la grille du fichier
+int compare(grille L1,grille L2);                 // compare la grille de l'utilisateur a la grille du fichier
 
 
 
@@ -93,7 +94,10 @@ int compare(grille,grille);                 // compare la grille de l'utilisateu
  * @param     L la grille a compter
  * @return    I la grille resultat
  */
-grille compter_colonne(grille);             //grille des resultats des suite consecutive sur les colonne
+grille compter_colonne(grille L);             //grille des resultats des suite consecutive sur les colonne
+
+
+
 /**
  * \brief       Compte les suite consecutive sur les lignes
  * \details     Renvoi une grille des resultats des suite consecutive sur les lignes
@@ -101,7 +105,8 @@ grille compter_colonne(grille);             //grille des resultats des suite con
  * @param     L la grille a compter
  * @return    I la grille resultat
  */
-grille compter_ligne(grille);								//grille des resultats des suite consecutive sur les ligne
+grille compter_ligne(grille L);								//grille des resultats des suite consecutive sur les ligne
+
 
 
 /**
@@ -112,7 +117,10 @@ grille compter_ligne(grille);								//grille des resultats des suite consecutiv
  * @param     x  indice de la ligne a cocher
  * @param     tab_lig le tableau "interrupteur" 
  */
-void cocher_ligne(grille ,int ,int* );      // coche/decoche une ligne  
+void cocher_ligne(grille L,int x,int* tab_lig);      // coche/decoche une ligne  
+
+
+
 /**
  * \brief       coche/decoche toute une colonne du logigraphe
  * \details     Se base sur un table "interrupteur" pour savoir s'il faut cocher ou decocher une colonne donne
@@ -121,7 +129,9 @@ void cocher_ligne(grille ,int ,int* );      // coche/decoche une ligne
  * @param     y  indice de la colonne a cocher
  * @param     tab_col le tableau "interrupteur" 
  */
-void cocher_colonne(grille ,int ,int* );    // coche/decoche une colonne  
+void cocher_colonne(grille L,int y,int* tab_col);    // coche/decoche une colonne  
+
+
 
 /**
  * \brief       compte le decalage horizontal du a l'affichage des resultats des lignes
@@ -130,7 +140,10 @@ void cocher_colonne(grille ,int ,int* );    // coche/decoche une colonne
  * @param     L la grille resultat ligne
  * @return    I un int de la longueur de la suite la pus grande dans la grille L
  */
-int count_decalX(grille);                // compte le decalage du a l'affichage des resultats des lignes
+int count_decalX(grille L);                // compte le decalage du a l'affichage des resultats des lignes
+
+
+
 /**
  * \brief       compte le decalage vertical du a l'affichage des resultats des colonne
  * \details     A utiliser sur une grille resultat colonne 
@@ -138,21 +151,30 @@ int count_decalX(grille);                // compte le decalage du a l'affichage 
  * @param     L la grille resultat colonne
  * @return    I un int de la longueur de la suite la pus grande dans la grille L
  */
-int count_decalY(grille);									// compte le decalage du a l'affichage des resultats des colonnes
+int count_decalY(grille L);									// compte le decalage du a l'affichage des resultats des colonnes
+
+
+
 /**
  * \brief       Redondant : similaire a affiche_grille();
  * \details     A utiliser sur une grille resultats ligne,avec un decalage X et Y 
  *
  * @param     L la grille resultat ligne
  */
-void afficheCountLigne(grille, int,int);   //affiche la grille des resultats des suite consecutive sur les ligne avec le decalage Y du a l'affichage des resultats des colonnes
+void afficheCountLigne(grille L, int,int);   //affiche la grille des resultats des suite consecutive sur les ligne avec le decalage Y du a l'affichage des resultats des colonnes
+
+
+
 /**
  * \brief       Redondant : similaire a affiche_grille();
  * \details     A utiliser sur une grille resultats colonne,avec un decalage X et Y 
  *
  * @param     L la grille resultat colonne
  */
-void afficheCountCol(grille, int,int);     //affiche la grille des resultats des suite consecutive sur les colonne avec le decalage X du a l'affichage des resultats des lignes
+void afficheCountCol(grille L, int,int);     //affiche la grille des resultats des suite consecutive sur les colonne avec le decalage X du a l'affichage des resultats des lignes
+
+
+
 /**
  * \brief       Grosse fonction : gere les entree utilisateur et les ecriture dans la grille a completer
  * \details     Entree : deplacement du curseur, cocher ligne/colonne, ecriture de '+' '.'
@@ -167,6 +189,7 @@ void afficheCountCol(grille, int,int);     //affiche la grille des resultats des
  * @param   L1 grille de l'utilisateur
  * @param   L2 grille du jeu
  */
-void deplacement(int ,int* ,int* ,int* ,int*,int,int,grille,grille );         //entree et deplacement  
+void deplacement(int entree,int* tab_lig,int* tab_col,int* x,int* y,int decalX,int decalY,grille L1,grille L2);         //entree et deplacement  
+
 
 #endif

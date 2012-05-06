@@ -8,11 +8,17 @@
  * \details    Contient les prototypes des fonctions relatives au chargement d'une image ppm en logigraphe.
  *
  */
+
+
+
 #ifndef _grille_H
 #define _grille_H 
 #include<stdio.h>
 #include<stdlib.h>
 #include "grille.h"
+
+
+
 /**
  * \brief       Creer une grille d'apres une image ppm.
  * \details     Si l'image fait plus de 70 pixel de large elle sera tronquee a 70 colonnes.
@@ -23,6 +29,9 @@
  * @return    L  une grille chargee d'apres l'image.
  */
 grille charger_image( char* nom_du_fichier,char* mode,int seuil);
+
+
+
 /**
  * \brief       Calcule la valeurs moyenne des pixels de l'image.
  * @param     nom_du_fichier le nom du fichier a charger.

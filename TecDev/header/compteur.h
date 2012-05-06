@@ -8,6 +8,9 @@
  * \details    Contient les prototypes des fonctions relatives au calcul et l'affichage du temps ou a leurs traitements.
  *
  */
+
+
+
 #ifndef _COMPTEUR_H
 #define _COMPTEUR_H
 #include<stdio.h>

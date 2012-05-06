@@ -22,22 +22,23 @@
 #include "cairo_util.h"
 #include "compteur.h"
 
-#define SIZEX 800
-#define SIZEY 800
+#define SIZEX 900
+#define SIZEY 900
 
 int main(int argc, char *argv[])
 {
-int decalX=0,decalY=0;
-grille test,l;
+	int decalX=0,decalY=0;
+	grille test,l;
 
-Display *dpy;
-Window rootwin;
-Window win;
-XEvent e;
-int scr;
-KeySym keysym;
-char buffer[100];
+	Display *dpy;
+	Window rootwin;
+	Window win;
+	XEvent e;
+	int scr;
+	KeySym keysym;	
+	char buffer[100];
 
+//initialisation de la fenetre x11
 if(!(dpy=XOpenDisplay(NULL))) {
 fprintf(stderr, "ERROR: Could not open display\n");
 exit(1);

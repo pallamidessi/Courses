@@ -14,14 +14,14 @@
 
 
 int Seuil(char* nom_du_fichier){
-int i=0;
-FILE* fichier = NULL;
-int sizeImageH=0,sizeImageV=0;
-char R=0,V=0,B=0;
-int total=0,seuil=0;
-int ValMax=0;
-char chaine[TAILLE_MAX];
-fichier = fopen(nom_du_fichier, "r");
+	int i=0;
+	FILE* fichier = NULL;
+	int sizeImageH=0,sizeImageV=0;
+	char R=0,V=0,B=0;
+	int total=0,seuil=0;
+	int ValMax=0;
+	char chaine[TAILLE_MAX];
+	fichier = fopen(nom_du_fichier, "r");
 
   if (fichier != NULL)
   {
@@ -36,23 +36,25 @@ fichier = fopen(nom_du_fichier, "r");
                  fscanf(fichier,"%c", &B);
             total+=R*0.299+V*0.587+B*0.114;
      }
-  }
+  }else
+		exit(1);
+
 seuil=total/(sizeImageV*sizeImageH);
 return seuil;
-  }
+ }
 
 
 
 
 grille charger_image( char* nom_du_fichier,char* mode,int seuil){
-int i=0,v=0;
-char R=0,V=0,B=0;
-FILE* fichier = NULL;
-int ValMax=0;
-char modeImage[2];
-int sizeImageH=0, sizeImageV=0;
-char chaine[TAILLE_MAX] = "";
-grille charge;
+	int i=0,v=0;
+	char R=0,V=0,B=0;
+	FILE* fichier = NULL;
+	int ValMax=0;
+	char modeImage[2];
+	int sizeImageH=0, sizeImageV=0;
+	char chaine[TAILLE_MAX] = "";
+	grille charge;
 
 fichier = fopen(nom_du_fichier, mode);
 

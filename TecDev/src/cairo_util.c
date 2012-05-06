@@ -1,6 +1,7 @@
 #include<cairo_util.h>
 
 
+
 void Affiche_jeu(cairo_surface_t *surface,grille l,grille Ligne,grille Col,int decalX,int
 decalY,int Sx,int Sy,int bouton){
 	cairo_t* mask;
@@ -46,8 +47,6 @@ decalY,int Sx,int Sy,int bouton){
     decalY++;
 		}
 
-
-
 	/*affiche les sommes des suites sur les lignes*/
 	decalX=resetX;
 	decalY=resetY;
@@ -67,8 +66,6 @@ decalY,int Sx,int Sy,int bouton){
 			}
 		}
 	}
-
-
  
 	/*affiche les sommes des suites sur les colonnes*/
 
@@ -95,8 +92,11 @@ decalY,int Sx,int Sy,int bouton){
  cairo_destroy(mask);
 }
 
+
+
+
 void tracer_grille(cairo_t* mask,grille l,int decalX,int decalY){
-int i=0;
+	int i=0;
 
 	cairo_set_source_rgb(mask,0.0,0.0,0.0); 
 	cairo_set_line_width (mask, 1.0);
@@ -117,6 +117,9 @@ int i=0;
 			cairo_stroke(mask);
 		}
 }
+
+
+
 
 
  //carre de selection
@@ -147,12 +150,14 @@ else
 }
 
 
+
+
 grille menu(cairo_surface_t *surface,XEvent e,Display* dpy,KeySym keysym){
 	int i=0,n=0,m=0;
 	char buffer[100];
 	char* nom;
 	int choix=0,deja=0,swt=0;
-	grille l;
+	grille l=NULL;
 
 nom=(char*) malloc (15*sizeof(char));
 cairo_t* mask=cairo_create(surface);
@@ -191,7 +196,7 @@ if (e.type==KeyPress && XLookupString(&e,buffer,100,keysym,0)==1){
 			XNextEvent(dpy,&e);
 			if (e.type==KeyPress && XLookupString(&e,buffer,100,keysym,0)==1){
 				nom[i]=buffer[0];
-				cairo_move_to(mask,10+(i*6),35);
+				cairo_move_to(mask,10+(i*8),35);
 				cairo_show_text(mask,(char*)&buffer[0]);
 				i++;
 			}
@@ -251,14 +256,15 @@ if (e.type==KeyPress && XLookupString(&e,buffer,100,keysym,0)==1){
 		l=charger_grille(l, nom, "r");
 	  choix=1;
 
-		//if (l==NULL)
-		//	exit(1);
+		if (l==NULL)
+			exit(1);
 	}
  else 
 	if (buffer[0]=='i'){
 		cairo_set_source_rgb(mask,1,1,1);
 		cairo_paint(mask);
 
+		cairo_set_source_rgb(mask,0.1,0.1,0.1);
 		cairo_move_to(mask,10,20);
 		cairo_show_text(mask,"Nom du fichier(defaut : couleur.ppm)");
 		
@@ -268,14 +274,18 @@ if (e.type==KeyPress && XLookupString(&e,buffer,100,keysym,0)==1){
 			XNextEvent(dpy,&e);
 			if (e.type==KeyPress && XLookupString(&e,buffer,100,keysym,0)==1){
 				nom[i]=buffer[0];
-				cairo_move_to(mask,10+i,21);
+				cairo_move_to(mask,10+(i*8),35);
 				cairo_show_text(mask,(char*)&buffer[0]);
 				i++;
 			}
 		}
 
+		nom[i-1]='\0';				 //fini le string
     
 		l=charger_image(nom,"r",Seuil(nom));
+
+		if (l==NULL)
+			exit(1);
 
 		choix=1;
 		}

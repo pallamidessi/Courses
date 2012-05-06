@@ -14,8 +14,7 @@
 
 
 grille alloue_grille(int n,int m){
-
-int i,v;
+	int i,v;
 
 grille L=NULL;
 L=malloc(sizeof(str_grille));
@@ -40,7 +39,7 @@ return L;
 
 
 void desalloue_grille(grille L){
-int i=0;
+	int i=0;
 
 for(i=0;i<L->N;i++)
 	free(L->matrice[i]);
@@ -51,10 +50,10 @@ for(i=0;i<L->N;i++)
 
 
 grille charger_grille(grille L, char* nom,char* mode){
-int i=0,v=0;
-grille charge=alloue_grille(L->N,L->M);
-FILE* fichier = NULL;
-char chaine[TAILLE_MAX] = "";
+	int i=0,v=0;
+	grille charge=alloue_grille(L->N,L->M);
+	FILE* fichier = NULL;
+	char chaine[TAILLE_MAX] = "";
 
 fichier = fopen(nom, mode);
 
@@ -62,6 +61,9 @@ fichier = fopen(nom, mode);
   {
  		 while (fgets(chaine, TAILLE_MAX, fichier) != NULL )
      {
+			 if(v==L->N)
+				 break;
+
      	 for(i=0;i<L->M;i++)
        charge->matrice[v][i]=chaine[i];
 			 v++;
@@ -74,9 +76,10 @@ return charge;
 
 
 
+
 void affiche_grille(grille L,int decalX,int decalY){
-int i, v ;
-int originX=decalX;
+	int i, v ;
+	int originX=decalX;
 
   for(i=0;i<L->N;i++){
 		decalX=originX;
@@ -85,16 +88,14 @@ int originX=decalX;
 			decalX++;
       }
     decalY++;
+	}
 }
-
-}
-
 
 
 				
 				
 int compare(grille l1,grille l2){
-int i=0,v=0;
+	int i=0,v=0;
 
 for(i=0;i<l1->N;i++)
 	for(v=0;v<l1->M;v++){
@@ -106,11 +107,11 @@ return 0;
 
 
 
-grille compter_ligne(grille l){
-grille valeur=alloue_grille(l->N,l->M);
-int i=0,v=0;
-int x=0;
 
+grille compter_ligne(grille l){
+	grille valeur=alloue_grille(l->N,l->M);
+	int i=0,v=0;
+	int x=0;
 
 	for(i=0;i<l->N;i++)
 		for(v=0;v<l->M;v++)
@@ -130,12 +131,11 @@ return valeur;
 
 
 
+
 grille compter_colonne(grille l){
-grille valeur=alloue_grille(l->N,l->M);
-int i=0,v=0;
-int x=0;
-
-
+	grille valeur=alloue_grille(l->N,l->M);
+	int i=0,v=0;
+	int x=0;
 
 for(i=0;i<l->N;i++)
 	for(v=0;v<l->M;v++)
@@ -154,9 +154,11 @@ return valeur;
 }	    
 
 
+
+
 void afficheCountLigne(grille l , int decalX ,int decalY){
-int i=0,v=0;	
-int originX=decalX;
+	int i=0,v=0;	
+	int originX=decalX;
 
 	for(i=0;i<l->N;i++){
 		decalY++;
@@ -171,10 +173,9 @@ int originX=decalX;
 
 
 
-
 void afficheCountCol(grille l , int decalX ,int decalY){
-int i=0,v=0;
-int originY=decalY;
+	int i=0,v=0;
+	int originY=decalY;
 
 for(i=0;i<l->M;i++){
   refresh();
@@ -192,7 +193,7 @@ for(i=0;i<l->M;i++){
 
 
 void cocher_colonne(grille l,int y,int* tab){
-int i;
+	int i;
 
   if (tab[y]==0){
     for(i=0;i<l->N;i++)
@@ -203,7 +204,7 @@ int i;
   for(i=0;i<l->N;i++)
   	l->matrice[i][y]='+';
 		tab[y]=0;	
-}
+	}
 }
 
 
@@ -220,7 +221,7 @@ int i;
   for(i=0;i<l->M;i++)
   	l->matrice[y][i]='+';
 		tab[y]=0;	
-}
+	}
 }
 
 
@@ -239,11 +240,11 @@ for(i=0;i<l->N;i++){
 	}
 }	
 return tmp;
-
-
-
-
 }
+
+
+
+
 int count_decalY(grille l){
 int i=0,v=0,tmp=0,valeur=0;
 
@@ -257,8 +258,9 @@ for(i=0;i<l->M;i++){
 	}
 }	
 return tmp;
-	}
+}
 	
+
 	
 void deplacement(int entree,int* tab_col,int* tab_lig,int* x,int* y,int decalX,int decalY,grille test,grille l){
        if (entree==KEY_DOWN && (*y)<(test->N)-1){

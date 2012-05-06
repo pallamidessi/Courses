@@ -13,8 +13,7 @@
 
 
 grille alloue_grille(int n,int m){
-
-int i,v;
+	int i,v;
 
 grille L=NULL;
 L=malloc(sizeof(str_grille));
@@ -39,7 +38,7 @@ return L;
 
 
 void desalloue_grille(grille L){
-int i=0;
+	int i=0;
 
 for(i=0;i<L->N;i++)
 	free(L->matrice[i]);
@@ -50,10 +49,10 @@ for(i=0;i<L->N;i++)
 
 
 grille charger_grille(grille L, char* nom,char* mode){
-int i=0,v=0;
-grille charge=alloue_grille(L->N,L->M);
-FILE* fichier = NULL;
-char chaine[TAILLE_MAX] = "";
+	int i=0,v=0;
+	grille charge=alloue_grille(L->N,L->M);
+	FILE* fichier = NULL;
+	char chaine[TAILLE_MAX] = "";
 
 fichier = fopen(nom, mode);
 
@@ -84,7 +83,7 @@ return charge;
 				
 				
 int compare(grille l1,grille l2){
-int i=0,v=0;
+	int i=0,v=0;
 
 for(i=0;i<l1->N;i++)
 	for(v=0;v<l1->M;v++){
@@ -97,9 +96,9 @@ return 0;
 
 
 grille compter_ligne(grille l){
-grille valeur=alloue_grille(l->N,l->M);
-int i=0,v=0;
-int x=0;
+	grille valeur=alloue_grille(l->N,l->M);
+	int i=0,v=0;
+	int x=0;
 
 
 	for(i=0;i<l->N;i++)
@@ -121,9 +120,9 @@ return valeur;
 
 
 grille compter_colonne(grille l){
-grille valeur=alloue_grille(l->N,l->M);
-int i=0,v=0;
-int x=0;
+	grille valeur=alloue_grille(l->N,l->M);
+	int i=0,v=0;
+	int x=0;
 
 
 for(i=0;i<l->N;i++)
@@ -138,14 +137,14 @@ for(i=0;i<l->M;i++){
 	  else if ((valeur->matrice[x][i]!=0) && (l->matrice[v][i]=='.'))
 	    x++;							
 				}
-}
+	}
 return valeur;
 }	    
 
 
 
 void cocher_ligne(grille l,int y,int* tab){
-int i;
+	int i;
 
   if (tab[y]==0){
     for(i=0;i<l->M;i++)
@@ -156,7 +155,7 @@ int i;
   for(i=0;i<l->M;i++)
   	l->matrice[y][i]='+';
 		tab[y]=0;	
-}
+	}
 }
 
 
@@ -175,20 +174,10 @@ for(i=0;i<l->N;i++){
 	}
 }	
 return tmp;
-
-
-int compare(grille l1,grille l2){
-int i=0,v=0;
-
-for(i=0;i<l1->N;i++)
-	for(v=0;v<l1->M;v++){
-	  if (l1->matrice[i][v] !=l2->matrice[i][v])
-	    return 1;				
-	}
-return 0;
 }
 
-}
+
+
 int count_decalY(grille l){
 int i=0,v=0,tmp=0,valeur=0;
 

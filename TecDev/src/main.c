@@ -20,20 +20,21 @@
 #include "compteur.h"
 
 
+
 int main()
 {
-int x=2,y=2;
-int n=0,m=0;
-int deja=0;
-int decalX=0,decalY=0;
-initscr();
-keypad(stdscr,1);
-cbreak();
-//noecho();
-int entree=0,choix=0;
-char nom_fichier[20];
-grille test,l;
-initscr();
+	int x=2,y=2;
+	int n=0,m=0;
+	int deja=0;
+	int decalX=0,decalY=0;
+	initscr();
+	keypad(stdscr,1);
+	cbreak();
+	//noecho();
+	int entree=0,choix=0;
+	char nom_fichier[20];
+	grille test,l;
+	initscr();
 
 //compteur(decalY,decalX);
 
