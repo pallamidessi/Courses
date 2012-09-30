@@ -15,8 +15,10 @@ char *nettoye=(char*)malloc(6*sizeof(char));
 int i;
 
 for(i=1;i<6;i++){
-	nettoye[i]=motlexique[i];			
+	nettoye[i-1]=motlexique[i];			
 }
+nettoye[5]='\0';
+free(motlexique);
 return nettoye;
 }
 
@@ -30,7 +32,7 @@ return (brut/9)*9;
 
 int main (int argc , char* argv[] ){
 
-char *verification="";
+char *verification=(char*) malloc(6*sizeof(char));
 int milieu=0,debut=0,fin=0;
 int fd;
 int signe;
@@ -47,22 +49,26 @@ if ((fd=open("lexique",O_RDONLY))==-1){
 
 	  debut=0;
 		fin=lseek(fd,0,SEEK_END);		
-		milieu=lseek(fd,,SEEK_END);
+		milieu=lseek(fd,-(arrondiAneuf(fin/2)),SEEK_END);
 
-
+				read(fd,verification,6);
+				lseek(fd,-6,SEEK_CUR);
+				verification=nettoyer(verification);
+				
 while((signe=strcmp(argv[1],verification))){
 			if(signe>0){ 		
 				debut=milieu;
-				milieu=lseek(fd,arrondiAneuf((debut+fin)/2),SEEK_CUR);
+				milieu=lseek(fd,arrondiAneuf((debut+fin)/2),SEEK_SET);
 			}
 			else{ 
 				fin=milieu;
-				milieu=lseek(fd,arrondiAneuf((debut+fin)/2),SEEK_CUR);
+				milieu=lseek(fd,(arrondiAneuf((debut+fin)/2)),SEEK_SET);
 			}
 				read(fd,verification,6);
+				lseek(fd,-6,SEEK_CUR);
 				verification=nettoyer(verification);
-				printf("%s",verification);
+				printf("%s\n",verification);
 }
-
+free(verification);
 return 0;
 }
