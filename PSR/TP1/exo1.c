@@ -1,3 +1,16 @@
+
+/**
+ * \file			exo1.c
+ * \author		Pallamidessi joseph
+ * \version		1.0 
+ * \date			2 octobre 2012
+ * \brief			On ecrit, en majuscule, sur la sortie standard le contenu d'un fichier donne
+ * en argument. 	
+ * 
+ * \details		
+ * 
+ */ 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -22,7 +35,9 @@ if (argc != 2){
 	exit(1);
 	}
 
-fd = open(argv[1],O_RDONLY);
+if(fd = open(argv[1],O_RDONLY)==-1)
+	printf("usage:le fichier donner en argument n'existe pas");
+
 
 while((nr=read(fd,buffer,T_BUFFER))>0){				
 	
@@ -32,6 +47,6 @@ while((nr=read(fd,buffer,T_BUFFER))>0){
 	
 	write(1,buffer,nr);				
 }
-
+close(fd);
 exit(0);
 }
