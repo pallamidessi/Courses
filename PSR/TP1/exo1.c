@@ -35,7 +35,7 @@ if (argc != 2){
 	exit(1);
 	}
 
-if(fd = open(argv[1],O_RDONLY)==-1)
+if((fd = open(argv[1],O_RDONLY))==(-1))
 	printf("usage:le fichier donner en argument n'existe pas");
 
 
