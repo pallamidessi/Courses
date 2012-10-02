@@ -22,14 +22,15 @@
 				
 int  getchar2(){
 	char static buffer[1024];				
-	int fi;
 	static int indice;
-	static nbr_elem;
+	static int nbr_elem;
 
 
 	if(nbr_elem==0){
 		nbr_elem=read(0,&buffer,1024);
-		indice=0;
+		indice=1;
+		nbr_elem--;
+		return buffer[0];
 	}
 	else{ 
 		indice++;
@@ -45,4 +46,6 @@ int main(int argc, char *argv[])
 
   while((c = getchar())!=EOF)
     putchar(c);
+	
+	return 0;
 }
