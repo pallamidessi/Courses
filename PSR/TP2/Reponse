@@ -1,0 +1,10 @@
+1) il n'y a pas de wait dans le cas du pere,donc suivqnt l'utilisation de la machine a un
+instant t, le printf("Fils") peut s'afficher devant le pere.
+
+2) Jamais, n'y a pas de partage de la memoire entre les deux processus, juste duplication 
+
+
+
+
+
+
