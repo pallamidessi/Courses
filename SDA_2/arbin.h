@@ -16,7 +16,7 @@ S etiquette;
 S max(S a,S b);
 
 arbin arbre_nouv();
-arbin enracinement(arbin gauche,arbre droit,S x);
+arbin enracinement(arbin gauche,S x,arbin droit);
 arbin arbre_gauche(arbin a);
 arbin arbre_droit(arbin a);
 S racine(arbin a);
@@ -29,5 +29,5 @@ int nbr_feuille(arbin a);
 int nbr_noeud(arbin a);
 int nbr_noeudInterne(arbin a);
 bool ega_arbre(arbin a,arbin b);
-
+void affiche(arbin a);
 #endif	

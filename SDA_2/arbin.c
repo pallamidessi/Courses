@@ -1,4 +1,4 @@
-#include<arbin.h>
+#include"arbin.h"
 
 
 arbin arbre_nouv(){
@@ -6,7 +6,7 @@ arbin arbre_nouv(){
 }
 
 
-arbin enracinement(arbin gauche,arbre droit,S x){
+arbin enracinement(arbin gauche,S x,arbin droit){
 	arbin r=(arbin) malloc(sizeof(str_arbin));
 
 	r->ag=gauche;
@@ -28,17 +28,17 @@ arbin arbre_droit(arbin a){
 
 
 S racine(arbin a){
-	return r->etiquette;
+	return a->etiquette;
 }
 
 
 bool vide(arbin a){
-	return (r==NULL);
+	return (a==NULL);
 }
 
 
 S max(S a,S b){
-	(a>b)?return a:return b;
+	return ((a>b) ?  a : b);
 }
 	
 	
@@ -74,7 +74,7 @@ bool feuille(arbin a){
 int nbr_feuille(arbin a){
 	if(feuille(a))
 		return 1;
-	else nbr_feuille(a->ag)+nbr_feuille(a->ad);
+	else return nbr_feuille(a->ag)+nbr_feuille(a->ad);
 }
 
 
@@ -95,7 +95,10 @@ int nbr_noeudInterne(arbin a){
 
 bool ega_arbre(arbin a,arbin b){
 	return (a->etiquette==b->etiquette)&&
-					ega(a->ag,b->ag)&&
-					ega(a->ad,b->ad);
+					ega_arbre(a->ag,b->ag)&&
+					ega_arbre(a->ad,b->ad);
 }
 
+	
+	
+	
