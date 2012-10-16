@@ -1,10 +1,8 @@
-
-
 /**
- * \file			exo2.c
+ * \file			exo3.c
  * \author		Pallamidessi joseph
  * \version		1.0 
- * \date			3 octobre 2012
+ * \date			16 octobre 2012
  * \brief		
  * 
  * \details		
@@ -47,7 +45,7 @@ int main(int args,char* argv[])
 								else
 									break;
 							}
-							printf("proc %d pere %d\n",getpid(),getppid());
+							printf("proc %d pere %d\n",getpid(),getppid()); //L'affichage est desordonne, mais si on dessine l'arbre des pid ,on voit bien qu'un arbre de N fils et de profondeur M a ete cree
 							exit(0);
 			default : 		
 								wait(&status);

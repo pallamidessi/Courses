@@ -1,9 +1,9 @@
 
 /**
- * \file			exo2.c
+ * \file			exo7.c
  * \author		Pallamidessi joseph
  * \version		1.0 
- * \date			3 octobre 2012
+ * \date			16 octobre 2012
  * \brief		
  * 
  * \details		
@@ -22,6 +22,8 @@
 #define N 20
 #define M 50
 
+
+/*transforme une chaine en un tableau de mot*/
 char** decoupage(char* chaine){
 	
 	int i=0,j=0,l=0,exec=0;
@@ -33,13 +35,13 @@ char** decoupage(char* chaine){
 
 
 	i=0,j=0,l=0;
-	while(chaine[i]!='\n'){
+	while(chaine[i]!='\n'){				//avec fgets() on a toujour un retour-chariot avant le '\0'
 		exec=1;
 
 
-		if(chaine[i]==32){
+		if(chaine[i]==32){					//gestion de l'espace
 			liste_mot[j][l]='\0';
-			j++;
+			j++;											//on change de mot
 			i++;
 			l=0;
 			
@@ -57,9 +59,9 @@ char** decoupage(char* chaine){
 
 
 
-	liste_mot[j][l]='\0';
+	liste_mot[j][l]='\0';						//fini du dernier mot
 	j+=1;
-	liste_mot[j]=(char*) NULL;
+	liste_mot[j]=(char*) NULL;			//on fini le tableau de char* par un pointeur null
 	return liste_mot;
 	}
 

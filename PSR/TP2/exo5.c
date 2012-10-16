@@ -1,3 +1,16 @@
+/**
+ * \file			exo5.c
+ * \author		Pallamidessi joseph
+ * \version		1.0 
+ * \date			16 octobre 2012
+ * \brief		
+ * 
+ * \details		
+ * 
+ */ 
+
+
+/*L'exercice n'est pas fonctionnelle*/
 #include <math.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -9,55 +22,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct Liste{
-	int *l;
-	int nbrElem;
-	int taille;
 
-}str_liste,*liste;
-
-liste agrandissement(liste a){
-	realloc(a->l,a->taille+10*sizeof(int));
-	a->taille+=10;
-	return a;
-	}
-
-int* generateur(n){
-	liste listeNbr=(liste)malloc(sizeof(str_liste));
-	
-	listeNbr->taille=(int)floor(pow(n,2))-1;
-	int n2=listeNbr->taille;
-	int i;
-	listeNbr->l=(int*) malloc(n2*sizeof(int));
-
-	liste->nbrElem=n2;
-
-	for(i=0;i<n2;i++){
-		liste[i]=i+1;
-		}
-	return listeNbr;
-	}
-
-
-int* diviseur(liste aDiviser,int d){
-	liste nouvliste;
-	
-
-	for(i=0;i<aDiviser->taille;i++){
-		if(aDiviser->l[i]%d!=0)
-			if 
-		
-		
-		}
-	
-	}
 int main(int args,char* argv[])
 {
-	int n=0,m=0,pid;
-	int i=0;
+	int n=0,i=0;
 	int status;
-  int pipefd;
-
+	int buffer;
+	int nr;
+	int diviseur;
 	if(args !=2){
 		perror("usage:nombre d'argument ");
 		exit(1);
@@ -65,24 +37,78 @@ int main(int args,char* argv[])
 	
 	n=atoi(argv[1]);
 
+	int ncarre=(int)floor(pow(n,2));
 
-pid=fork();
+	int n_fils=0;
+	n_fils++;
 
-		pid=fork();		
-		switch (pid){
-			case -1 :
-							perror("erreur fork");
-							exit(2);
-			case	0	:
-							
-							for(i=0;i<n;i++){
-								if(fork())
-									wait(&status);
-								else
-									break;
-							}
-			default : 		
-								wait(&status);
-	
-		}
+	int pipefd[2];
+	pipe(pipefd);
+
+  int pipefd2[2];
+	pipe(pipefd2);
+
+	while(!fork()){
+
+
+			if(n_fils==n) 														//Cas d'arret dernier fils possible 
+				exit(0);
+			if (n_fils==1){
+				
+				close(pipefd2[1]);
+				close(pipefd2[0]);
+				close(pipefd[0]);
+				
+				for(i=2;i<=ncarre;i++){
+					buffer=i;
+					write(pipefd[1],&buffer,4);
+				}
+
+				close(pipefd[1]);
+			}
+			else if((n_fils%2)==0){											//lit dans pipefd et ecrit dans pipefd2
+					
+				close(pipefd2[0]);
+				close(pipefd[1]);
+				
+				if((nr=read(pipefd[0],&diviseur,4))>0)    // Cas d'arret : le pipe est vide
+					printf(" %d ",diviseur);
+				else 
+					exit(0);
+
+				while((nr=read(pipefd[0],&buffer,4))>0){
+					if((buffer%diviseur)!=0)
+						write(pipefd2[1],&buffer,nr);
+				
+				}
+				close(pipefd[0]);
+				close(pipefd2[1]);
+				
+			}
+			else if((n_fils%2)==1){											//lit dans pipefd2 et ecrit dans pipefd
+				
+				close(pipefd2[1]);
+				close(pipefd[0]);
+				
+				if((nr=read(pipefd2[0],&diviseur,4))>0)    // Cas d'arret : le pipe est vide
+					printf(" %d ",diviseur);
+				else 
+					exit(0);
+
+				while((nr=read(pipefd2[0],&buffer,4))>0){
+					if((buffer%diviseur)!=0)
+						write(pipefd[1],&buffer,nr);
+				}
+				
+				close(pipefd2[0]);
+				close(pipefd[1]);
+			}
+
+	n_fils++;		
 	}
+
+wait(&status);
+
+	return 0;
+}
+
