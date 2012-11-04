@@ -12,9 +12,9 @@ typedef struct{
 
 couleur nouv_couleur();
 couleur ic(int r,int v,int b);
-couleur r(couleur c);
-couleur v(couleur c);
-couleur b(couleur c);
+unsigned char r(couleur c);
+unsigned char v(couleur c);
+unsigned char b(couleur c);
 couleur blanc();
 couleur noir();
 void detruire_couleur(couleur c);

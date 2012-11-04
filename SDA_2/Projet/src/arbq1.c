@@ -1,3 +1,6 @@
+#include"arbq1.h"
+
+/*
 arbq damier(int n){
 	
 	arbq a=f(NULL);
@@ -6,6 +9,7 @@ arbq damier(int n){
 
 	
 }
+*/
 
 arbq symh(arbq a){
 	
@@ -29,14 +33,16 @@ arbq rotg(arbq a){
 	else
 		return e(rotg(ne(a)),rotg(se(a)),rotg(no(a)),rotg(so(a)));
 	
-	}
+}
+
 arbq rotd(arbq a){
 	if(estf(no(a)))
 		return e(so(a),no(a),se(a),ne(a));
 	else
 		return e(rotd(so(a)),rotd(no(a)),rotd(se(a)),rotd(ne(a)));
 	
-	}
+}
+
 arbq dzoo(arbq a){
 	if(estf(no(no(a))))
 		return e(no(no(a)),no(ne(a)),no(so(a)),no(se(a)));
@@ -45,13 +51,13 @@ arbq dzoo(arbq a){
 }
 
 
-arbq parc(arbq a,void(*operation)(arbq)){
+arbq parc(arbq a,arbq(*operation)(arbq)){
 
 	if(estf(no(a)))
 		return e(operation(no(a)),operation(ne(a)),operation(so(a)),operation(se(a)));
 	else
-		e(parc(no(a),void(*operation)(arbq)),parc(ne(a),void(*operation)(arbq)),
-		parc(so(a),void(*operation)(arbq)),parc(se(a),void(*operation)(arbq)));
+		return e(parc(no(a),(*operation)),parc(ne(a),(*operation)),
+		parc(so(a),(*operation)),parc(se(a),(*operation)));
 
 }
 
@@ -61,17 +67,17 @@ arbq invc(arbq a){
 
 arbq nivg(arbq a){
 	
-	unsigned char niv_gris=(unsigned char)(r(c(a))*0,299+v(c(a)*0,578)+b(c(a))*0,114);
+	unsigned char niv_gris=(unsigned char)(r(c(a))*0,299+v(c(a))*0,578+b(c(a))*0,114);
 	
 	return f(ic(niv_gris,niv_gris,niv_gris));
 }
 
 arbq tresh(arbq a,int seuil){
 	
-	unsigned char niv_gris=(unsigned char)(r(c(a))*0,299+v(c(a)*0,578)+b(c(a))*0,114);
+	unsigned char niv_gris=(unsigned char)(r(c(a))*0,299+v(c(a))*0,578+b(c(a))*0,114);
 	
-	if(niv_gris<x)
-		return f(ic(r(c(a)i)+50,v(c(a))+50,b(c(a))+50));
+	if(niv_gris<seuil)
+		return f(ic(r(c(a))+50,v(c(a))+50,b(c(a))+50));
 	else
 		return a;
 }

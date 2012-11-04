@@ -12,7 +12,9 @@ arbq rotg(arbq a);
 arbq rotd(arbq a);
 arbq dzoo(arbq a);
 
-arbq parc(arbq a,void(*operation)(arbq));
+arbq parc(arbq a,arbq(*operation)(arbq));
 arbq invc(arbq a);
 arbq nivg(arbq a);
 arbq tresh(arbq a,int seuil);
+
+#endif 

@@ -7,7 +7,7 @@ couleur nouv_couleur(){
 
 couleur ic(int r,int v,int b){
 	
-	new_couleur=(couleur) malloc(sizeof(str_couleur));
+	couleur new_couleur=(couleur) malloc(sizeof(str_couleur));
 	
 	new_couleur->r=r;
 	new_couleur->v=v;
@@ -17,15 +17,15 @@ couleur ic(int r,int v,int b){
 }
 
 
-couleur r(couleur c){
+unsigned char r(couleur c){
 	return c->r;
 }
 
-couleur v(couleur c){
+unsigned char v(couleur c){
 	return c->v;
 }
 
-couleur b(couleur c){
+unsigned char b(couleur c){
 	return c->b;
 }
 

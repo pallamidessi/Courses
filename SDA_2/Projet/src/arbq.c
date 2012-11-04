@@ -22,10 +22,10 @@ arbq e(arbq a,arbq b,arbq c,arbq d){
 	
 	new_racine->c=NULL;
 
-	new_feuille->no=a;
-	new_feuille->ne=b;
-	new_feuille->so=c;
-	new_feuille->se=d;
+	new_racine->no=a;
+	new_racine->ne=b;
+	new_racine->so=c;
+	new_racine->se=d;
 	
 	return new_racine;	
 }
@@ -49,24 +49,16 @@ arbq se(arbq a){
 
 int hauteur(arbq a){
 	
-	if estf(a)
+	if (estf(a))
 		return 1;
 	else
 		return hauteur(no(a))+1;
 }
 
 couleur c(arbq a){
-	if(a->c!=NULL)
 		return a->c;
 }
 
-bool v(arbq a){
-
-	if(a==NULL)
-		return 1;
-	else 
-		return 0;
-}
 
 bool estf(arbq a){
 	if(no(a)==NULL)
@@ -95,7 +87,7 @@ couleur p(int x,int y,arbq a){
 				return p(x-moitie_taille,y,ne(a));
 			else
 				if(y-moitie_taille)
-					return p(x,y-moitie_taille,so(a))
+					return p(x,y-moitie_taille,so(a));
 				else
-					p(x,y,no(a));
+					return p(x,y,no(a));
 }

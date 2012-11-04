@@ -7,6 +7,7 @@
 #include<math.h>
 #include"couleur.h"
 
+typedef int bool;
 
 typedef struct Arbq{
 	struct Arbq* no;
@@ -24,7 +25,6 @@ arbq so(arbq a);
 arbq se(arbq a);
 int hauteur(arbq a);
 couleur c(arbq a);
-bool v(arbq a);
 bool estf(arbq a);
 int nf(arbq a);
 couleur p(int x,int y,arbq a);
