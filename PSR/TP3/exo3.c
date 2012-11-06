@@ -1,9 +1,8 @@
-
 /**
  * \file			exo3.c
  * \author		Pallamidessi joseph
  * \version		1.0 
- * \date			24 octobre 2012
+ * \date			6 novembre 2012
  * \brief		
  * 
  * \details		

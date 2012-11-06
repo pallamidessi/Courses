@@ -1,8 +1,8 @@
 /**
- * \file			exo3.c
+ * \file			exo4.c
  * \author		Pallamidessi joseph
  * \version		1.0 
- * \date			24 octobre 2012
+ * \date			06 novembre 2012
  * \brief		
  * 
  * \details		
@@ -66,7 +66,7 @@ void fin2(int sigalrm){
 }
 	
 void fin(int sigint){
-	printf("plus grqnde valeur initiale %d,altitude max %lld avec %d comme valeur initiale,\n plus long vol %d avec  %d comme valeur initiale",i,alt_max,init_alt_max,vol,init_vol);
+	printf("plus grande valeur initiale %d,altitude max %lld avec %d comme valeur initiale, plus long vol %d avec  %d comme valeur initiale\n",i,alt_max,init_alt_max,vol,init_vol);
 
 	count_sigint++;
 	alarm(2);
