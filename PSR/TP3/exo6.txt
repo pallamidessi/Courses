@@ -1,0 +1,12 @@
+	On bloque SIGINT et SIGUSR1,pour eviter de sortir du programme avant d'afficher les
+signaux pendant a travers sigprocmask. 
+	
+	Pendant 15 seconde l'utilisateur envoi des signaux.Ces signaux seront "attrapes" par
+sigpending qui remplira un ensemble ens2.
+	
+	On regarde quel signaux on ete envoi pendant le sleep en les testant un a un avec
+sigismember dans une boucle.
+	
+	On dort 15 seconde avant de vider le mask de bloquage et on affichage que le programme ce
+termine.
+

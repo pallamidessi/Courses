@@ -1,0 +1,11 @@
+	On redirige les signaux SIGQUIT et SIGINT vers un handler nommer hand, mais on ne bloque
+que SIGQUIT pendant son execution.
+
+	Le main est dans une boucle infini.Lorsque l'utilisateur envoi SIGINT ou SIGQUIT suit tres
+rapidement d'autre signaux, le handler afficher lequel de SIGINT ou SIGQUIT l'a lance.
+
+	Le handler bloque tout les signaux grace a sigprocmask avec le constante SIG_BLOCK.On
+affiche les signal bloque contenu dans ens1.
+
+	Si le signal lancant le handler est SIGINT,alors on enleve sa redirection avec la
+constante SIG_DFL. Le prochain envoi de SIGINT quittera donc le programme.
