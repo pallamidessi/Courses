@@ -22,13 +22,11 @@ faux:.asciiz " la chaine n'est pas un palindrome\n"
 
 			jal strlen 
 			
-			addi $18,$18,-1
 			lw $4,0($29)
 			addi $29,$29,4
-
-			sw $4,0($29)
-			addi $29,$29,-4
-
+			
+			la $4,read
+			addi $18,$18,-1
 			jal test 			
 		
 		j    Exit        # saut a la fin du programme
@@ -38,32 +36,57 @@ faux:.asciiz " la chaine n'est pas un palindrome\n"
 			sw $31,4($29)			
 			ori $15,$0,10
 			or $18,$0,$0
-			jal while
+			lb $10 0($4)
+			jal rechercheFin
 			lw $31,4($29)
 			addi $29,$29,4
 			
-		while:		
+		rechercheFin:		
 			bne $15 $10 parc
 			jr $31
 
 		parc:
-			addi $18,1
-			addi $4,1
+			addi $18 $18 1
+			addi $4 $4 1
 			lb $10 0($4)
-			j while
+			j rechercheFin
 
 		test:
-			addi $29 ,$29 ,-4
+			addi $29 ,$29 ,-4 
 			sw $31,4($29)
 			or $13,$0,$0
 			or $14,$0,$0
+			add $20,$4,$18
 			jal while
 			lw $31,4($29)
 			addi $29,$29,4
+			jr $31
 					
-			while:
-			beq $14 $13 suivant
-			beq 
-						
+		while:
+			beq $14 $13 suivant		#si la lettre de debut est egale a la lettre de fin on continue 
+			j nonPalindrome			#on affiche le message d'echec dans le cas contraire
+			
+		suivant:
+			beq $4 $20 estPalindrome		#si l'adresse de debut est egale a l'adresse de la fin ,alors c'est un palindrome
+			lb $13 0($4)				#on charge une lettre au debut
+			lb $14 0($20)				#on charge une lettre a la fin 
+			addi $4 $4 1				#on incremente l'adresse de debut
+			addi $20 $20 -1			#on decremente l'adresse de fin 
+			bgt $4 $20 estPalindrome		#si l'adresse de fin et de debut se depasse alors l'entree est un palindrome
+			j while
+			
+		#affichage du message si l'entree est un palindrome
+		estPalindrome:
+			la $4 vrai
+			ori $2, $0, 4
+			syscall
+			j Exit
+		
+		#affichage du message si l'entree n'est pas un palindrome
+		nonPalindrome:
+			la $4 faux
+			ori $2, $0, 4
+			syscall
+			j Exit
 
 Exit:                    # fin du programme

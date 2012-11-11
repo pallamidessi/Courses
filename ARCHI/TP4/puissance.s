@@ -42,10 +42,11 @@
 		j    Exit        # saut a la fin du programme
 
 		puissance:
-	   addi $29 ,$29 ,4
+	   	addi $29 ,$29 ,-4
 		sw $31,8($29)
 		jal while 
 		lw $31,8($29)
+		addi $29 ,$29 ,4
 		jr $31
 
 		while:
