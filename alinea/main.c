@@ -23,6 +23,10 @@ int main(){
 
 	Matrix mult=multiplication(test,test2);
 	affichage(mult);
+	
+	printf("\n\n");
+	mult=Extraction(mult,1,2,2);
+	affichage(mult);
 
 	deleteMatrix(test);
 	deleteMatrix(test2);

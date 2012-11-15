@@ -105,7 +105,7 @@ Matrix multiplication(Matrix a,Matrix b){
 	for(i=0;i<resultat->nb_rows;i++){
 		for(j=0;j<resultat->nb_columns;j++){
 			for(k=0;k<a->nb_columns;k++)
-			resultat->mat[i][j]+=a->mat[i][k]*b->mat[k][i];
+				resultat->mat[i][j]+=a->mat[i][k]*b->mat[k][j];
 		}
 	}
 
@@ -128,14 +128,15 @@ void remplissage(Matrix m){
 	int i,j;	
 
 	for(i=0;i<m->nb_rows;i++){
-		for(j=0;j<m->nb_column;j++){
+		for(j=0;j<m->nb_columns;j++){
 			m->mat[i][j]=rand()%10;
 		}
 	}		
 }
 
 void affichage(Matrix m){
-	
+	int i,j;	
+
 	for(i=0;i<m->nb_rows;i++){
 		for(j=0;j<m->nb_columns;j++){
 			printf(" %f",m->mat[i][j]);
