@@ -7,38 +7,65 @@
 #include<sys/wait.h>
 #include<time.h>
 
-#define i 15
-#define j 15
 
 
-int main(){
+int main(int args,char** argv){
 	
-	int k;
 	int pid;
-	int matrices;
-	srand(time(NULL));
+	int x,k;
 
-	if((matrices=shmget(IPC_PRIVATE,3*(i*sizeof(int))*(j*sizeof(int)+sizeof(int)),IPC_CREAT|0666))==-1){
+	if(args !=3){
+		perror("usage:argument");
+		exit(1);
+	}
+	
+	x=atoi(argv[1]); 
+	k=atoi(argv[2]);
+
+	if((matrices=shmget(IPC_PRIVATE,(k+1)*sizeof(float),IPC_CREAT|0666))==-1){
 		perror("creation de la memoire partage\n");
 		exit(1);
 	}
 
 
+		int* p;
+
+		if((p=shmat(matrices,NULL,0))==(void*)-1){
+			perror("attachement \n");
+			exit(2);
+		}
+
+		p[k+1]=0;
+		
+
 	pid=fork();
 	
 	if(pid==0){
 		int* t;
-		
+		int float;
+
 		if((t=shmat(matrices,NULL,0))==(void*)-1){
 			perror("attachement \n");
 			exit(2);
 		}
 
-		for(k=i*j;k<2*(i*j);k++){
-			*(t+k)=rand()%100;	
+		while(t[k+1]==0){
+		}
+
+		for(i=0;i<k;i+2){
+			if(i==0)
+				t[i]*=0;
+			else
+				t[i]*=1/i;	
 		}
 		
-		*(t+3*(i*j))=1;
+
+		for(i=0;i<k;i++){
+			resultat+=t[i];
+		}
+
+		printf("%f",resultat);
+
 		if(shmdt(t)==-1){
 			perror("detachement \n");
 			exit(3);
@@ -47,35 +74,18 @@ int main(){
 		exit(0);
 	}
 	else{
-		int* p;
+		
+		p[0]=1;
 
-		if((p=shmat(matrices,NULL,0))==(void*)-1){
-			perror("attachement \n");
-			exit(2);
+		for(i=1;i<k;i++){
+			for(n=0;n<i;n++){
+				p[i]*=x;	
 		}
 
+		t[k+1]=1;
 		
-		for(k=0;k<i*j;k++){
-			*(p+k)=rand()%100;	
-		}
-		
-		//*(p+3*(i*j))=0;
-			
-		while((*(p+3*(i*j)))!=1){
-		}
-		
-		for(k=2*(i*j);k<3*(i*j);k++){
-			*(p+k)=*(p+(k-(2*(i*j))))+*(p+(k-(i*j)));	
-		}
-		
-		
-		for(k=2*(i*j);k<3*(i*j);k++){
-			if(k%i==0)
-				printf("\n");
+		wait(NULL);
 
-			printf("%d ",*(p+k));
-		}
-		
 		if(shmdt(p)==-1){
 			perror("detachement \n");
 			exit(3);
