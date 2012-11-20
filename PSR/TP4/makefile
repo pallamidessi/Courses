@@ -3,7 +3,7 @@ CC = gcc
 CFLAGS = -Wall -g
 BIN = bin/
 
-all:exo1 exo2 exo2b exo3 exo4 exo6   
+all:exo1 exo2 exo2b exo3 exo4 exo5 exo5b exo7 
 
 
 exo1: exo1.c
@@ -21,5 +21,11 @@ exo3: exo3.c
 exo4: exo4.c
 	$(CC) -o $@ $< $(CFLAGS)
 
-exo6: exo6.c
+exo5: exo5.c
 	$(CC) -o $@ $< $(CFLAGS)
+
+exo5b: exo5b.c 
+	$(CC) -o $@ $^ $(CFLAGS)
+
+exo7: exo7.c 
+	$(CC) -o $@ $^ $(CFLAGS)
