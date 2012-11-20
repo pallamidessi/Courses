@@ -87,6 +87,8 @@ int main(int args,char** argv){
 	x=atof(argv[1]); 
 	k=atoi(argv[2]);
 
+	/* Creation du tableau,du semaphore en memoire et des variable necessaire a l'algoritme
+	 * de Peterson en memoire partage */
 	if((tableau_partage=shmget(IPC_PRIVATE,(k)*sizeof(float),IPC_CREAT|0666))==-1){
 		perror("creation de la memoire partage\n");
 		exit(1);
@@ -109,6 +111,7 @@ int main(int args,char** argv){
 
 	sigaction(SIGINT,&act,NULL);
 
+	/* Attachement dans le pere */
 	if((p=shmat(tableau_partage,NULL,0))==(void*)-1){
 		perror("attachement \n");
 		exit(2);
@@ -129,16 +132,18 @@ int main(int args,char** argv){
 		exit(2);
 	}
 	
+	/* Initialisation du tableau pour l'algorithme de Peterson et du semaphore */
 	wantIn[0]=FALSE;
 	wantIn[1]=FALSE;
 	*index_partage=0;
 	
 	pid=fork();
 	
-	if(pid==0){
+	if(pid==0){																// Processus fils
 		float resultat=0.0;
 
 
+		/* Attachement dans le fils */
 		if((t=shmat(tableau_partage,NULL,0))==(void*)-1){
 			perror("attachement \n");
 			exit(2);
@@ -183,13 +188,14 @@ int main(int args,char** argv){
 
 		
 		/*le fils multiplie les puissance paires par le coefficient approprie negatif*/
-		t[0]*=0;
+		t[0]*=0;						//cas particulier pour eviter le test dans la boucle
 		
 		for(i=2;i<k;i+=2){
 				t[i]*=(float)-1/i;	
 		}
 		
 
+		/* Calcul du resultat */
 		for(i=0;i<k;i++){
 			resultat+=t[i];
 		}
@@ -197,10 +203,10 @@ int main(int args,char** argv){
 		printf("%f\n",resultat);
 
 
+		/* Detachement dans le fils */
 		if(shmdt(t)==-1){
 			perror("detachement \n");
 			exit(3);
-	
 		}
 
 		if(shmdt(index_partage)==-1){
@@ -250,17 +256,8 @@ int main(int args,char** argv){
 			wantIn[myPid]=FALSE;
 		}
 
-		for(i=1;i<k;i++){
-			p[i]=x;
-			for(n=0;n<i-1;n++){
-				p[i]*=x;	
-			}
-		}
-
 		
-
 		/*le pere multiplie les puissance impaire par le coefficient approprie positif*/
-		
 		for(i=3;i<k;i+=2){
 				p[i]*=(float)1/i;	
 		}
@@ -269,6 +266,7 @@ int main(int args,char** argv){
 		wait(NULL);
 
 
+		/* Detachement dans le pere */
 		if(shmdt(p)==-1){
 			perror("detachement \n");
 			exit(3);
@@ -289,6 +287,7 @@ int main(int args,char** argv){
 			exit(3);
 		}
 
+		/* destruction dans le pere */
 		if(shmctl(semaphore,IPC_RMID,NULL)==-1){
 			perror("destruction de la memoire partagee\n");
 			exit(4);

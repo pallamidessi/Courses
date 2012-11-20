@@ -7,7 +7,7 @@
 #include<sys/wait.h>
 #include<time.h>
 
-#define N 15
+#define N 5
 
 
 
@@ -28,6 +28,9 @@ int main(){
 	
 	if(pid==0){
 		int* t;
+
+		sleep(1);						//pour garantir que les nombres sont bien tirer aleatoirement
+		srand(time(NULL));
 
 		if((t=shmat(matrices,NULL,0))==(void*)-1){
 			perror("attachement \n");
@@ -96,6 +99,24 @@ int main(){
 			}
 		}
 		
+		for(i=0;i<N;i++){
+			for(j=0;j<N;j++){
+				printf("%d ",(*A)[i][j]);
+			}
+			printf("\n");
+		}
+
+		printf("\n\n");
+
+		for(i=0;i<N;i++){
+			for(j=0;j<N;j++){
+				printf("%d ",(*B)[i][j]);
+			}
+			printf("\n");
+		}
+
+		printf("\n\n");
+
 		for(i=0;i<N;i++){
 			for(j=0;j<N;j++){
 				printf("%d ",(*C)[i][j]);

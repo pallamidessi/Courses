@@ -50,6 +50,7 @@ int main(int args,char** argv){
 	x=atof(argv[1]); 
 	k=atoi(argv[2]);
 
+	/* Creation du tableau et du semaphore en memoire partage */
 	if((tableau_partage=shmget(IPC_PRIVATE,(k+1)*sizeof(float),IPC_CREAT|0666))==-1){
 		perror("creation de la memoire partage\n");
 		exit(1);
@@ -58,6 +59,7 @@ int main(int args,char** argv){
 	sigaction(SIGINT,&act,NULL);
 
 
+	/* Attachement dans le pere */
 	if((p=shmat(tableau_partage,NULL,0))==(void*)-1){
 		perror("attachement \n");
 		exit(2);
@@ -67,33 +69,38 @@ int main(int args,char** argv){
 		
 	pid=fork();
 	
-	if(pid==0){
+	if(pid==0){													// Processu fils
 		float* t;
 		float resultat=0.0;
 
+		/* Attachement dans le fils */
 		if((t=shmat(tableau_partage,NULL,0))==(void*)-1){
 			perror("attachement \n");
 			exit(2);
 		}
 
+		/* Boucle infinie pour la synchro */
 		while(t[k+1]==0){
+			sleep(0.01);					//pour eviter de faire tourner le processeur pour rien
 		}
 		
 		/*le fils multiplie les puissance paires par le coefficient approprie negatif*/
 		
-		t[0]*=0;
+		t[0]*=0;								//cas particulier pour eviter le test dans la boucle
 		
 		for(i=2;i<k;i+=2){
 				t[i]*=(float)-1/i;	
 		}
 		
 
+		/* Addition du resultat */
 		for(i=0;i<k;i++){
 			resultat+=t[i];
 		}
 
 		printf("%f",resultat);
 
+		/* Detachement dans le fils */
 		if(shmdt(t)==-1){
 			perror("detachement \n");
 			exit(3);
@@ -117,16 +124,19 @@ int main(int args,char** argv){
 		for(i=3;i<k;i+=2){
 				p[i]*=(float)1/i;	
 		}
-
+		
+		/* Le pere signifie au fils qu'il a fini en modifie le booleen place en fin de tableau*/
 		p[k+1]=1;
 		
 		wait(NULL);
 
+		/* Detachement dans le pere */
 		if(shmdt(p)==-1){
 			perror("detachement \n");
 			exit(3);
 		}
 
+		/* destruction dans le pere */
 		if(shmctl(tableau_partage,IPC_RMID,NULL)==-1){
 			perror("destruction de la memoire partagee\n");
 			exit(4);
