@@ -1,43 +1,43 @@
 #include "couleur.h"
 
 
-couleur nouv_couleur(){
+Couleur nouv_Couleur(){
 	return NULL;	
 }
 
-couleur ic(int r,int v,int b){
+Couleur ic(unsigned char r,unsigned char v,unsigned char b){
 	
-	couleur new_couleur=(couleur) malloc(sizeof(str_couleur));
+	Couleur new_Couleur=(Couleur) malloc(sizeof(str_couleur));
 	
-	new_couleur->r=r;
-	new_couleur->v=v;
-	new_couleur->b=b;
+	new_Couleur->r=r;
+	new_Couleur->v=v;
+	new_Couleur->b=b;
 	
-	return new_couleur;
+	return new_Couleur;
 }
 
 
-unsigned char r(couleur c){
+unsigned char r(Couleur c){
 	return c->r;
 }
 
-unsigned char v(couleur c){
+unsigned char v(Couleur c){
 	return c->v;
 }
 
-unsigned char b(couleur c){
+unsigned char b(Couleur c){
 	return c->b;
 }
 
-couleur blanc(){
+Couleur blanc(){
 	return ic(0,0,0);
 }
 
-couleur noir(){
+Couleur noir(){
 	return ic(255,255,255);	
 }
 
 
-void detruire_couleur(couleur c){
+void detruire_Couleur(Couleur c){
 	free(c);	
 }

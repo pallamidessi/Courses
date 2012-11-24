@@ -1,9 +1,9 @@
 #include"arbq.h"
 
 
-arbq f(couleur c){
+Arbq f(Couleur c){
 	
-	arbq new_feuille=(arbq) malloc(sizeof(str_arbq));
+	Arbq new_feuille=(Arbq) malloc(sizeof(str_arbq));
 	
 	new_feuille->c=c;
 
@@ -16,9 +16,9 @@ arbq f(couleur c){
 }
 
 
-arbq e(arbq a,arbq b,arbq c,arbq d){
+Arbq e(Arbq a,Arbq b,Arbq c,Arbq d){
 	
-	arbq new_racine=(arbq) malloc(sizeof(str_arbq));
+	Arbq new_racine=(Arbq) malloc(sizeof(str_arbq));
 	
 	new_racine->c=NULL;
 
@@ -31,23 +31,23 @@ arbq e(arbq a,arbq b,arbq c,arbq d){
 }
 
 
-arbq no(arbq a){
+Arbq no(Arbq a){
 	return a->no;	
 }
 
-arbq ne(arbq a){
+Arbq ne(Arbq a){
 	return a->ne;	
 }
 
-arbq so(arbq a){
+Arbq so(Arbq a){
 	return a->so;	
 }
 
-arbq se(arbq a){
+Arbq se(Arbq a){
 	return a->se;	
 }
 
-int hauteur(arbq a){
+int hauteur(Arbq a){
 	
 	if (estf(a))
 		return 1;
@@ -55,39 +55,39 @@ int hauteur(arbq a){
 		return hauteur(no(a))+1;
 }
 
-couleur c(arbq a){
+Couleur c(Arbq a){
 		return a->c;
 }
 
 
-bool estf(arbq a){
+bool estf(Arbq a){
 	if(no(a)==NULL)
 		return 1;
 	else
 		return 0;
 }
 
-int nf(arbq a){
+int nf(Arbq a){
 	if(estf(a))
-		return 4;
+		return 1;
 	else 
-		return nf(no(a))*4;
+		return 4*nf(no(a));
 }
 
-couleur p(int x,int y,arbq a){
+Arbq p(Arbq a,int x,int y){
 	int moitie_taille=((int)sqrt(nf(a)))/2;
 
 	if(estf(a))
-		return c(a);
+		return a;
 	else
 		if(x>moitie_taille && y>moitie_taille)
-			return p(x-moitie_taille,y-moitie_taille,se(a));
+			return p(se(a),x-moitie_taille,y-moitie_taille);
 		else
 			if(x>moitie_taille)
-				return p(x-moitie_taille,y,ne(a));
+				return p(so(a),x-moitie_taille,y);
 			else
-				if(y-moitie_taille)
-					return p(x,y-moitie_taille,so(a));
+				if(y>moitie_taille)
+					return p(ne(a),x,y-moitie_taille);
 				else
-					return p(x,y,no(a));
+					return p(no(a),x,y);
 }

@@ -1,33 +1,40 @@
 #include"arbq1.h"
 
 /*
-arbq damier(int n){
+Arbq damier(int n){
 	
-	arbq a=f(NULL);
+	Arbq a=f(NULL);
 
 	while(nf(a)<n*n)
 
 	
 }
 */
-
-arbq symh(arbq a){
-	
+Arbq symh1(Arbq a){
 	if(estf(no(a)))
-		return e(se(a),so(a),no(a),ne(a));
+		return e(so(a),se(a),no(a),ne(a));
 	else
-		return e(no(a),ne(a),symh(no(a)),symh(ne(a)));
+		return e(symh1(so(a)),symh1(se(a)),symh1(no(a)),symh1(ne(a)));
+	}
+
+Arbq symh(Arbq a){
+	
+		return e(no(a),ne(a),symh1(no(a)),symh1(ne(a)));
 }
 
-arbq symv(arbq a){
-	
+Arbq symv1(Arbq a){
 	if(estf(no(a)))
-		return e(se(a),so(a),no(a),ne(a));
+		return e(ne(a),no(a),se(a),so(a));
 	else
-		return e(no(a),ne(a),symv(no(a)),symv(ne(a)));
+		return e(symv1(ne(a)),symv1(no(a)),symv1(se(a)),symv1(so(a)));
+	}
+
+Arbq symv(Arbq a){
+	
+		return e(no(a),symv1(no(a)),so(a),symv1(so(a)));
 }
 
-arbq rotg(arbq a){
+Arbq rotg(Arbq a){
 	if(estf(no(a)))
 		return e(ne(a),se(a),no(a),so(a));
 	else
@@ -35,7 +42,7 @@ arbq rotg(arbq a){
 	
 }
 
-arbq rotd(arbq a){
+Arbq rotd(Arbq a){
 	if(estf(no(a)))
 		return e(so(a),no(a),se(a),ne(a));
 	else
@@ -43,7 +50,7 @@ arbq rotd(arbq a){
 	
 }
 
-arbq dzoo(arbq a){
+Arbq dzoo(Arbq a){
 	if(estf(no(no(a))))
 		return e(no(no(a)),no(ne(a)),no(so(a)),no(se(a)));
 	else 
@@ -51,7 +58,7 @@ arbq dzoo(arbq a){
 }
 
 
-arbq parc(arbq a,arbq(*operation)(arbq)){
+Arbq parc(Arbq a,Arbq(*operation)(Arbq)){
 
 	if(estf(no(a)))
 		return e(operation(no(a)),operation(ne(a)),operation(so(a)),operation(se(a)));
@@ -61,20 +68,20 @@ arbq parc(arbq a,arbq(*operation)(arbq)){
 
 }
 
-arbq invc(arbq a){
+Arbq invc(Arbq a){
 	return f(ic(255-r(c(a)),255-v(c(a)),255-b(c(a))));		
 }
 
-arbq nivg(arbq a){
+Arbq nivg(Arbq a){
 	
-	unsigned char niv_gris=(unsigned char)(r(c(a))*0,299+v(c(a))*0,578+b(c(a))*0,114);
+	unsigned char niv_gris=(unsigned char)(r(c(a))*0.299+v(c(a))*0.578+b(c(a))*0.114);
 	
 	return f(ic(niv_gris,niv_gris,niv_gris));
 }
 
-arbq tresh(arbq a,int seuil){
+Arbq tresh(Arbq a,int seuil){
 	
-	unsigned char niv_gris=(unsigned char)(r(c(a))*0,299+v(c(a))*0,578+b(c(a))*0,114);
+	unsigned char niv_gris=(unsigned char)(r(c(a))*0.299+v(c(a))*0.578+b(c(a))*0.114);
 	
 	if(niv_gris<seuil)
 		return f(ic(r(c(a))+50,v(c(a))+50,b(c(a))+50));
