@@ -1,3 +1,12 @@
+/**
+ * \file			arbq.h
+ * \author		Pallamidessi Joseph
+ * \version		1.0
+ * \date			02/12/2012
+ * \brief			header arbq.h
+ *
+ * \details		Definition de la struct Arbq, et fonctions generatrices
+*/
 #ifndef _ARBQ_H__
 #define _ARBQ_H__
 

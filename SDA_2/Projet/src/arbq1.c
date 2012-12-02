@@ -1,15 +1,46 @@
+/**
+ * \file			arbq1.c
+ * \author		Pallamidessi Joseph
+ * \version		1.0
+ * \date			02/12/2012
+ * \brief			src arbq1.c
+ *
+ * \details		Fonctions associees a arbq1.h
+*/
 #include"arbq1.h"
 
-/*
 Arbq damier(int n){
-	
-	Arbq a=f(NULL);
+	int hauteur_max;
+	int test=1;
 
-	while(nf(a)<n*n)
-
+	if(n%2!=0){
+		printf("la taille specifie n'est pas un multiple de 2\n");
+		return NULL;
+	}
 	
+	while(n*n!=test){
+		test*=4;
+		hauteur_max++;
+	}
+
+	Arbq dam=f(NULL);
+
+	return damier1(dam,0,hauteur_max);
 }
-*/
+
+Arbq damier1(Arbq a,int hauteur_act,int hauteur_max){
+	
+	if(hauteur_max==hauteur_act)
+		return e(f(blanc()),f(noir()),f(noir()),f(blanc()));
+	else
+		a->no=f(NULL);
+		a->ne=f(NULL);
+		a->so=f(NULL);
+		a->se=f(NULL);
+		return e(damier1(no(a),hauteur_act+1,hauteur_max),damier1(ne(a),hauteur_act+1,hauteur_max),
+							damier1(so(a),hauteur_act+1,hauteur_max),damier1(se(a),hauteur_act+1,hauteur_max));
+}
+
 Arbq symh1(Arbq a){
 	if(estf(no(a)))
 		return e(so(a),se(a),no(a),ne(a));
@@ -65,6 +96,17 @@ Arbq parc(Arbq a,Arbq(*operation)(Arbq)){
 	else
 		return e(parc(no(a),(*operation)),parc(ne(a),(*operation)),
 		parc(so(a),(*operation)),parc(se(a),(*operation)));
+
+}
+
+Arbq parc1(Arbq a,Arbq(*operation)(Arbq,int),int seuil){
+
+	if(estf(no(a)))
+		return
+		e(operation(no(a),seuil),operation(ne(a),seuil),operation(so(a),seuil),operation(se(a),seuil));
+	else
+		return e(parc1(no(a),(*operation),seuil),parc1(ne(a),(*operation),seuil),
+					   parc1(so(a),(*operation),seuil),parc1(se(a),(*operation),seuil));
 
 }
 

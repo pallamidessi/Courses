@@ -30,5 +30,8 @@ couleur.o: couleur.c couleur.h
 	$(CC) -c $< $(INC) -o $(OBJ)$@ $(CFLAGS)
 
 clean:
-	rm obj/*.o
+	rm -r obj/*.o bin/main Doxydoc obj/strasbourg_matrix_*
+
+doxy:
+	doxygen
 

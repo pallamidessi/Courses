@@ -1,3 +1,12 @@
+/**
+ * \file			arbq1.h
+ * \author		Pallamidessi Joseph
+ * \version		1.0
+ * \date			02/12/2012	
+ * \brief			header arbq1.h
+ *
+ * \details		Fonctions de transformation sur les Arbq
+*/
 #ifndef _ARBQ1_H__
 #define _ARBQ1_H__
 
@@ -13,7 +22,7 @@
 * @return	a Un Arbq, L'Arbq ainsi creer
 **/
 Arbq damier(int n);
-
+Arbq damier1(Arbq a,int hauteur_act,int hauteur_max);
 
 /**
 * /brief		Creer un Arbq correspondant a la symetrie axial horizontale d'un Arbq par son
@@ -80,6 +89,21 @@ Arbq dzoo(Arbq a);
 * les feuilles de l'arbre passe en argument 
 **/
 Arbq parc(Arbq a,Arbq(*operation)(Arbq));
+
+/**
+* /brief		Fonction de parcours en pronfondeur d'un Arbq, en appliquant une fonction passe
+* en parametre sur les feuilles
+*	/details	Les fonction passees en argument on un prototype de la forme Arbq
+*	fonction(Arbq,int) pour la fonction tresh
+*
+*	@param	a 				Un Arbq, sur lequelle on veut appliquer une fonction aux feuilles	
+*	@param	operation Un pointeur de fonction, la fonction applique une transformation sur
+*	les feuilles
+* @param	val				la valeur que l'on veut passer en argument de operation
+* @return	r 				Un Arbq, resultat de la transformation de la fonctio0n passee en argument sur
+* les feuilles de l'arbre passe en argument 
+**/
+Arbq parc1(Arbq a,Arbq(*operation)(Arbq,int),int val);
 
 
 /**

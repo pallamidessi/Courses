@@ -1,3 +1,12 @@
+/**
+ * \file			couleur.c
+ * \author		Pallamidessi Joseph
+ * \version		1.0
+ * \date			02/12/2012
+ * \brief			src couleur.c
+ *
+ * \details		Fonctions associees a couleur.h
+*/
 #include "couleur.h"
 
 
@@ -36,7 +45,6 @@ Couleur blanc(){
 Couleur noir(){
 	return ic(255,255,255);	
 }
-
 
 void detruire_Couleur(Couleur c){
 	free(c);	

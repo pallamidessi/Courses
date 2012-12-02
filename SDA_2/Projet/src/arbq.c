@@ -1,3 +1,13 @@
+/**
+ * \file			arbq.c
+ * \author		Pallamidessi Joseph
+ * \version		1.0
+ * \date			02/12/2012
+ * \brief			src arbq.c
+ *
+ * \details		Fonctions associees a arbq.h
+*/
+
 #include"arbq.h"
 
 
@@ -90,4 +100,25 @@ Arbq p(Arbq a,int x,int y){
 					return p(ne(a),x,y-moitie_taille);
 				else
 					return p(no(a),x,y);
+}
+
+void detruire_Arbq(Arbq a){
+	
+	if(estf(no(a))){
+		detruire_Couleur(c(no(a)));
+		detruire_Couleur(c(ne(a)));
+		detruire_Couleur(c(so(a)));
+		detruire_Couleur(c(se(a)));
+		free(no(a));
+		free(ne(a));
+		free(so(a));
+		free(se(a));
+	}
+	else{
+		detruire_Arbq(no(a));	
+		detruire_Arbq(ne(a));	
+		detruire_Arbq(so(a));	
+		detruire_Arbq(se(a));
+		free(a);
+	}
 }

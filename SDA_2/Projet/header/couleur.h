@@ -1,3 +1,12 @@
+/**
+ * \file			couleur.h
+ * \author		Pallamidessi Joseph
+ * \version		1.0
+ * \date			02/12/2012	
+ * \brief			header couleur.h
+ *
+ * \details		Definition de la structure couleur,avec ses fonctions generatrices
+*/
 #ifndef _COULEUR_H__
 #define _COULEUR_H__
 
@@ -93,7 +102,7 @@ Couleur noir();
 *
 *	@param	c Une couleur, que l'on veut free
 **/
-void detruire_couleur(Couleur c);
+void detruire_Couleur(Couleur c);
 
 
 #endif
