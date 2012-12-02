@@ -24,7 +24,7 @@ int main(){
 	
 	printf("Damier 128*128\n");
 	Arbq dam=damier(128);
-	exportBmp(dam,"damier");
+	exportBmp(dam,"damier.bmp");
 	detruire_Arbq(dam);
 
 	printf("Rotation a droite\n");
