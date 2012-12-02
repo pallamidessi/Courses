@@ -10,14 +10,9 @@
 #include"arbq1.h"
 
 Arbq damier(int n){
-	int hauteur_max;
+	int hauteur_max=0;
 	int test=1;
 
-	if(n%2!=0){
-		printf("la taille specifie n'est pas un multiple de 2\n");
-		return NULL;
-	}
-	
 	while(n*n!=test){
 		test*=4;
 		hauteur_max++;

@@ -22,6 +22,11 @@ int main(){
 	exportBmp(transf,strcat(filename,"_rotg.bmp"));
 	filename[fin_nom]='\0';
 	
+	printf("Damier 128*128\n");
+	Arbq dam=damier(128);
+	exportBmp(dam,"damier");
+	detruire_Arbq(dam);
+
 	printf("Rotation a droite\n");
 	transf=rotd(arbre);
 	exportBmp(transf,strcat(filename,"_rotd.bmp"));
