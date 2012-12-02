@@ -15,7 +15,6 @@ int main(){
 	Arbq arbre = import(strcat(filename,".mat"));
 	filename[fin_nom]='\0';
 
-
 	printf("On fait un jeu complet de modification \n\n");
 	
 	printf("Rotation a gauche\n");
@@ -28,14 +27,24 @@ int main(){
 	exportBmp(transf,strcat(filename,"_rotd.bmp"));
 	filename[fin_nom]='\0';
 	
-	printf("Symetrie horizontal\n");
+	printf("Symetrie horizontal par rapport au milieu\n");
 	transf=symh(arbre);
 	exportBmp(transf,strcat(filename,"_symh.bmp"));
 	filename[fin_nom]='\0';
 	
-	printf("Symetrie vertical\n");
+	printf("Symetrie vertical par rapport au milieu\n");
 	transf=symv(arbre);
 	exportBmp(transf,strcat(filename,"_symv.bmp"));
+	filename[fin_nom]='\0';
+	
+	printf("Symetrie horizontal\n");
+	transf=symhT(arbre);
+	exportBmp(transf,strcat(filename,"_symhT.bmp"));
+	filename[fin_nom]='\0';
+	
+	printf("Symetrie vertical\n");
+	transf=symvT(arbre);
+	exportBmp(transf,strcat(filename,"_symvT.bmp"));
 	filename[fin_nom]='\0';
 	
 	printf("Reduction image\n");
@@ -46,23 +55,26 @@ int main(){
 	printf("Inversion couleur\n");
 	transf=parc(arbre,invc);
 	exportBmp(transf,strcat(filename,"_invc.bmp"));
-	filename[fin_nom-1]='\0';
+	filename[fin_nom]='\0';
 	
 	printf("Obscursir selon un seuil:150\n");
 	transf=parc1(arbre,tresh,150);
 	exportBmp(transf,strcat(filename,"_tresh.bmp"));
-	filename[fin_nom-1]='\0';
+	filename[fin_nom]='\0';
 	
 	printf("Niveau de gris\n");
 	transf=parc(arbre,nivg);
 	exportBmp(transf,strcat(filename,"_nivg.bmp"));
-	filename[fin_nom-1]='\0';
+	filename[fin_nom]='\0';
 
-	printf("Modification multiple sur une seuleimage\n");
+	
+	printf("\n\nModification multiple sur une seule image\n");
 	printf("Rotation a gauche: rotg \n");
 	printf("Rotation a droite: rotd \n");
-	printf("Symetrie horizontal: symh \n");
-	printf("Symetrie vertical: symv \n");
+	printf("Symetrie horizontal par rapport au milieu: symh \n");
+	printf("Symetrie vertical par rapport au milieu: symv \n");
+	printf("Symetrie horizontal: symhT \n");
+	printf("Symetrie vertical : symvT \n");
 	printf("Reduction image: dzoo\n");
 	printf("Inversion couleur: invc \n");
 	printf("Obscursir selon un seuil: tresh \n");
@@ -82,43 +94,45 @@ int main(){
 
 		if (strcmp(command,"rotg")==0){
 			transf=rotg(transf);
-			exportBmp(transf,strcat(filename,"_rotg.bmp"));
 			filename[fin_nom]='\0';
 		}
 		else if (strcmp(command,"rotd")==0){
 			transf=rotd(transf);
-			exportBmp(transf,strcat(filename,"_rotd.bmp"));
 			filename[fin_nom]='\0';
 		}
 		else if (strcmp(command,"symh")==0){
 			transf=symh(transf);
-			exportBmp(transf,strcat(filename,"_symh.bmp"));
 			filename[fin_nom]='\0';
 		}
 		else if (strcmp(command,"symv")==0){
 			transf=symv(transf);
-			exportBmp(transf,strcat(filename,"_symv.bmp"));
+			filename[fin_nom]='\0';
+		}
+		else if (strcmp(command,"symhT")==0){
+			transf=symhT(transf);
+			filename[fin_nom]='\0';
+		}
+		else if (strcmp(command,"symvT")==0){
+			transf=symvT(transf);
 			filename[fin_nom]='\0';
 		}
 		else if (strcmp(command,"dzoo")==0){
 			transf=dzoo(transf);
-			exportBmp(transf,strcat(filename,"_dzoo.bmp"));
 			filename[fin_nom]='\0';
 		}
 		else if (strcmp(command,"invc")==0){
 			transf=parc(transf,invc);
-			exportBmp(transf,strcat(filename,"_invc.bmp"));
-			filename[fin_nom-1]='\0';
+			filename[fin_nom]='\0';
 		}
 		else if (strcmp(command,"tresh")==0){
-			printf("\n seuil :");
+			printf("\nseuil : ");
 			scanf("%d",&s);
 			transf=parc1(transf,tresh,s);
-			filename[fin_nom-1]='\0';
+			filename[fin_nom]='\0';
 		}
 		else if (strcmp(command,"nivg")==0){
 			transf=parc(transf,nivg);
-			filename[fin_nom-1]='\0';
+			filename[fin_nom]='\0';
 		}
 	}
 	exportBmp(transf,strcat(filename,"_perso.bmp"));

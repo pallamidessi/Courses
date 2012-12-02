@@ -45,6 +45,25 @@ Arbq symh(Arbq a);
 **/
 Arbq symv(Arbq a);
 
+/**
+* /brief		Creer un Arbq correspondant a la symetrie axial horizontale d'un Arbq 
+*	/details 	Utilise une fonction symh1 auxilliaire qui gere la recursion 
+*
+*	@param 	a Un Arbq, l'arbre sur lequelle appliquer la symetrie
+* @return r Un Arbq, resultat de la symetrie	
+**/
+Arbq symhT(Arbq a);
+
+
+/**
+* /brief		Creer un Arbq correspondant a la symetrie axial horizontale d'un Arbq
+*	/details 	Utilise une fonction symh1 auxilliaire qui gere la recursion 
+*
+*	@param 	a Un Arbq, l'arbre sur lequelle appliquer la symetrie
+* @return r Un Arbq, resultat de la symetrie	
+**/
+Arbq symvT(Arbq a);
+
 
 /**
 * /brief		Creer un Arbq correspondant a la rotation a gauche d'un Arbq donne

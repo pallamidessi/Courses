@@ -53,6 +53,10 @@ Arbq symh(Arbq a){
 		return e(no(a),ne(a),symh1(no(a)),symh1(ne(a)));
 }
 
+Arbq symhT(Arbq a){
+	return e(symh1(so(a)),symh1(se(a)),symh1(no(a)),symh1(ne(a)));
+}
+
 Arbq symv1(Arbq a){
 	if(estf(no(a)))
 		return e(ne(a),no(a),se(a),so(a));
@@ -63,6 +67,10 @@ Arbq symv1(Arbq a){
 Arbq symv(Arbq a){
 	
 		return e(no(a),symv1(no(a)),so(a),symv1(so(a)));
+}
+
+Arbq symvT(Arbq a){
+	return e(symv1(ne(a)),symv1(no(a)),symv1(se(a)),symv1(so(a)));
 }
 
 Arbq rotg(Arbq a){
@@ -122,11 +130,31 @@ Arbq nivg(Arbq a){
 }
 
 Arbq tresh(Arbq a,int seuil){
-	
+	unsigned char rouge=r(c(a));
+	unsigned char vert=v(c(a));
+	unsigned char bleu=b(c(a));
+
 	unsigned char niv_gris=(unsigned char)(r(c(a))*0.299+v(c(a))*0.578+b(c(a))*0.114);
 	
-	if(niv_gris<seuil)
-		return f(ic(r(c(a))+50,v(c(a))+50,b(c(a))+50));
+	if(niv_gris<seuil){
+		
+		if(rouge+50>255)
+			rouge=255;
+		else 
+			rouge+=50;
+
+		if(vert+50>255)
+			vert=255;
+		else 
+			vert+=50;
+		
+		if(bleu+50>255)
+			bleu=255;
+		else 
+			bleu+=50;
+
+		return f(ic(rouge,vert,bleu));
+	}
 	else
 		return a;
 }
