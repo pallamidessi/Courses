@@ -1,31 +1,36 @@
 #include"determinant.h"
 
-Matrix Extraction(Matrix m,int row,int column,int size){
-	Matrix extraite=newMatrix(size,size);
+Matrix Extraction(Matrix m,int row,int column){
+	
+	Matrix extraite=newMatrix(m->nb_rows-1,m->nb_columns-1);
 	int i,j;
-	int x,y;
+	int x=0,y=0;
 
-	if(row>m->nb_rows||
-		column>m->nb_columns||
-		size>m->nb_columns){
-			printf("erreur extraction : dimension\n");
-			exit(1);
+	for(i=0;i<m->nb_rows;i++){
+		
+		if(i==row)
+			i++;
+		
+		y=0;
+		for(j=0;j<m->nb_columns;j++){
+
+			if(j==column && j<m->nb_columns-1){
+				j++;
+				extraite->mat[x][y]=m->mat[i][j];
+			}
+			else 
+				if(j!=column)
+					extraite->mat[x][y]=m->mat[i][j];
+			else
+				j++;
+
+			y++;
 		}
-	
-	for(i=0;i<size;i++){
-		for(j=0;j<size;j++){
-			x=i+row;
-			y=j+column;
-
-			if(x>m->nb_rows)
-				x=x%m->nb_rows;
-			else if(y>m->nb_columns)
-				y=x%m->nb_columns;
-
-			extraite->mat[i][j]=m->mat[x][y];
-		}
+		x++;
 	}
-	
+	printf("\n\n");
+	affichage(extraite);
+	printf("\n\n");
 	return extraite;
 }
 
@@ -40,7 +45,10 @@ int Determinant(Matrix m){
 	}
 	else{
 		for(i=0;i<m->nb_columns;i++)
-			det+=m->mat[0][i]*Determinant(Extraction(m,1,i,m->nb_columns-1));
+			if(i%2==0)
+				det+=m->mat[0][i]*Determinant(Extraction(m,0,i));
+			else
+				det+=-m->mat[0][i]*Determinant(Extraction(m,0,i));
 	}
 
 	return det;

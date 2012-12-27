@@ -2,7 +2,7 @@
 #define __DETERMINANT_H
 #include"tp1.h"
 
-Matrix Extraction(Matrix m,int row,int column,int size);
+Matrix Extraction(Matrix m,int row,int column);
 int Determinant(Matrix m);
 
 #endif
