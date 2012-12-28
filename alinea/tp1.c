@@ -43,6 +43,18 @@ void deleteMatrix(Matrix m){
 	free(m);
 }	
 
+Matrix identite(int nb_rows,int nb_columns){
+	
+	int i;
+	Matrix id=newMatrix(nb_rows,nb_columns);
+
+	for(i=0;i<nb_rows;i++){
+		id->mat[i][i]=1;
+	}
+
+	return id;
+}
+
 int isSymetric(Matrix m){
 	int i,j;
 
@@ -62,6 +74,22 @@ int isSquare(Matrix m){
 		return 0;
 }
 
+Matrix copie(Matrix m){
+	int rows=m->nb_rows;
+	int columns=m->nb_columns;
+	Matrix copy=newMatrix(rows,columns);
+	E** matrice=m->mat;
+	E** m_copy=copy->mat;
+	int i,j;
+
+	for(i=0;i<rows;i++){
+		for(j=0;j<columns;j++){
+			m_copy[i][j]=matrice[i][j];	
+		}
+	}
+
+	return copy;	
+}
 
 Matrix transpose(Matrix m){
 	int i,j;

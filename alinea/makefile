@@ -1,9 +1,9 @@
 CC=gcc
-FLAGS=-Wall -g
+CFLAGS=-Wall -g
 
 ALL:main
 
-main:main.o tp1.o determinant.o
+main:main.o tp1.o determinant.o gauss.o inversion.o
 	$(CC) $^ -o $@ $(CFLAGS) 
 
 main.o:main.c tp1.h	determinant.h
@@ -14,3 +14,12 @@ tp1.o:tp1.c tp1.h
 
 determinant.o:determinant.c determinant.h
 	$(CC) -c $< -o $@ $(CFLAGS) 
+
+gauss.o:gauss.c gauss.h
+	$(CC) -c $< -o $@ $(CFLAGS) 
+
+inversion.o:inversion.c inversion.h
+	$(CC) -c $< -o $@ $(CFLAGS) 
+
+clean:
+	rm *.o main

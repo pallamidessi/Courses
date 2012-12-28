@@ -8,9 +8,15 @@ Matrix Extraction(Matrix m,int row,int column){
 
 	for(i=0;i<m->nb_rows;i++){
 		
-		if(i==row)
+		if(i==row){
+			
+			if(i==m->nb_rows-1){
+				break;	
+			}
+
 			i++;
-		
+		}
+
 		y=0;
 		for(j=0;j<m->nb_columns;j++){
 
@@ -28,9 +34,6 @@ Matrix Extraction(Matrix m,int row,int column){
 		}
 		x++;
 	}
-	printf("\n\n");
-	affichage(extraite);
-	printf("\n\n");
 	return extraite;
 }
 
@@ -38,7 +41,7 @@ Matrix Extraction(Matrix m,int row,int column){
 int Determinant(Matrix m){
 	
 	int i;
-	int det=0;
+	float det=0;
 	
 	if(m->nb_rows==2){
 		return (m->mat[0][0]*m->mat[1][1])-(m->mat[0][1]*m->mat[1][0]);
