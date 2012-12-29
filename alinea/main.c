@@ -2,12 +2,14 @@
 #include"determinant.h"
 #include"gauss.h"
 #include"inversion.h"
+#include"resol.h"
 #include<time.h>
 
 int main(){
 	//int det;
 	srand(time(NULL));
 
+/*
 	Matrix test=newMatrix(3,3);
 	Matrix test2;	
 
@@ -15,7 +17,6 @@ int main(){
 	affichage(test);
 	printf("\n\n");
 
-/*
 	Matrix add=addition(test,test2);
 	
 	affichage(add);
@@ -38,7 +39,6 @@ int main(){
 	printf("%d\n",det);
 	printf("\n");
 
-*/
 //test=Pivot_Gauss(test);
 //	affichage(test);
 //	det=m_determinant(test);
@@ -72,6 +72,17 @@ int main(){
 //	deleteMatrix(add);
 //	deleteMatrix(mult);
 
+*/
+
+	Systeme test=newSystem(3,3);
+	remplissage_systeme(test);
+	affichage_systeme(test);
+	printf("\n");
+	//test=resolution(test);
+	//affichage_systeme(test);
+	//printf("\n");
+	
+	valeur_propre(test->matrice);
 	return 0;	
 }
  
