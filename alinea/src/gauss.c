@@ -30,7 +30,7 @@ Matrix addMultLigne(Matrix m,int row1,int row2,float scalar){
 	return m;
 }
 
-Matrix Pivot_Gauss(Matrix m){
+int Pivot_Gauss(Matrix m){
 	
 	int i,j,k,l;
 	int rows=m->nb_rows;
@@ -38,6 +38,9 @@ Matrix Pivot_Gauss(Matrix m){
 	int row_max;
 	float pivot;
 	float coeff;
+	int signe=0;
+
+
 	for(k=0;k<rows;k++){
 		
 		row_max=k;
@@ -48,6 +51,10 @@ Matrix Pivot_Gauss(Matrix m){
 		}
 
 		permuter(m,row_max,k);
+		
+	if(row_max!=k)
+			signe+=row_max+k;
+
 		pivot=m->mat[k][k];
 	//	printf("pivot %f \n",pivot);
 		for(i=k+1;i<rows;i++){
@@ -65,19 +72,26 @@ Matrix Pivot_Gauss(Matrix m){
 			m->mat[i][j]=0;
 		}
 	}
+	
+	return signe;	
 
-	return m;	
 }
 
 
 int m_determinant(Matrix m){
 	
 	int i;
+	int signe=0;
 	int det=1;
 	
+	signe=Pivot_Gauss(m);
+
 	for(i=0;i<m->nb_rows;i++){
 		det*=m->mat[i][i];
-	}	
+	}
+	
+	if(signe%2==1)
+		det*=-1;
 
 	return det;
 }

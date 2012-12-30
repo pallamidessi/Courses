@@ -5,6 +5,10 @@
 #include<stdlib.h>
 
 typedef float E;
+typedef int bool;
+
+#define true 1
+#define false 0
 
 typedef struct matrix {
 	E **mat;
@@ -27,5 +31,5 @@ Matrix mult_scalar(E scalar,Matrix m);
 Matrix copie(Matrix m);
 void affichage(Matrix m);
 void remplissage(Matrix m);
-
+Matrix saisie();
 #endif

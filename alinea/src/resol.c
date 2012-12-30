@@ -112,6 +112,13 @@ void affichage_systeme(Systeme s){
 
 }
 
+void deleteSysteme(Systeme s){
+
+	deleteMatrix(s->matrice);
+	deleteMatrix(s->valeur);
+
+	free(s);
+}
 
 void valeur_propre(Matrix m){
 	

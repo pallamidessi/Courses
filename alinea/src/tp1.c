@@ -162,6 +162,29 @@ void remplissage(Matrix m){
 	}		
 }
 
+Matrix saisie(){
+	int nb_rows;
+	int nb_columns;
+	int i,j;
+	
+	printf("nombre de colonne de la matrice : ");
+	scanf("%d",&nb_columns);
+	printf("nombre de ligne de la matrice : ");
+	scanf("%d",&nb_rows);
+
+	printf("\n");
+	Matrix new=newMatrix(nb_rows,nb_columns);
+	
+	for(i=0;i<nb_rows;i++){
+		for(j=0;j<nb_columns;j++){
+			scanf("%f ",&new->mat[i][j]);
+		}
+		printf("\n");
+	}
+	
+	return new;
+}
+
 void affichage(Matrix m){
 	int i,j;	
 
