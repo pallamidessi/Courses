@@ -11,18 +11,19 @@ int main(int argc,char** argv){
 	char* tvalue=NULL;
 	int taille=3;
 	srand(time(NULL));
-	char command[10];
+	char command[20];
 	char c;
 	int det=0;
 	int premiere_affi=1;
-
+	Matrix A,B,C;
 	bool mode_script=false;
 	bool deter_pivot=false;
 	bool deter_recur=false;
 	bool inver_pivot=false;
 	bool inver_comatrice=false;
-
-	while((c=getopt(argc,argv,"sprict:"))!=-1){
+	bool inver_comatrice_op=false;
+	bool deja_supprimer=false;
+	while((c=getopt(argc,argv,"spricot:"))!=-1){
 			switch(c)
 			{
 			case 's':
@@ -33,6 +34,15 @@ int main(int argc,char** argv){
 				break;
 			case 'r':
 				deter_recur=true;
+				break;
+			case 'i':
+				inver_pivot=true;
+				break;
+			case 'c':
+				inver_comatrice=true;
+				break;
+			case 'o':
+				inver_comatrice_op=true;
 				break;
 			case 't':
 				tvalue=optarg;
@@ -54,14 +64,20 @@ int main(int argc,char** argv){
 
 		if(deter_pivot==true)
 			det=m_determinant(m);			
-		else if(deter_recur==true)
+		else if(deter_recur==true){
 			det=Determinant(m);
+			deja_supprimer=true;
+		}
 		else if(inver_pivot==true)
 			m=inversion_gauss(m);
 		else if(inver_comatrice==true)
 			m=inversion_comatrice(m);
-
-		deleteMatrix(m);
+		else if(inver_comatrice_op==true)
+			m=inversion_comatrice_op(m);
+		
+		if(deja_supprimer==false)
+			deleteMatrix(m);
+		
 		return 0;
 	}
 
@@ -95,7 +111,9 @@ int main(int argc,char** argv){
 	deleteMatrix(add);
 
 	printf("Determinant de A par calcul recursif\n");
+	Matrix tmp=copie(test);	
 	det=Determinant(test);
+	test=tmp;
 	printf("%d\n",det);
 	printf("\n");
 
@@ -106,20 +124,25 @@ int main(int argc,char** argv){
 	printf("\n");
 
 	printf("inversion par pivot de gauss\n");
-	Matrix copy=copie(test);	
+	Matrix copy=copie(test);
+	Matrix copy2=copie(test);		
 	test=inversion_gauss(test);
-	affichage(test2);
+	affichage(test);
 	printf("\n");
 
 	printf("inversion par comatrice\n");
 	copy=inversion_comatrice(copy);
-	affichage(test2);
+	affichage(test);
 	printf("\n");
 
 	printf("Inversion par comatrice optimisee\n");
 
+	copy2=inversion_comatrice_op(copy2);
+	affichage(copy2);
+	printf("\n");
 
 	deleteMatrix(copy);
+	deleteMatrix(copy2);
 	deleteMatrix(test);
 	deleteMatrix(test2);
 
@@ -148,7 +171,7 @@ int main(int argc,char** argv){
 	printf("Decomposition PLU: PLU\n");
 	printf("valeur propre: valeur_propre\n\n");
 
-
+	 
 	printf("\nCommande : ");
 	while((strcmp(command,"quit"))!=0){
 
@@ -160,28 +183,127 @@ int main(int argc,char** argv){
 		scanf("%s",command);
 
 		if (strcmp(command,"add")==0){
-	
+			printf("Saisir la matrice A :\n");			
+			A=saisie();
+			printf("\n");
+			affichage(A);
+			printf("\n");
+			printf("Saisir la matrice B :\n");
+			B=saisie();
+			printf("\n");
+			affichage(B);
+			printf("\n");
+			
+			C=addition(A,B); 
+			printf("\n\nResultat:\n");
+			affichage(C);
+			
+			deleteMatrix(A);
+			deleteMatrix(B);
+			deleteMatrix(C);
 		}
 		else if (strcmp(command,"mult")==0){
-		
+			printf("Saisir la matrice A :\n");			
+			A=saisie();
+			printf("\n");
+			affichage(A);
+			printf("\n");
+			printf("Saisir la matrice B :\n");
+			B=saisie();
+			printf("\n");
+			affichage(B);
+			printf("\n");
+
+			C=multiplication(A,B); 
+			printf("\n\nResultat:\n");
+			affichage(C);
+			
+			deleteMatrix(A);
+			deleteMatrix(B);
+			deleteMatrix(C);
 		}
 		else if (strcmp(command,"deter_recur")==0){
-		
+			printf("Saisir la matrice A :\n");			
+			A=saisie();
+			printf("\n");
+			affichage(A);
+			printf("\n");
+
+
+			det=Determinant(test);
+			printf("Determinant : %d\n",det);
+			printf("\n");
+
+			deleteMatrix(A);
+
 		}
 		else if (strcmp(command,"deter_pivot")==0){
+			printf("Saisir la matrice A :\n");			
+			A=saisie();
+			printf("\n");
+			affichage(A);
+			printf("\n");
 			
+			
+			det=m_determinant(test);
+			printf("Determinant : %d\n",det);
+			printf("\n");
+			
+			deleteMatrix(A);
+
 		}
 		else if (strcmp(command,"inver_pivot")==0){
-		
+			printf("Saisir la matrice A :\n");			
+			A=saisie();
+			printf("\n");
+			affichage(A);
+			printf("\n");
+			
+			
+			A=inversion_gauss(A);
+			affichage(A);
+			printf("\n");
+			
+			deleteMatrix(A);
 		}
 		else if (strcmp(command,"inver_comatrice")==0){
-	
+			printf("Saisir la matrice A :\n");			
+			A=saisie();
+			printf("\n");
+			affichage(A);
+			printf("\n");
+			
+			A=inversion_comatrice(A);
+			affichage(A);
+			printf("\n");
+			
+			deleteMatrix(A);
 		}
 		else if (strcmp(command,"inver_comatrice_op")==0){
-		
+			printf("Saisir la matrice A :\n");			
+			A=saisie();
+			printf("\n");
+			affichage(A);
+			printf("\n");
+			
+			A=inversion_comatrice_op(A);
+			affichage(A);
+			printf("\n");
+			
+			deleteMatrix(A);
 		}
 		else if (strcmp(command,"resol_systeme")==0){
+			printf("Saisir le systeme s :\n");			
+			Systeme s=saisie_systeme();
+			printf("\n");			
+			affichage_systeme(s);
+			printf("\n");
 			
+			s=resolution(s);
+			affichage_systeme(s);
+			printf("\n");
+			deleteSysteme(s);
+
 		}
 		else if (strcmp(command,"PLU")==0){
 		

@@ -115,7 +115,7 @@ Matrix addition(Matrix a,Matrix b){
 
 	for(i=0;i<a->nb_rows;i++){
 		for(j=0;j<a->nb_columns;j++){
-			resultat->mat[i][j]=a->mat[j][i]+b->mat[i][j];
+			resultat->mat[i][j]=a->mat[i][j]+b->mat[i][j];
 		}
 	}
 
@@ -171,15 +171,14 @@ Matrix saisie(){
 	scanf("%d",&nb_columns);
 	printf("nombre de ligne de la matrice : ");
 	scanf("%d",&nb_rows);
-
-	printf("\n");
 	Matrix new=newMatrix(nb_rows,nb_columns);
 	
+
 	for(i=0;i<nb_rows;i++){
 		for(j=0;j<nb_columns;j++){
-			scanf("%f ",&new->mat[i][j]);
+			scanf("%f",&new->mat[i][j]);
 		}
-		printf("\n");
+	printf("\n");
 	}
 	
 	return new;

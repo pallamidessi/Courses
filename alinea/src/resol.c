@@ -16,8 +16,6 @@ void remplissage_systeme(Systeme s){
 
 }
 
-
-
 Systeme resolution(Systeme s){
 	Matrix m=s->matrice;
 	Matrix v=s->valeur;
@@ -29,7 +27,7 @@ Systeme resolution(Systeme s){
 	float pivot;
 	float coeff;
 
-	
+	/*Choix du pivot et verification si la matrice est inversible*/
 	for(k=0;k<rows;k++){
 		
 		row_max=k;
@@ -43,12 +41,7 @@ Systeme resolution(Systeme s){
 		permuter(v,row_max,k);
 
 		pivot=m->mat[k][k];
-/*
-		if(pivot==0){
-			printf("Matrice non inversible");
-			exit(0);
-		}
-*/
+		/*Descente du pivot de gauss*/
 		for(i=k+1;i<rows;i++){
 			coeff=(float) ((float) m->mat[i][k]/(float) pivot);
 			for(j=k;j<columns;j++){
@@ -56,15 +49,9 @@ Systeme resolution(Systeme s){
 				v->mat[i][j]-=(float) (v->mat[k][j]*coeff);
 			}
 		}
-	affichage_systeme(s);
-	printf("\n");
 	}
 	
-//	affichage(m);
-//	printf("\n");
-
-	
-
+	/*Remontee du pivot*/
 	for(k=rows-1;k>=0;k--){
 		
 		pivot=m->mat[k][k];
@@ -76,21 +63,15 @@ Systeme resolution(Systeme s){
 				v->mat[i][0]-=(float) (v->mat[k][0]*coeff);
 			}
 		}
-		
-	affichage_systeme(s);
-	printf("\n");
 	}
 
-
-	//affichage(m);
-	//printf("\n");
-
+	/*Par division,la matrice diagonal devient la matrice identite*/
 	for(i=0;i<rows;i++){
 		coeff=(float) 1/m->mat[i][i];
 		multLigne(m,i,coeff);
 		multLigne(v,i,coeff);
 	}
-	//affichage(inverse);
+
 	printf("\n");
 
 
@@ -111,7 +92,33 @@ void affichage_systeme(Systeme s){
 	}
 
 }
+Systeme saisie_systeme(){
+	int nb_rows;
+	int nb_columns;
+	int i,j;
+	
+	printf("Nombre de colonne de la matrice : ");
+	scanf("%d",&nb_columns);
+	printf("Nombre de ligne de la matrice : ");
+	scanf("%d",&nb_rows);
 
+	Systeme s=newSystem(nb_rows,nb_columns);
+
+	printf("On saisie le contenu de la matrice: \n");
+
+	for(i=0;i<nb_rows;i++){
+		for(j=0;j<nb_columns;j++){
+			scanf("%f",&s->matrice->mat[i][j]);
+		}
+		printf("\n");
+	}
+
+	printf("On saisie les valeur du systeme: \n");
+	for(i=0;i<nb_rows;i++){
+		scanf("%f",&s->valeur->mat[i][0]);
+	}
+	return s;
+}
 void deleteSysteme(Systeme s){
 
 	deleteMatrix(s->matrice);
@@ -145,7 +152,7 @@ void valeur_propre(Matrix m){
 		permuter(m,row_max,k);
 		permuter(id,row_max,k);
 		pivot=m->mat[k][k];
-	//	printf("pivot %f \n",pivot);
+
 		for(i=k+1;i<rows;i++){
 			coeff=(float) ((float) m->mat[i][k]/(float) pivot);
 			for(j=k;j<columns;j++){

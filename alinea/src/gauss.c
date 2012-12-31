@@ -43,6 +43,7 @@ int Pivot_Gauss(Matrix m){
 
 	for(k=0;k<rows;k++){
 		
+		/*Choix du pivot et verification si la matrice est inversible*/
 		row_max=k;
 
 		for(l=k;l<rows;l++){
@@ -51,21 +52,19 @@ int Pivot_Gauss(Matrix m){
 		}
 
 		permuter(m,row_max,k);
-		
-	if(row_max!=k)
+		/*Lors d'un permutation on garde la puissance du coefficient (-1) pour avoir le bon signe du determinant*/
+		if(row_max!=k)
 			signe+=row_max+k;
 
 		pivot=m->mat[k][k];
-	//	printf("pivot %f \n",pivot);
+		/*Descente du pivot de gauss*/
 		for(i=k+1;i<rows;i++){
 			coeff=(float) ((float) m->mat[i][k]/(float) pivot);
 			for(j=k;j<columns;j++){
 				m->mat[i][j]-=(float) (m->mat[k][j]*coeff);
 			}
 		}
-	//	printf("\n");
-	//	affichage(m);
-	//		printf("\n");
+
 	}
 	for(i=0;i<rows;i++){
 		for(j=0;j<i;j++){
@@ -83,6 +82,9 @@ int m_determinant(Matrix m){
 	int i;
 	int signe=0;
 	int det=1;
+
+	if(m->nb_rows==2 && m->nb_columns==2)
+		return (m->mat[0][0]*m->mat[1][1])-(m->mat[0][1]*m->mat[1][0]);
 	
 	signe=Pivot_Gauss(m);
 

@@ -42,9 +42,11 @@ int Determinant(Matrix m){
 	
 	int i;
 	float det=0;
-	
+	float tmp;
 	if(m->nb_rows==2){
-		return (m->mat[0][0]*m->mat[1][1])-(m->mat[0][1]*m->mat[1][0]);
+		tmp=(m->mat[0][0]*m->mat[1][1])-(m->mat[0][1]*m->mat[1][0]);
+		deleteMatrix(m);
+		return tmp;
 	}
 	else{
 		for(i=0;i<m->nb_columns;i++)
@@ -53,7 +55,7 @@ int Determinant(Matrix m){
 			else
 				det+=-m->mat[0][i]*Determinant(Extraction(m,0,i));
 	}
-
+	deleteMatrix(m);
 	return det;
 }
 
