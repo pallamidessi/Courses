@@ -35,10 +35,30 @@
 #include<netinet/in.h>
 #include<arpa/inet.h>
 #include<string.h>
-#include<select.h>
+#include<sys/select.h>
 #include<fcntl.h>
+#include<signal.h>
 
 #define MAX_CLIENT 16
+#define TRUE 1
+#define FALSE 0
+
+typedef int bool;
+int list_client[MAX_CLIENT];
+
+
+void fin(int sig){
+	int i;
+
+	close(sockfd);	
+	
+	for(i=0;i<MAX_CLIENT;i++){
+		if(client_list[i]!=0){
+			close(client_list[i]);
+		}
+	}	
+}
+
 
 int main(int argc, char **argv)
 {
@@ -46,37 +66,51 @@ int main(int argc, char **argv)
 	int sockfd, sockfd2;
 	int max=0;
 	int nbr_client=0;
+	bool next_is_name=FALSE,client_disconnected=FALSE;
 	fd_set rdclient; 
-	int list_client[MAX_CLIENT];
+	char name_client[MAX_CLIENT][16];
 	socklen_t addrlen;
 	char buf[1024];
+	char buf2[1024];
 
-	FD_ZERO(&rdclient);
 
 	struct sockaddr_in my_addr;
+	struct sigaction terminaison;
 
-	// check the number of args on command line
+	/*Initializing the client array */
+	for(i=0;i<MAX_CLIENT;i++){
+		list_client[i]=0;
+	}
+
+	/* check the number of args on command line*/
 	if(argc != 2)
 	{
 		printf("USAGE: %s port_num\n", argv[0]);
 		exit(-1);
 	}
 
-	// socket factory
+	/* socket factory*/
 	if((sockfd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP)) == -1)
 	{
 		perror("socket");
 		exit(EXIT_FAILURE);
 	}
+	
+	/*Signal handler in case of ^C, to close the sockets*/
+	terminaison.sa_handler=fin;
+	sigfillset(&terminaison.sa_mask);
+	terminaison.sa_flags=0;
+		
+	sigaction(SIGINT,&terminaison,NULL);
 
-	// init local addr structure and other params
+	/* init local addr structure and other params */
 	my_addr.sin_family      = AF_INET;
 	my_addr.sin_port        = htons(atoi(argv[1]));
 	my_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	addrlen                 = sizeof(struct sockaddr_in);
 	memset(buf,'\0',1024);
 
-	// bind addr structure with socket
+	/* bind addr structure with socket */
 	if(bind(sockfd,(struct sockaddr*)&my_addr,addrlen) == -1)
 	{
 		perror("bind");
@@ -84,51 +118,102 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	//Set sockfd to be non-blocking
+	/*Set sockfd to be non-blocking*/
 	fcntl(sockfd,F_SETFL,O_NONBLOCK);
 
-	// set the socket in passive mode (only used for accept())
-	// and set the list size for pending connection
+	/* set the socket in passive mode (only used for accept())
+	 * and set the list size for pending connection*/
 	listen(sockfd,SOMAXCONN);
-	
-	if(sockfd2>max){
-		max=sockfd2;
-	}
 
-	FD_SET(sockfd);
+	max=sockfd;
+
 
 	while(1){
-		if(nbr_client<MAX_CLIENT){
 
-			if((select(max+1,rdclient,NULL,NULL,NULL))>1)
-				sockfd2 = accept(sockfd,(struct sockaddr*)&my_addr,&addrlen);
+		FD_ZERO(&rdclient);
+		FD_SET(sockfd,&rdclient);
 
-			if(sockfd2>max){
-				max=sockfd2;
+		for(i=0;i<nbr_client;i++){
+			if(list_client[i]!=0){
+				FD_SET(list_client[i],&rdclient);
 			}
+		}
 
-			FD_SET(sockfd2,&rdclient);
+		if(nbr_client<MAX_CLIENT){
+			if((select(max+1,&rdclient,NULL,NULL,NULL))>=1){
+				if(FD_ISSET(sockfd,&rdclient)){
+					sockfd2 = accept(sockfd,(struct sockaddr*)&my_addr,&addrlen);
 
-			//Adding the newly connected client to the list of client
-			list_client[nbr_client]=sockfd2;
-			nbr_client++;
+					if(sockfd2>max){
+						max=sockfd2;
+					}
+					printf("nouveaux client\n");
 
-			for(i=0;i<nbr_client;i++){
-				if(FD_ISSET(list_client[i])){
-					recv(list_client[i],buf,1024,0);
-					FD_SET(list_client[i],&rdclient);
+					/*Adding the newly connected client to the list of client*/
 
-					for(j=0;j<nbr_client;j++){
-						if(j!=i)
-							send(list_client[i],buf,1024,0);	
+					list_client[nbr_client]=sockfd2;
+					nbr_client++;
+					next_is_name=TRUE;
+				}
+
+				/* Check whose fd changed and received from him and then send the message to every
+				 * other client */
+
+				else{
+					for(i=0;i<nbr_client;i++){
+						if(list_client[i]!=0){
+							if(FD_ISSET(list_client[i],&rdclient)){
+								if(recv(list_client[i],buf,1024,0)==0){
+									client_disconnected=TRUE;
+								}
+								else
+									printf("%s\n",buf);
+
+								/* Notify everyone if a new user connect */
+								if(next_is_name==TRUE){
+									strcpy(name_client[i],buf);
+									next_is_name=FALSE;
+									strcat(buf," vient de rejoindre le chat !");
+									strcpy(buf2,buf);
+								}
+								/* Notify everyone if an user disconnect */
+								else if(client_disconnected==TRUE){
+									list_client[i]=0;
+									nbr_client--;
+
+									strcpy(buf2,name_client[i]);
+									strcat(buf2," vient de se deconnecter !");
+									client_disconnected=FALSE;
+								}
+
+
+								/* Send the message to everyone with the sender name before */
+								else {
+									strcpy(buf2,name_client[i]);
+									printf("%s\n",name_client[i]);
+									strcat(buf2,": ");
+									strcat(buf2,buf);
+								}
+								/* Send loop*/
+								for(j=0;j<nbr_client;j++){
+									if(j!=i){
+										if(send(list_client[j],buf2,1024,0)==-1){
+											perror("send : ");
+										}	
+									}
+								}
+							}
+						}
 					}
 				}
 			}
 		}
-
-		// fermeture des sockets
-		close(sockfd);
-		close(sockfd2);
-
-		return 0;
 	}
+
+	/*Closing all opened socket*/
+	for(i=0;i<nbr_client;i++){
+		close(list_client[i]);	
+	}
+
+	return 0;
+}

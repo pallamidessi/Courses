@@ -19,10 +19,10 @@
  * @section DESCRIPTION
  *
  * Simple program that creates an IPv4 TCP socket and tries to connect
- * to a remote host before sending a string to this host. The string,
+ * to a remote host . The string,
  * IPv4 addr and port number of the remote host are passed as command
  * line parameters as follow:
- * ./pg_name IPv4_addr port_number string
+ * ./pg_name IPv4_addr port_number 
  */
 
 #include<stdio.h>
@@ -34,38 +34,58 @@
 #include<arpa/inet.h>
 #include<string.h>
 
+
+void fin(int sig){
+	close(sockfd);		
+}
+
 int main(int argc, char **argv)
 {
-	int sockfd;
+	int sockfd,pid;
 	struct sockaddr_in server;
 	socklen_t addrlen;
+	char name[16];
+	char buffer[1024];
+	struct sigaction terminaison;
 
-	// check the number of args on command line
-	if(argc != 4)
+	/* check the number of args on command line*/
+	if(argc != 3)
 	{
-		printf("USAGE: %s @server port_num string\n", argv[0]);
+		printf("USAGE: %s @server port_num\n", argv[0]);
 		exit(-1);
 	}
 
-	// socket factory
+	/* socket factory*/
 	if((sockfd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP)) == -1)
 	{
 		perror("socket");
 		exit(EXIT_FAILURE);
 	}
 
-	// init remote addr structure and other params
+	/*Signal handler in case of ^C, to close the sockets*/
+	terminaison.sa_handler=fin;
+	sigfillset(&terminaison.sa_mask);
+	terminaison.sa_flags=0;
+
+	sigaction(SIGINT,&terminaison,NULL);
+
+	/* init remote addr structure and other params*/
 	server.sin_family = AF_INET;
 	server.sin_port   = htons(atoi(argv[2]));
 	addrlen           = sizeof(struct sockaddr_in);
 
-	// get addr from command line and convert it
+	/* get addr from command line and convert it*/
 	if(inet_pton(AF_INET,argv[1],&server.sin_addr.s_addr) != 1)
 	{
 		perror("inet_pton");
 		close(sockfd);
 		exit(EXIT_FAILURE);
 	}
+	
+	/*User choose his name*/
+	printf("Nom :\n");
+	scanf("%s",name);
+
 
 	printf("Trying to connect to the remote host\n");
 	if(connect(sockfd,(struct sockaddr*)&server,addrlen) == -1)
@@ -75,18 +95,28 @@ int main(int argc, char **argv)
 	}
 
 	printf("Connection OK\n");
+	
+	send(sockfd,name,strlen(name)+1,0);
 
-	// send string
-	if(send(sockfd,argv[3],strlen(argv[3]),0) == -1)
-	{
-		perror("send");
-		close(sockfd);
-		exit(EXIT_FAILURE);
+	/*forking : father=sending message,child=receiving message*/
+
+	pid=fork();
+	while(1){
+		if(pid==0){
+			if(recv(sockfd,buffer,1024,0)==0)
+				exit(0);
+			else{
+				printf("%s\n",buffer);
+			}
+		}
+		else{
+			scanf("%s",buffer);
+			send(sockfd,buffer,strlen(buffer)+1,0);
+		}
 	}
-
 	printf("Disconnection\n");
 
-	// close the socket
+	/* close the socket*/
 	close(sockfd);
 
 	return 0;
