@@ -45,7 +45,22 @@
 
 typedef int bool;
 int list_client[MAX_CLIENT];
+int sockfd;
 
+/*Example of command the chat can support */
+void who_is_connected(int sockfd,int* list_client,char** nom_client,int max_client){
+	int i=0;
+
+	for(i=0;i<MAX_CLIENT;i++){
+		if(list_client[i]!=0 && sockfd!=list_client[i]){
+			send(sockfd,nom_client[i],16,0);
+			
+		}
+	}
+}
+
+/* Close the server and all opened sockets when a SIGINT is received and send a terminaison (interpreted) 
+ * string to the connected clients*/
 
 void fin(int sig){
 	int i;
@@ -53,17 +68,20 @@ void fin(int sig){
 	close(sockfd);	
 	
 	for(i=0;i<MAX_CLIENT;i++){
-		if(client_list[i]!=0){
-			close(client_list[i]);
+		if(list_client[i]!=0){
+			send(list_client[i],"000/END",8,0);
+			close(list_client[i]);
 		}
-	}	
+	}
+
+	exit(0);
 }
 
 
 int main(int argc, char **argv)
 {
 	int i,j;
-	int sockfd, sockfd2;
+	int sockfd2;
 	int max=0;
 	int nbr_client=0;
 	bool next_is_name=FALSE,client_disconnected=FALSE;
@@ -150,8 +168,15 @@ int main(int argc, char **argv)
 					printf("nouveaux client\n");
 
 					/*Adding the newly connected client to the list of client*/
+					
+					i=0;
+					
+					while(list_client[i]!=0 && i<MAX_CLIENT){
+						i++;
+					}
 
-					list_client[nbr_client]=sockfd2;
+					list_client[i]=sockfd2;
+
 					nbr_client++;
 					next_is_name=TRUE;
 				}
@@ -166,6 +191,10 @@ int main(int argc, char **argv)
 								if(recv(list_client[i],buf,1024,0)==0){
 									client_disconnected=TRUE;
 								}
+								else if(strcmp(buf,"/who")==0){
+									who_is_connected(list_client[i],list_client,(char **) name_client,MAX_CLIENT);
+									break;
+								}	
 								else
 									printf("%s\n",buf);
 
@@ -195,8 +224,8 @@ int main(int argc, char **argv)
 									strcat(buf2,buf);
 								}
 								/* Send loop*/
-								for(j=0;j<nbr_client;j++){
-									if(j!=i){
+								for(j=0;j<MAX_CLIENT;j++){
+									if(list_client[j]!=0 && j!=i){
 										if(send(list_client[j],buf2,1024,0)==-1){
 											perror("send : ");
 										}	
@@ -208,11 +237,6 @@ int main(int argc, char **argv)
 				}
 			}
 		}
-	}
-
-	/*Closing all opened socket*/
-	for(i=0;i<nbr_client;i++){
-		close(list_client[i]);	
 	}
 
 	return 0;

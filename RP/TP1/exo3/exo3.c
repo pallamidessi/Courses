@@ -18,7 +18,7 @@ typedef int bool;
 
 int main(int argc, char **argv){
 
-	int sockfd,sockfd2,sockfd3;
+	int sockfd,sockfd3;
 	struct sockaddr* server_web;
 	struct sockaddr_in browser;
 	socklen_t addrlen,browser_addrlen;
@@ -101,7 +101,7 @@ int main(int argc, char **argv){
 
 	//wait to receive the requested page
 	if(recv(sockfd,buffer,1024*30,0)==0){
-		printf("casse \n");
+		printf("L'host a ferme son socket \n");
 	}
 
 	printf("%s",buffer);

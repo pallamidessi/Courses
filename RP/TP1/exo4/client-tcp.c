@@ -33,15 +33,19 @@
 #include<netinet/in.h>
 #include<arpa/inet.h>
 #include<string.h>
+#include<signal.h>
+#include<sys/wait.h>
 
+int sockfd;
 
 void fin(int sig){
-	close(sockfd);		
+	close(sockfd);
+	exit(0);
 }
 
 int main(int argc, char **argv)
 {
-	int sockfd,pid;
+	int pid,status;
 	struct sockaddr_in server;
 	socklen_t addrlen;
 	char name[16];
@@ -103,21 +107,27 @@ int main(int argc, char **argv)
 	pid=fork();
 	while(1){
 		if(pid==0){
-			if(recv(sockfd,buffer,1024,0)==0)
-				exit(0);
-			else{
-				printf("%s\n",buffer);
+			recv(sockfd,buffer,1024,0);
+			if(strcmp(buffer,"000/END")==0){
+				printf("Serveur coupe :entrez une touche pour continuer...\n");
+				fin(0);
 			}
+			else
+				printf("%s\n",buffer);
 		}
 		else{
-			scanf("%s",buffer);
-			send(sockfd,buffer,strlen(buffer)+1,0);
+			while(waitpid(pid,&status,WNOHANG)!=pid){
+				scanf("%s",buffer);
+				send(sockfd,buffer,strlen(buffer)+1,0);
+			}
+			
+			/* close the socket*/
+			close(sockfd);
+			exit(0);
 		}
 	}
 	printf("Disconnection\n");
 
-	/* close the socket*/
-	close(sockfd);
 
 	return 0;
 }
