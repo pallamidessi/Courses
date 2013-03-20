@@ -73,7 +73,7 @@ ctxt_t e2_ctxt_init (char *file, int maxbuf)
 	}
 
 	block_size=1024 << c->sb.s_log_block_size;
-	nb_group=c->sb.s_blocks-count/c->sb.s_block_per_group;
+	nb_group=c->sb.s_blocks_count/c->sb.s_block_per_group;
 
 	c->fd=fd_file;
 	c->ngroup=nb_group;
@@ -120,7 +120,6 @@ void e2_ctxt_close (ctxt_t c)
 	if(c!=NULL){
 		close(c->fd);
 		free(c->gd);
-		free(c);
 
 		while(c->last!=NULL){
 			c->last->next=tmp;
@@ -128,6 +127,7 @@ void e2_ctxt_close (ctxt_t c)
 			free(c->last);
 			c->last=tmp;
 		}
+		free(c);
 	}
 
 }
@@ -172,21 +172,65 @@ int e2_block_fetch (ctxt_t c, pblk_t blkno, void *data)
 buf_t e2_buffer_get (ctxt_t c, pblk_t blkno)
 {
 
+
+	buf_t last_buffer=c->last;
+	buf_t tmp;
+	
+	//cas relou a gerer
+	if(last_buffer->blkno==blkno){
+		c->bufstat_read++;
+		return tmp;
+	}
+	else{
+		while(last_buffer->next!=c->last){
+			if(last_buffer->blkno!=blkno)
+				last_buffer=last_buffer->next;
+			else{
+				c->bufstat_read++;
+				tmp=last_buffer->next;
+				last_buffer->next=last_buffer->next->next;
+				return tmp;
+			}
+		}
+	}
+	
+	if(c->last!=NULL){
+		c->bufstat_cached++;
+		void* data=malloc(e2_ctxt_blksize(c));
+		e2_block_fetch(c,blkno,data);
+		
+		free(c->last->data);
+
+		c->last->data=data;
+		c->last->blkno=blkno;
+
+		return tmp;
+	}
+	else
+		return NULL;
+
 }
         
 /* replace le buffer en premier dans la liste */
 void e2_buffer_put (ctxt_t c, buf_t b)
 {
+	buf_t tmp=c->last->next;
+
+	c->last->next=b;
+	b->next=tmp;
+
 }
         
 /* recupere les donnees du buffer */
 void *e2_buffer_data (buf_t b)
 {
+	return b->data;
 }
 
 /* affiche les statistiques */
 void e2_buffer_stats (ctxt_t c)
 {
+	printf("%d %d",c->bufstat_read,c->bufstat_cached);
 }
 
 /******************************************************************************
@@ -196,16 +240,42 @@ void e2_buffer_stats (ctxt_t c)
 /* recupere le buffer contenant l'inode */
 pblk_t e2_inode_to_pblk (ctxt_t c, inum_t i)
 {
+	int k;
+	unsigned int blk_size=e2_ctxt_blksize(c);
+
+	for(k=0;k<c->ngroups;k++){
+			
+		if(i<c->sb.s_inodes_per_group*k)
+			return c->gd[k].bg_inode_table+i/(blk_size/sizeof(struct ext2_inode));
+			
+	}
+	return -1;
 }
+
 
 /* extrait l'inode du buffer */
 struct ext2_inode *e2_inode_read (ctxt_t c, inum_t i, buf_t b)
 {
+	i%=c->sb.s_inodes_per_group;
+	struct ext2_inode* inode_read=b->data+i*sizeof(ext2_inode);
+	
+	return inode_read;
+
 }
 
 /* numero de bloc physique correspondant au bloc logique blkno de l'inode in */
 pblk_t e2_inode_lblk_to_pblk (ctxt_t c, struct ext2_inode *in, lblk_t blkno)
 {
+	if(blkno<13){
+		return in->i_block[blkno];
+	}
+	else if(blkno<e2_ctxt_blksize(c)/32){
+		e2_buffer_get(c,i_block[13]);
+
+		return
+	}
+	else if(blkno<)
+
 }
 
 /******************************************************************************
