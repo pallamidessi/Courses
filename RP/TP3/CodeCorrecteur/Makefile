@@ -1,6 +1,6 @@
 CC=gcc
-LFLAGS = -g -W -Wall -Wmissing-declarations -Wmissing-prototypes -Wredundant-decls -Wshadow -Wbad-function-cast -Wcast-qual -Werror -o
-CFLAGS = -c -g -W -Wall -Wmissing-declarations -Wmissing-prototypes -Wredundant-decls -Wshadow -Wbad-function-cast -Wcast-qual -Werror
+LFLAGS = -g -W -Wall #-Wmissing-declarations -Wmissing-prototypes -Wredundant-decls -Wshadow -Wbad-function-cast -Wcast-qual -Werror -o
+CFLAGS = -c -g -W -Wall # -Wmissing-declarations -Wmissing-prototypes -Wredundant-decls -Wshadow -Wbad-function-cast -Wcast-qual -Werror
 LDFLAGS_NET=
 
 PROGS=sender receiver medium

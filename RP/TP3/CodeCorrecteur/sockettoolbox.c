@@ -28,6 +28,7 @@
 struct sockaddr_un setAddr(char *ref)
 {
   struct sockaddr_un remote_addr;
+	memset(&remote_addr,0,sizeof(struct sockaddr_un));
 
   remote_addr.sun_family = AF_UNIX;
   strcpy(remote_addr.sun_path, ref);
@@ -40,6 +41,7 @@ int getAndBindSocket(char *ref)
   int desc = 0;
   int res  = 0;
   struct sockaddr_un local_addr;
+	memset(&local_addr,0,sizeof(struct sockaddr_un));
 
   desc = socket(AF_UNIX, SOCK_DGRAM, 0);
 
@@ -52,7 +54,7 @@ int getAndBindSocket(char *ref)
   local_addr.sun_family = AF_UNIX;
   strcpy(local_addr.sun_path, ref);
 
-  res = bind(desc, (struct sockaddr*) &local_addr, sizeof(local_addr));
+  res = bind(desc, (struct sockaddr*) &local_addr,sizeof(local_addr.sun_path)+sizeof(local_addr.sun_family));
 
   if(res == -1)
     {

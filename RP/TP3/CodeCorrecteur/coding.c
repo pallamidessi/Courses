@@ -48,14 +48,14 @@ void copyDataBitsCoding(char *message, CodeWord_t *cw, int size)
 void computeCtrlBits(CodeWord_t *message, int size)
 {
 	int i,j;
-	int bit=0;
+	unsigned int bit=0;
 
- 	for(i=0;i<size;i++){
+ 	for(i=0;i<size/(int) sizeof(CodeWord_t);i++){
 		for(j=1;j<=8;j++){		
 			bit+=getNthBit(message[i],j);
 			bit%=2;
 		}
- 		setNthBitCW(&message[i],9,bit);	
+ 		setNthBitCW(&message[i],9,bit);
 	}
 	return;
 }
@@ -63,9 +63,17 @@ void computeCtrlBits(CodeWord_t *message, int size)
 
 void coding(char *message, int data_size, char *cw, int *cw_size)
 {
-  *cw_size = data_size * sizeof(CodeWord_t);
+  *(cw_size)= data_size * sizeof(CodeWord_t);
+	int i;
 
   copyDataBitsCoding(message, (CodeWord_t*)cw, data_size);
+	
+	/*
+		for(i=0;i<data_size-1;i++){
+			printBits(cw[i],"");
+		}
+	*/
+
   //-- to uncomment when complete and needed
   computeCtrlBits((CodeWord_t*)cw, *cw_size);
 
