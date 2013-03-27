@@ -257,6 +257,7 @@ pblk_t e2_inode_to_pblk (ctxt_t c, inum_t i)
 struct ext2_inode *e2_inode_read (ctxt_t c, inum_t i, buf_t b)
 {
 	i%=c->sb.s_inodes_per_group;
+	//copier la structure au cas ou le buf_t est detruit
 	struct ext2_inode* inode_read=b->data+i*sizeof(ext2_inode);
 	
 	return inode_read;
@@ -266,15 +267,49 @@ struct ext2_inode *e2_inode_read (ctxt_t c, inum_t i, buf_t b)
 /* numero de bloc physique correspondant au bloc logique blkno de l'inode in */
 pblk_t e2_inode_lblk_to_pblk (ctxt_t c, struct ext2_inode *in, lblk_t blkno)
 {
+
+	//NETTOYER 
+
+	int blksize=e2_ctxt_blksize(c);
+
 	if(blkno<13){
 		return in->i_block[blkno];
 	}
-	else if(blkno<e2_ctxt_blksize(c)/32){
-		e2_buffer_get(c,i_block[13]);
+	else if(blkno<(13+blksize/(sizeof(int)))){ //dans les 13+8*15 ?  premier bloc
+		buf_t bloc_indirection1=e2_buffer_get(c,in->i_block[13]);
+		
+		int* blk_ind=(int*) bloc_indirection1->data;
+		
+		int numero_dans_blk_ind=blkno-13;
 
-		return
+		return blk_ind[numero_dans_blk_ind];
+		
 	}
-	else if(blkno<)
+	else if(blkno<(13+blksize/(sizeof(int))*blksize/(sizeof(int)))){
+		
+		blkno-=13+blksize/(sizeof(int));
+		
+		buf_t bloc_indirection1=e2_buffer_get(c,in->i_block[14]);
+		int* blk_ind1=(int*) bloc_indirection1->data;
+
+		int inode_dans_blk_ind=blksize/(sizeof(int))*blksize/(sizeof(int))/blkno - 1;
+		
+		int inode_dans_blk_ind2=blkno%(blksize/(sizeof(int)));
+		
+		buf_t bloc_indirection2=e2_buffer_get(c,blk_ind[inode_dans_blk_ind]);
+
+		return ((int*) bloc_indirection2->data)[inode_dans_blk_ind2];
+
+	}
+	else if(blkno<13+blksize/(sizeof(int))*blksize/(sizeof(int))*blksize/(sizeof(int))){
+			
+		blkno-=13+blksize/(sizeof(int))*blksize/(sizeof(int));
+			
+		buf_t bloc_indirection1=e2_buffer_get(c,in->i_block[15]);
+
+			
+		int* blk_ind1=(int*) bloc_indirection1->data;
+	}
 
 }
 
