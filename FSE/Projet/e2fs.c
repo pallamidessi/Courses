@@ -50,7 +50,7 @@ ctxt_t e2_ctxt_init (char *file, int maxbuf)
 	int i=0;
 	int fd_file;
 	int nb_group;
-	int block-size;
+	int block_size;
 	buf_t tmp;
 	ctxt_t c=malloc(sizeof(struct context));
 	c->gd=malloc(sizeof(struct ext2_group_desc));
@@ -73,10 +73,10 @@ ctxt_t e2_ctxt_init (char *file, int maxbuf)
 	}
 
 	block_size=1024 << c->sb.s_log_block_size;
-	nb_group=c->sb.s_blocks_count/c->sb.s_block_per_group;
+	nb_group=c->sb.s_blocks_count/c->sb.s_blocks_per_group;
 
 	c->fd=fd_file;
-	c->ngroup=nb_group;
+	c->ngroups=nb_group;
 
 	lseek(fd_file,1024+block_size,SEEK_SET);
 	
@@ -91,20 +91,20 @@ ctxt_t e2_ctxt_init (char *file, int maxbuf)
 	c->last=NULL;
 
 	while(i<maxbuf){
-		if(last==NULL){
-			c->last=malloc(struct buffer);
+		if(c->last==NULL){
+			c->last=malloc(sizeof(struct buffer));
 			c->last->data=malloc(block_size);
 			c->last->blkno=0;
-			c_>last->valid=0;
-			c->last->next=last;
+			c->last->valid=0;
+			c->last->next=c->last;
 		}
 		else{
 			tmp=c->last->next;
-			c->last->next=malloc(struct buffer);
-			c->last=next;
-			c->last->data=malloc(block_size)
+			c->last->next=malloc(sizeof(struct buffer));
+			c->last=c->last->next;
+			c->last->data=malloc(block_size);
 			c->last->blkno=0;
-			c_>last->valid=0;
+			c->last->valid=0;
 			c->last->next=tmp;
 		} 
 		i++;
@@ -151,6 +151,7 @@ int e2_ctxt_blksize (ctxt_t c)
 
 int e2_block_fetch (ctxt_t c, pblk_t blkno, void *data)
 {
+	int i=e2_ctxt_blksize(c);
 	lseek(c->fd,1024+i*blkno,SEEK_SET);
 	
 	if((read(c->fd,data,e2_ctxt_blksize(c)))==-1){
@@ -258,7 +259,7 @@ struct ext2_inode *e2_inode_read (ctxt_t c, inum_t i, buf_t b)
 {
 	i%=c->sb.s_inodes_per_group;
 	//copier la structure au cas ou le buf_t est detruit
-	struct ext2_inode* inode_read=b->data+i*sizeof(ext2_inode);
+	struct ext2_inode* inode_read=b->data+i*sizeof(struct ext2_inode);
 	
 	return inode_read;
 
@@ -296,7 +297,7 @@ pblk_t e2_inode_lblk_to_pblk (ctxt_t c, struct ext2_inode *in, lblk_t blkno)
 		
 		int inode_dans_blk_ind2=blkno%(blksize/(sizeof(int)));
 		
-		buf_t bloc_indirection2=e2_buffer_get(c,blk_ind[inode_dans_blk_ind]);
+		buf_t bloc_indirection2=e2_buffer_get(c,blk_ind1[inode_dans_blk_ind]);
 
 		return ((int*) bloc_indirection2->data)[inode_dans_blk_ind2];
 
