@@ -1,0 +1,19 @@
+#Init
+#an=((2*A)/(pi*n))*(-cos(pi*n)+1)
+#bn=(A*sin(pi*n))/pi*n;  Constante egale a 0
+#Ici A=1
+#et F=2*pi
+# et x correspond a t
+
+#hn(t)=an*sin(2*pi*n*F*t)+bn*cos(2*pi*n*F*t);
+ 
+set samples 1000;
+ 
+carre(x)= sin(x)>0 ? 1 : 0 ;
+f0(x)=0.5;
+f1(x)=f0(x)+ ((2/(pi))*(-cos(pi)+1))  * sin(x)   +  ((sin(pi)/pi))   *  cos(x);
+f2(x)=f1(x)+ ((2)/(pi*2))*(-cos(pi*2)+1) *  sin(2*x) +   (sin(pi*2))/(pi*2)  *  cos(2*x);
+f3(x)=f2(x)+ ((2)/(pi*3))*(-cos(pi*3)+1) *  sin(3*x) +   (sin(pi*3))/(pi*3)  *  cos(3*x);
+
+
+plot carre(x),f0(x),f1(x),f2(x),f3(x)
