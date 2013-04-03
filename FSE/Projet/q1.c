@@ -24,10 +24,13 @@ int main (int argc, char *argv [])
 	perror ("e2_ctxt_init") ;
 	exit (1) ;
     }
+		void* data=malloc(e2_ctxt_blksize(c));
 
     /* A REDIGER */
-
-    e2_ctxt_close (c) ;
-
+		e2_block_fetch(c,atoi(argv[2]),data);
+		
+		write(1,data,e2_ctxt_blksize(c));
+   	e2_ctxt_close (c) ;
+		free(data);
     exit (0) ;
 }

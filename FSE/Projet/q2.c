@@ -11,6 +11,8 @@
 int main (int argc, char *argv [])
 {
     ctxt_t c ;
+		int i;
+		buf_t tmp;
 
     if (argc < 3)
     {
@@ -26,7 +28,16 @@ int main (int argc, char *argv [])
     }
 
     /* A REDIGER */
-
+		for(i=2;i<argc;i++){
+			tmp=e2_buffer_get(c,atoi(argv[i]));
+				
+			write(1,e2_buffer_data(tmp),e2_ctxt_blksize(c));
+			e2_buffer_put(c,tmp);
+			printf("\n");
+		}
+		 
+		e2_buffer_stats(c);
+		
     e2_ctxt_close (c) ;
 
     exit (0) ;

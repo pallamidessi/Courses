@@ -48,21 +48,23 @@ struct ofile
 ctxt_t e2_ctxt_init (char *file, int maxbuf)
 {
 	int i=0;
-	int fd_file;
+	int fd_file=0;
 	int nb_group;
 	int block_size;
 	buf_t tmp;
 	ctxt_t c=malloc(sizeof(struct context));
 	c->gd=malloc(sizeof(struct ext2_group_desc));
 
-	if(fd_file==(open(file,O_RDONLY|O_WRONLY)==-1)){
+	if((fd_file=open(file,O_RDWR))==-1){
 		//to do: init errno
 		return NULL;
 	}
 	
-	lseek(fd_file,1024,SEEK_SET);
+	if(lseek(fd_file,1024,SEEK_SET)==-1){
+		return NULL;
+	}
 	
-	if((read(fd_file,&c->sb,sizeof(struct ext2_super_block)))==-1){
+	if((read(fd_file,&(c->sb),sizeof(struct ext2_super_block)))==-1){
 		//to do: init errno
 		return NULL;	
 	}
@@ -73,7 +75,7 @@ ctxt_t e2_ctxt_init (char *file, int maxbuf)
 	}
 
 	block_size=1024 << c->sb.s_log_block_size;
-	nb_group=c->sb.s_blocks_count/c->sb.s_blocks_per_group;
+	nb_group=c->sb.s_blocks_count/c->sb.s_blocks_per_group + 1;
 
 	c->fd=fd_file;
 	c->ngroups=nb_group;
@@ -116,17 +118,21 @@ ctxt_t e2_ctxt_init (char *file, int maxbuf)
 void e2_ctxt_close (ctxt_t c)
 {
 	buf_t tmp;
+	buf_t tmp2;
 
 	if(c!=NULL){
 		close(c->fd);
 		free(c->gd);
 
-		while(c->last!=NULL){
-			c->last->next=tmp;
-			free(c->last->data);
-			free(c->last);
-			c->last=tmp;
+		tmp=c->last;
+		while(tmp->next!=c->last){
+			tmp2=tmp->next;
+			free(tmp->data);
+			free(tmp);
+			tmp=tmp2;
 		}
+		free(tmp->data);
+		free(tmp);
 		free(c);
 	}
 
@@ -152,7 +158,7 @@ int e2_ctxt_blksize (ctxt_t c)
 int e2_block_fetch (ctxt_t c, pblk_t blkno, void *data)
 {
 	int i=e2_ctxt_blksize(c);
-	lseek(c->fd,1024+i*blkno,SEEK_SET);
+	lseek(c->fd,1024+i*blkno-1,SEEK_SET);
 	
 	if((read(c->fd,data,e2_ctxt_blksize(c)))==-1){
 		//to do: init errno
@@ -178,9 +184,10 @@ buf_t e2_buffer_get (ctxt_t c, pblk_t blkno)
 	buf_t tmp;
 	
 	//cas relou a gerer
-	if(last_buffer->blkno==blkno){
+	if(last_buffer->blkno==blkno && last_buffer==last_buffer->next){
 		c->bufstat_read++;
-		return tmp;
+		c->last=NULL;
+		return last_buffer;
 	}
 	else{
 		while(last_buffer->next!=c->last){
@@ -204,7 +211,16 @@ buf_t e2_buffer_get (ctxt_t c, pblk_t blkno)
 
 		c->last->data=data;
 		c->last->blkno=blkno;
-
+		
+		buf_t prev=c->last->next;
+		tmp=c->last;
+		
+		while(prev->next!=c->last){
+			prev=prev->next;
+		}
+		
+		prev->next=c->last->next;
+		c->last=prev;
 		return tmp;
 	}
 	else
@@ -231,7 +247,8 @@ void *e2_buffer_data (buf_t b)
 /* affiche les statistiques */
 void e2_buffer_stats (ctxt_t c)
 {
-	printf("%d %d",c->bufstat_read,c->bufstat_cached);
+	printf("buffer reads : %d\n",c->bufstat_read);
+	printf("buffe cached %d\n",c->bufstat_cached);
 }
 
 /******************************************************************************
@@ -246,8 +263,8 @@ pblk_t e2_inode_to_pblk (ctxt_t c, inum_t i)
 
 	for(k=0;k<c->ngroups;k++){
 			
-		if(i<c->sb.s_inodes_per_group*k)
-			return c->gd[k].bg_inode_table+i/(blk_size/sizeof(struct ext2_inode));
+		if(i<=c->sb.s_inodes_per_group*(k+1))
+			return c->gd[k].bg_inode_table+(i-1)/(blk_size/sizeof(struct ext2_inode));
 			
 	}
 	return -1;
@@ -257,7 +274,8 @@ pblk_t e2_inode_to_pblk (ctxt_t c, inum_t i)
 /* extrait l'inode du buffer */
 struct ext2_inode *e2_inode_read (ctxt_t c, inum_t i, buf_t b)
 {
-	i%=c->sb.s_inodes_per_group;
+	i-=1;
+	i%=e2_ctxt_blksize(c)/sizeof(struct ext2_inode);
 	//copier la structure au cas ou le buf_t est detruit
 	struct ext2_inode* inode_read=b->data+i*sizeof(struct ext2_inode);
 	
@@ -269,49 +287,89 @@ struct ext2_inode *e2_inode_read (ctxt_t c, inum_t i, buf_t b)
 pblk_t e2_inode_lblk_to_pblk (ctxt_t c, struct ext2_inode *in, lblk_t blkno)
 {
 
-	//NETTOYER 
 
-	int blksize=e2_ctxt_blksize(c);
+	int blksize = e2_ctxt_blksize(c);
+	int nb_ind_per_block = blksize / (sizeof(int));
+	int nb_ind_s = 13 + nb_ind_per_block;
+	int nb_ind_d = nb_ind_s + nb_ind_per_block * nb_ind_per_block;
+	int nb_ind_t = nb_ind_d + nb_ind_per_block * nb_ind_per_block * nb_ind_per_block;
+	
+	int numero_dans_blk_ind1;
+	int numero_dans_blk_ind2;
+	int numero_dans_blk_ind3;
+	
+	buf_t bloc_indirection1;
+	buf_t bloc_indirection2;
+	buf_t bloc_indirection3;
+	
+	int* blk_ind1;
+	int* blk_ind2;
+	int* blk_ind3;
 
-	if(blkno<13){
+	int pblk;
+
+	if(blkno < 13){
 		return in->i_block[blkno];
 	}
-	else if(blkno<(13+blksize/(sizeof(int)))){ //dans les 13+8*15 ?  premier bloc
-		buf_t bloc_indirection1=e2_buffer_get(c,in->i_block[13]);
+	else if(blkno<nb_ind_s){
 		
-		int* blk_ind=(int*) bloc_indirection1->data;
+		bloc_indirection1=e2_buffer_get(c,in->i_block[13]);
 		
-		int numero_dans_blk_ind=blkno-13;
+		blk_ind1=(int*) bloc_indirection1->data;
+		numero_dans_blk_ind1=blkno-13;
 
-		return blk_ind[numero_dans_blk_ind];
+		pblk=blk_ind1[numero_dans_blk_ind1];
+		
+		e2_buffer_put(c,bloc_indirection1);
+		return pblk;
 		
 	}
-	else if(blkno<(13+blksize/(sizeof(int))*blksize/(sizeof(int)))){
+	else if(blkno < nb_ind_d){
 		
-		blkno-=13+blksize/(sizeof(int));
+		blkno-=13+nb_ind_s;
 		
-		buf_t bloc_indirection1=e2_buffer_get(c,in->i_block[14]);
-		int* blk_ind1=(int*) bloc_indirection1->data;
+		bloc_indirection1=e2_buffer_get(c,in->i_block[14]);
+		blk_ind1=(int*) bloc_indirection1->data;
 
-		int inode_dans_blk_ind=blksize/(sizeof(int))*blksize/(sizeof(int))/blkno - 1;
+		numero_dans_blk_ind1=blkno/nb_ind_per_block +1;
+		numero_dans_blk_ind2=blkno%nb_ind_per_block;
 		
-		int inode_dans_blk_ind2=blkno%(blksize/(sizeof(int)));
-		
-		buf_t bloc_indirection2=e2_buffer_get(c,blk_ind1[inode_dans_blk_ind]);
+		bloc_indirection2=e2_buffer_get(c,blk_ind1[numero_dans_blk_ind1]);
+		pblk=((int*) bloc_indirection2->data)[numero_dans_blk_ind2];
 
-		return ((int*) bloc_indirection2->data)[inode_dans_blk_ind2];
+		e2_buffer_put(c,bloc_indirection1);
+		e2_buffer_put(c,bloc_indirection2);
+		
+		return pblk;
 
 	}
-	else if(blkno<13+blksize/(sizeof(int))*blksize/(sizeof(int))*blksize/(sizeof(int))){
+	else if(blkno < nb_ind_t){
 			
-		blkno-=13+blksize/(sizeof(int))*blksize/(sizeof(int));
+		blkno-=nb_ind_d;
 			
 		buf_t bloc_indirection1=e2_buffer_get(c,in->i_block[15]);
 
-			
-		int* blk_ind1=(int*) bloc_indirection1->data;
+		blk_ind1=(int*) bloc_indirection1->data;
+
+		numero_dans_blk_ind1= (blkno /(nb_ind_per_block*nb_ind_per_block));
+		numero_dans_blk_ind2=(blkno%nb_ind_per_block*nb_ind_per_block)/nb_ind_per_block;
+		numero_dans_blk_ind3=blkno%nb_ind_per_block;
+
+	
+		bloc_indirection2=e2_buffer_get(c,blk_ind1[numero_dans_blk_ind1]);
+		blk_ind2=(int*) bloc_indirection2->data;
+		bloc_indirection3=e2_buffer_get(c,blk_ind2[numero_dans_blk_ind2]);
+		blk_ind3=(int*) bloc_indirection3->data;
+
+		e2_buffer_put(c,bloc_indirection1);
+		e2_buffer_put(c,bloc_indirection2);
+		e2_buffer_put(c,bloc_indirection3);
+
+		pblk=blk_ind3[numero_dans_blk_ind3];
+		return pblk	;
 	}
 
+	return -1;
 }
 
 /******************************************************************************
