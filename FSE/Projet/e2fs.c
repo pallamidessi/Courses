@@ -158,7 +158,7 @@ int e2_ctxt_blksize (ctxt_t c)
 int e2_block_fetch (ctxt_t c, pblk_t blkno, void *data)
 {
 	int i=e2_ctxt_blksize(c);
-	lseek(c->fd,1024+i*blkno-1,SEEK_SET);
+	lseek(c->fd,1024+i*(blkno-1),SEEK_SET);
 	
 	if((read(c->fd,data,e2_ctxt_blksize(c)))==-1){
 		//to do: init errno
@@ -379,6 +379,34 @@ pblk_t e2_inode_lblk_to_pblk (ctxt_t c, struct ext2_inode *in, lblk_t blkno)
 /* affiche les blocs d'un fichier */
 int e2_cat (ctxt_t c, inum_t i, int disp_pblk)
 {
+	int pblk=e2_inode_to_pblk(c,i);
+	buf_t buf=e2_buffer_get(c,pblk);
+	struct ext2_inode* in=e2_inode_read(c,i,buf);
+	int j=0;	
+	pblk_t current_blk;
+	buf_t current_buf;
+	
+	if(disp_pblk==0){
+		
+		while(in->i_block[j]!=0){
+			current_blk=e2_inode_lblk_to_pblk(c,in,j);
+			current_buf=e2_buffer_get(c,current_blk);
+
+			write(1,current_buf->data,e2_ctxt_blksize(c));
+			printf("\n");
+
+			e2_buffer_put(c,current_buf);
+			j++;
+		}
+	}
+	else{
+		printf("taille en octets:%d\n",in->i_size);
+		while(in->i_block[j]!=0){
+			printf("bloc physique %d\n",in->i_block[j]);
+			j++;
+		}
+	}
+	return 0;
 }
 
 /******************************************************************************

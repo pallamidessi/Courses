@@ -23,9 +23,8 @@ int main (int argc, char *argv [])
 	perror ("e2_ctxt_init") ;
 	exit (1) ;
     }
-
     /* A REDIGER */
-
+		e2_cat(c,atoi(argv[2]),atoi(argv[3]));
     e2_ctxt_close (c) ;
 
     exit (0) ;

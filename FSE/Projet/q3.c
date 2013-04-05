@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include <linux/fs.h>
 #include <linux/ext2_fs.h>
@@ -13,6 +14,9 @@
 int main (int argc, char *argv [])
 {
     ctxt_t c ;
+		pblk_t pb;
+		buf_t tmp;
+		struct ext2_inode* in;
 
     if (argc != 3)
     {
@@ -28,6 +32,15 @@ int main (int argc, char *argv [])
     }
 
     /* A REDIGER */
+		pb=e2_inode_to_pblk(c,atoi(argv[2]));
+		tmp=e2_buffer_get(c,pb);
+
+		printf("L'inode est dans le bloc physique %d\n",pb);
+		in=e2_inode_read(c,atoi(argv[2]),tmp);
+		
+		int test=in->i_blocks*512;
+		printf("taille du fichier en octet : %d \n",test);
+		e2_buffer_put(c,tmp);
 
     e2_ctxt_close (c) ;
 
