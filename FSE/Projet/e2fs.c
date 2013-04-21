@@ -55,6 +55,8 @@ ctxt_t e2_ctxt_init (char *file, int maxbuf)
 	buf_t tmp;
 	ctxt_t c=malloc(sizeof(struct context));
 	c->gd=malloc(sizeof(struct ext2_group_desc));
+	
+	/* Initialisation du super block */
 
 	if((fd_file=open(file,O_RDWR))==-1){
 		return NULL;
@@ -90,6 +92,8 @@ ctxt_t e2_ctxt_init (char *file, int maxbuf)
 	c->bufstat_cached=0;
 	c->last=NULL;
 
+	/* Initialisation des buffers */
+	
 	while(i<maxbuf){
 		if(c->last==NULL){
 			c->last=malloc(sizeof(struct buffer));
@@ -123,6 +127,9 @@ void e2_ctxt_close (ctxt_t c)
 		free(c->gd);
 
 		tmp=c->last;
+
+		/* Free des elements de la liste chainee circulaire de buffer */
+		
 		while(tmp->next!=c->last){
 			tmp2=tmp->next;
 			free(tmp->data);
@@ -181,6 +188,8 @@ buf_t e2_buffer_get (ctxt_t c, pblk_t blkno)
 	buf_t tmp;
 	
 	//cas relou a gerer
+	/* Recherche si le buffer est deja dans la liste, et le renvoi si oui. */
+	
 	if(last_buffer->blkno==blkno && last_buffer==last_buffer->next){
 		c->bufstat_read++;
 		c->last=NULL;
@@ -198,7 +207,10 @@ buf_t e2_buffer_get (ctxt_t c, pblk_t blkno)
 			}
 		}
 	}
-	
+
+	/*Le buffer n'as pas ete trouve dans la liste, on en prend un libre si possible pour
+	 * l'initialiser et on le renvoi. */
+
 	if(c->last!=NULL){
 		c->bufstat_cached++;
 		void* data=malloc(e2_ctxt_blksize(c));
@@ -274,7 +286,9 @@ struct ext2_inode *e2_inode_read (ctxt_t c, inum_t i, buf_t b)
 {
 	i-=1;
 	i%=e2_ctxt_blksize(c)/sizeof(struct ext2_inode);
-	//copier la structure au cas ou le buf_t est detruit
+	
+	/* On devrait copier la structure au cas ou le buf_t est detruit */
+	
 	struct ext2_inode* inode_read=b->data+i*sizeof(struct ext2_inode);
 	
 	return inode_read;
@@ -306,6 +320,7 @@ pblk_t e2_inode_lblk_to_pblk (ctxt_t c, struct ext2_inode *in, lblk_t blkno)
 
 	int pblk;
 
+	/* Pas d'indirection */
 	if(blkno < 13){
 		
 		if (in->i_block[blkno]==0) {
@@ -315,6 +330,7 @@ pblk_t e2_inode_lblk_to_pblk (ctxt_t c, struct ext2_inode *in, lblk_t blkno)
 		return in->i_block[blkno];
 
 	}
+	/* Premier bloc d'indirection */
 	else if(blkno<nb_ind_s){
 		
 		bloc_indirection1=e2_buffer_get(c,in->i_block[13]);
@@ -332,6 +348,7 @@ pblk_t e2_inode_lblk_to_pblk (ctxt_t c, struct ext2_inode *in, lblk_t blkno)
 		return pblk;
 		
 	}
+	/* Deuxieme bloc d'indirection */
 	else if(blkno < nb_ind_d){
 		
 		blkno-=13+nb_ind_s;
@@ -355,6 +372,7 @@ pblk_t e2_inode_lblk_to_pblk (ctxt_t c, struct ext2_inode *in, lblk_t blkno)
 		return pblk;
 
 	}
+	/* Troisieme bloc d'indirection */
 	else if(blkno < nb_ind_t){
 			
 		blkno-=nb_ind_d;
@@ -402,6 +420,7 @@ int e2_cat (ctxt_t c, inum_t i, int disp_pblk)
 	int j=0;	
 	pblk_t current_blk;
 	buf_t current_buf;
+	
 	if(disp_pblk==0){
 		
 		while(in->i_block[j]!=0){
@@ -414,6 +433,7 @@ int e2_cat (ctxt_t c, inum_t i, int disp_pblk)
 			e2_buffer_put(c,current_buf);
 			j++;
 		}
+
 	}
 	else{
 		printf("taille en octets:%d\n",in->i_size);
@@ -422,6 +442,7 @@ int e2_cat (ctxt_t c, inum_t i, int disp_pblk)
 			j++;
 		}
 	}
+
 	e2_buffer_put(c,buf);	
 	return 0;
 }
@@ -433,16 +454,16 @@ int e2_cat (ctxt_t c, inum_t i, int disp_pblk)
 file_t e2_file_open (ctxt_t c, inum_t i)
 {
 	file_t f=malloc(sizeof(struct ofile));
-    f->ctxt=c ;																									/* eviter param a chaque e2_file_xxx */
-    pblk_t pb=e2_inode_to_pblk(c,i);
-		f->buffer=e2_buffer_get(c,pb);
-		
-		f->inode=e2_inode_read(c,i,f->buffer);											/* l'inode proprement dit */
-    f->curblk=0 ;																								/* position en bloc */
-    f->data =malloc(e2_ctxt_blksize(c));												/* donnees */
-    f->len=e2_ctxt_blksize(c);																	/* longueur utile dans les donnees */
-		f->pos=0;
-		return f;
+	f->ctxt=c ;																									/* eviter param a chaque e2_file_xxx */
+	pblk_t pb=e2_inode_to_pblk(c,i);
+	f->buffer=e2_buffer_get(c,pb);
+	
+	f->inode=e2_inode_read(c,i,f->buffer);											/* l'inode proprement dit */
+	f->curblk=0 ;																								/* position en bloc */
+	f->data =malloc(e2_ctxt_blksize(c));												/* donnees */
+	f->len=e2_ctxt_blksize(c);																	/* longueur utile dans les donnees */
+	f->pos=0;
+	return f;
 }
 
 void e2_file_close (file_t of)
@@ -463,8 +484,9 @@ int e2_file_getc (file_t of)
 	int pos=of->pos;
 	void* data=of->data;
 	pblk_t next_blk;
-
-	if(curblk==0){
+	
+	
+	if(curblk==0){																													/* Premier appel a getc, on charge uniquement le premier bloc dans data */
 		p_data=e2_buffer_get(ctxt,e2_inode_lblk_to_pblk(ctxt,of->inode,0));
 		memcpy(data,e2_buffer_data(p_data),blksize);
 		e2_buffer_put(ctxt,p_data);
@@ -473,7 +495,7 @@ int e2_file_getc (file_t of)
     of->len=blksize;		
 	}
 	else if(len==pos){
-		if((next_blk=e2_inode_lblk_to_pblk(ctxt,of->inode,curblk+1))!=-1){
+		if((next_blk=e2_inode_lblk_to_pblk(ctxt,of->inode,curblk+1))!=-1){		/* Cas changement de bloc */
 			p_data=e2_buffer_get(ctxt,next_blk);
 			memcpy(data,e2_buffer_data(p_data),blksize);
 			e2_buffer_put(ctxt,p_data);
@@ -486,7 +508,7 @@ int e2_file_getc (file_t of)
 			return -1;
 	}
 	else{
-		of->pos++;
+		of->pos++;																														/* Retour du caractere courant */
 		return (int) (((char*) of->data)[pos]);
 	}
 	return 0;
@@ -516,7 +538,6 @@ struct ext2_dir_entry_2 *e2_dir_get (file_t of)
 	static struct ext2_dir_entry_2 entry;
 	
 	int pos=of->pos;
-	void* data=of->data;
 
 	if (pos==0 && of->curblk==0) {
 		e2_file_getc(of);
@@ -529,14 +550,12 @@ struct ext2_dir_entry_2 *e2_dir_get (file_t of)
 		
 		entry.name[entry.name_len+1]='\0';
 		
+		/* read "dans le vent" pour deplacer le curseur virtuel au debut de la prochaine
+		 * entree,possiblement dans le bloc suivant*/
+
 		char buf[sizeof(char)*entry.rec_len+1];
 		if(e2_file_read(of,buf,entry.rec_len)==0)
 			return NULL;
-		
-
-	/* pour placer pos sur l'entree de repertoire suivant
-	 * ,et au besoin dans le block suivant*/
-
 	}
 	else{
 		printf("pas un dossier\n");
@@ -559,8 +578,10 @@ inum_t e2_dir_lookup (ctxt_t c, inum_t i, char *str, int len)
 			return entry->inode;
 		}
 	}
+	
 	e2_file_close(of);
 	errno=ENOENT;
+	
 	return 0;
 }
 
