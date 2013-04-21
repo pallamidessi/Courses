@@ -10,6 +10,7 @@
 
 #include "e2fs.h"
 
+
 struct buffer
 {
     void *data ;			/* les donnees du bloc */
@@ -56,7 +57,6 @@ ctxt_t e2_ctxt_init (char *file, int maxbuf)
 	c->gd=malloc(sizeof(struct ext2_group_desc));
 
 	if((fd_file=open(file,O_RDWR))==-1){
-		//to do: init errno
 		return NULL;
 	}
 	
@@ -65,12 +65,11 @@ ctxt_t e2_ctxt_init (char *file, int maxbuf)
 	}
 	
 	if((read(fd_file,&(c->sb),sizeof(struct ext2_super_block)))==-1){
-		//to do: init errno
 		return NULL;	
 	}
 
 	if(c->sb.s_magic!=EXT2_SUPER_MAGIC){
-		//to do: init errno
+		errno=ENOTSUP;
 		return NULL;
 	}
 
@@ -83,7 +82,6 @@ ctxt_t e2_ctxt_init (char *file, int maxbuf)
 	lseek(fd_file,1024+block_size,SEEK_SET);
 	
 	if((read(fd_file,c->gd,sizeof(struct ext2_group_desc)))==-1){
-		//to do: init errno
 		return NULL;	
 	}
 
@@ -161,7 +159,6 @@ int e2_block_fetch (ctxt_t c, pblk_t blkno, void *data)
 	lseek(c->fd,1024+i*(blkno-1),SEEK_SET);
 	
 	if((read(c->fd,data,e2_ctxt_blksize(c)))==-1){
-		//to do: init errno
 		return 0;	
 	}
 	else{
@@ -224,6 +221,7 @@ buf_t e2_buffer_get (ctxt_t c, pblk_t blkno)
 		return tmp;
 	}
 	else
+		errno=ENOBUFS;
 		return NULL;
 
 }
@@ -309,7 +307,13 @@ pblk_t e2_inode_lblk_to_pblk (ctxt_t c, struct ext2_inode *in, lblk_t blkno)
 	int pblk;
 
 	if(blkno < 13){
+		
+		if (in->i_block[blkno]==0) {
+			return -1;
+		}
+
 		return in->i_block[blkno];
+
 	}
 	else if(blkno<nb_ind_s){
 		
@@ -320,6 +324,10 @@ pblk_t e2_inode_lblk_to_pblk (ctxt_t c, struct ext2_inode *in, lblk_t blkno)
 
 		pblk=blk_ind1[numero_dans_blk_ind1];
 		
+		if (pblk==0) {
+			return -1;
+		}
+
 		e2_buffer_put(c,bloc_indirection1);
 		return pblk;
 		
@@ -340,6 +348,10 @@ pblk_t e2_inode_lblk_to_pblk (ctxt_t c, struct ext2_inode *in, lblk_t blkno)
 		e2_buffer_put(c,bloc_indirection1);
 		e2_buffer_put(c,bloc_indirection2);
 		
+		if (pblk==0) {
+			return -1;
+		}
+
 		return pblk;
 
 	}
@@ -366,6 +378,11 @@ pblk_t e2_inode_lblk_to_pblk (ctxt_t c, struct ext2_inode *in, lblk_t blkno)
 		e2_buffer_put(c,bloc_indirection3);
 
 		pblk=blk_ind3[numero_dans_blk_ind3];
+		
+		if (pblk==0) {
+			return -1;
+		}
+
 		return pblk	;
 	}
 
@@ -385,7 +402,6 @@ int e2_cat (ctxt_t c, inum_t i, int disp_pblk)
 	int j=0;	
 	pblk_t current_blk;
 	buf_t current_buf;
-	
 	if(disp_pblk==0){
 		
 		while(in->i_block[j]!=0){
@@ -406,6 +422,7 @@ int e2_cat (ctxt_t c, inum_t i, int disp_pblk)
 			j++;
 		}
 	}
+	e2_buffer_put(c,buf);	
 	return 0;
 }
 
@@ -415,20 +432,78 @@ int e2_cat (ctxt_t c, inum_t i, int disp_pblk)
 
 file_t e2_file_open (ctxt_t c, inum_t i)
 {
+	file_t f=malloc(sizeof(struct ofile));
+    f->ctxt=c ;																									/* eviter param a chaque e2_file_xxx */
+    pblk_t pb=e2_inode_to_pblk(c,i);
+		f->buffer=e2_buffer_get(c,pb);
+		
+		f->inode=e2_inode_read(c,i,f->buffer);											/* l'inode proprement dit */
+    f->curblk=0 ;																								/* position en bloc */
+    f->data =malloc(e2_ctxt_blksize(c));												/* donnees */
+    f->len=e2_ctxt_blksize(c);																	/* longueur utile dans les donnees */
+		f->pos=0;
+		return f;
 }
 
 void e2_file_close (file_t of)
 {
+	e2_buffer_put(of->ctxt,of->buffer);
+	free(of->data);
+	free(of);
 }
 
 /* renvoie EOF ou un caractere valide */
 int e2_file_getc (file_t of)
 {
+	buf_t p_data;
+	ctxt_t ctxt=of->ctxt;
+	int blksize=e2_ctxt_blksize(ctxt);
+	int curblk=of->curblk;
+	int len=of->len;
+	int pos=of->pos;
+	void* data=of->data;
+	pblk_t next_blk;
+
+	if(curblk==0){
+		p_data=e2_buffer_get(ctxt,e2_inode_lblk_to_pblk(ctxt,of->inode,0));
+		memcpy(data,e2_buffer_data(p_data),blksize);
+		e2_buffer_put(ctxt,p_data);
+
+		of->curblk=1;
+    of->len=blksize;		
+	}
+	else if(len==pos){
+		if((next_blk=e2_inode_lblk_to_pblk(ctxt,of->inode,curblk+1))!=-1){
+			p_data=e2_buffer_get(ctxt,next_blk);
+			memcpy(data,e2_buffer_data(p_data),blksize);
+			e2_buffer_put(ctxt,p_data);
+			
+			of->curblk+=1;
+    	of->len=blksize;
+			of->pos=0;
+		}
+		else 
+			return -1;
+	}
+	else{
+		of->pos++;
+		return (int) (((char*) of->data)[pos]);
+	}
+	return 0;
 }
 
 /* renvoie nb de caracteres lus (0 lorsqu'on arrive en fin de fichier) */
 int e2_file_read (file_t of, void *data, int len)
 {
+	int i;
+	int last_char;
+	for(i=0;i<len;i++){
+		if((last_char=e2_file_getc(of))!=EOF)
+			((char*) data)[i]=(char) last_char;
+		else
+			return 0;
+	}
+	return i;
 }
 
 /******************************************************************************
@@ -438,11 +513,55 @@ int e2_file_read (file_t of, void *data, int len)
 /* retourne une entree de repertoire */
 struct ext2_dir_entry_2 *e2_dir_get (file_t of)
 {
+	static struct ext2_dir_entry_2 entry;
+	
+	int pos=of->pos;
+	void* data=of->data;
+
+	if (pos==0 && of->curblk==0) {
+		e2_file_getc(of);
+	}
+	
+
+	if(S_ISDIR(of->inode->i_mode)){
+
+		memcpy(&entry,((char*)of->data)+of->pos,sizeof(struct ext2_dir_entry_2));
+		
+		entry.name[entry.name_len+1]='\0';
+		
+		char buf[sizeof(char)*entry.rec_len+1];
+		if(e2_file_read(of,buf,entry.rec_len)==0)
+			return NULL;
+		
+
+	/* pour placer pos sur l'entree de repertoire suivant
+	 * ,et au besoin dans le block suivant*/
+
+	}
+	else{
+		printf("pas un dossier\n");
+		return NULL;
+	}
+
+
+	return &entry;
 }
 
 /* recherche un composant de chemin dans un repertoire */
 inum_t e2_dir_lookup (ctxt_t c, inum_t i, char *str, int len)
 {
+	file_t of=e2_file_open(c,i);
+	struct ext2_dir_entry_2* entry;
+
+	while((entry=e2_dir_get(of))!=NULL){
+		if(strncmp(str,entry->name,len)==0){
+			e2_file_close(of);
+			return entry->inode;
+		}
+	}
+	e2_file_close(of);
+	errno=ENOENT;
+	return 0;
 }
 
 /******************************************************************************
@@ -452,6 +571,15 @@ inum_t e2_dir_lookup (ctxt_t c, inum_t i, char *str, int len)
 /* affiche un repertoire donne par son inode */
 int e2_ls (ctxt_t c, inum_t i)
 {
+	file_t of=e2_file_open(c,i);
+	struct ext2_dir_entry_2* entry;
+
+	while((entry=e2_dir_get(of))!=NULL){
+		printf("%d %s\n",entry->inode,entry->name);
+	}
+	
+	e2_file_close(of);
+	return 0;
 }
 
 /******************************************************************************
@@ -461,4 +589,60 @@ int e2_ls (ctxt_t c, inum_t i)
 /* recherche le fichier (l'inode) par son nom */
 inum_t e2_namei (ctxt_t c, char *path)
 {
+	int i=0;
+	int sz_parsed_path[512];
+	int inode_to_search=2;
+	int nb_parsed_path=0;
+	char** parsed_path=calloc(512,sizeof(char*));
+	char* pp=path;
+
+	for (i = 0; i < 512; i++) {
+		sz_parsed_path[i]=0;
+	}
+	i=0;
+	
+	while((pp=strchr(pp,'/'))!=NULL){
+		parsed_path[i]=pp+1;
+		pp++;
+		i++;
+	}
+
+	if (parsed_path[0]==NULL) {
+		parsed_path[0]=path;
+	}
+
+	while (parsed_path[nb_parsed_path]!=NULL) {
+		nb_parsed_path++;
+	}
+
+	i=0;
+	if (nb_parsed_path==1) {
+		if(parsed_path[0][0]=='/'){
+			printf("test\n");
+			parsed_path[0]=path+1;
+		}
+		sz_parsed_path[0]=strlen(parsed_path[0]);
+	}
+	else{
+		while(parsed_path[i+1]!=NULL){
+			sz_parsed_path[i]=parsed_path[i+1]-parsed_path[i]-1;
+			i++;
+		}
+		sz_parsed_path[i]=strlen(parsed_path[i]);
+	}
+		
+	for (i = 0; i < nb_parsed_path; i++) {
+		
+		if ((inode_to_search=e2_dir_lookup(c,inode_to_search,parsed_path[i],sz_parsed_path[i]))!=0){
+			continue;
+		}
+		else {
+			free(parsed_path);
+			return 0;
+		}
+	}
+
+	free(parsed_path);
+	
+	return inode_to_search;
 }

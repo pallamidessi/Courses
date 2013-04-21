@@ -25,9 +25,17 @@ int main (int argc, char *argv [])
 	perror ("e2_ctxt_init") ;
 	exit (1) ;
     }
+		
+		char last_char;
 
-    /* A REDIGER */
+    file_t f=e2_file_open(c,atoi(argv[2]));
 
+		while(( last_char = e2_file_getc(f) ) != -1 ){
+			printf("%c",last_char);
+
+		}	
+printf("\n");
+		e2_file_close(f);
     e2_ctxt_close (c) ;
 
     exit (0) ;

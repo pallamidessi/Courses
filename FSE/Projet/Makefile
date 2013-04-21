@@ -1,5 +1,5 @@
 # Options utiles a la compilation
-CFLAGS = -g -Wall
+CFLAGS = -g -Wall 
 
 # Par defaut, on fait tout
 all:	q1 q2 q3 q4 q5 q6 q7

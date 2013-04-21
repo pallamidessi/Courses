@@ -24,8 +24,7 @@ int main (int argc, char *argv [])
 	exit (1) ;
     }
 
-    /* A REDIGER */
-
+		e2_ls(c,atoi(argv[2]));
     e2_ctxt_close (c) ;
 
     exit (0) ;

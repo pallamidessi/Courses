@@ -13,7 +13,7 @@ int main (int argc, char *argv [])
 
     if (argc != 3)
     {
-	fprintf (stderr, "usage: %s fs inode\n", argv [0]) ;
+	fprintf (stderr, "usage: %s fs path\n", argv [0]) ;
 	exit (1) ;
     }
 
@@ -23,7 +23,14 @@ int main (int argc, char *argv [])
 	perror ("e2_ctxt_init") ;
 	exit (1) ;
     }
+		
+		int nb_inode=e2_namei(c,argv[2]);
+		
+		printf("inode %d \n",nb_inode);
 
+		//if (S_ISDIR()) {
+			/* code */
+		//}
     /* A REDIGER */
 
     e2_ctxt_close (c) ;
