@@ -1,0 +1,5 @@
+Les réseaux de Petri servent principalement à modéliser la parallèlisation.
+Les transitions sont modélisables par des matrices.
+Le franchissement d'une transition consiste à retirer un jeton dans chacune des places en
+amont de la transition et à ajouter un jeton dans chacune des places en aval de celle-ci.
+Beaucoup utilisé dans la réalisation de "scénario" de jeu vidéo.
