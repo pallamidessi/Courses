@@ -1,0 +1,106 @@
+interface Icarre {
+	long carre(in long source)
+};
+
+IcarreImpl.java
+
+	import org;omg.CORBA.*;
+	public class IcarreImpl extends _IcarreImplBase{
+		public int carre(int source){
+				return source*source;
+		}
+	}
+
+Server.java
+	import org.omg.CORBA.*;
+
+	public class Serveur{
+		public static void main(String[] args){
+			try{ORB orb=ORB.init(args,null);
+				IcarreImpl myObject=new IcarreImpl();
+				String ior=orb.object.to_string(myobj);  //IP,host,etc ..
+				System.out.println(ior);
+				orb.run();
+			}catch(org.omg.CORBA.SystemException ex ){
+				System.out.println(ex);	
+			}
+		return;
+		}	
+	}
+
+Client.java
+
+	import java.io.*;
+	import org;omg.CORBA.*;
+
+	public class Client{
+		public static void main(String args[]){
+			int nb=2;
+			int res;
+			try{
+				ORB orb=ORB.init(args,null);
+				String ior=args[0];
+				org.og.CORBA.Object obj =orb.string_to_object(ior);
+				Icarre service=IcarreHelper.narrow(obj);
+				res=service.carre(nb);
+				System.out.println("Res="+res);
+			}catch(org.omg.CORBA.SystemException ex){
+					System.out.println(ex);
+			}catch(org.omg.CORBA.UserException ex){
+					System.out.println(ex);
+			}
+			}
+		}
+	}
+
+	idlg -fall -oldImplBase Icarre.idl
+	---> _IcarreImplBase.java~~>skeleton
+	---> _IcarreStub.java~~>proxy
+	---> IcarreHelper.java ~~>R/W flux
+	---> IcarreOperation.java.Icarre.java ~~>Projection de IDL
+	---> IcarreHolder.java ~~> Passage de paramètre
+	==> -f<client|serveur|all> 
+	==> -oldImplBase~~> Skeleton Simple
+	
+	1)javac *.java
+	2)java serveur
+		->ior
+	3)java Client <ior>
+
+Définition:
+
+	IOR=Identifier Object reference
+		°Machine
+		°Port
+		°Reference de l'objet(ptr_obj+prog)
+	
+	IIOP=Internet Inter-ORB Protocol
+
+Mécanisme internes
+	
+	°in/out/inout; dépend du langage passage par valeur en java,mais pointeur en C++
+	°Holder
+		final public class BooleanHolder{
+			public boolean value;
+			public booleanHolder{};
+			public booleanHolder(boolean v){value=v};
+		}
+
+		Byteholder,ShortHolder,IntHolder,longHolder,FloatHolder,DoubleHolder,StringHolder,ObjectHolder,AnyHolder.
+
+		cf. figure 1
+
+
+Description de IDL
+	°Type=void
+				short unsigned short ~> 16bits
+				long  unsigned long  ~> 32bits
+				float  ~> 32bits
+				double  ~> 64bits
+				long double  ~> 128bits
+				boolean
+				octect
+				char
+				String
+	°Constante
+				Const short x=100;
