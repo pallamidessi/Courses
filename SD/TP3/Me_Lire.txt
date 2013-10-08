@@ -1,0 +1,199 @@
+Exercices RMI 
+-------------
+
+Documentation
+-------------
+
+Le manuel Java qui vous sera utile pour les exercices RMI est 
+disponible a l'adresse suivante : 
+   http://java.sun.com/j2se/1.5.0/docs/api/ 
+   http://java.sun.com/j2se/1.4.2/docs/api/ 
+
+Pour tous les exercices : pensez bien a tuer tous vos processus
+a chaque fois que vous vous delogez d'une machine Linux.
+En ce qui concerne les processus java ou rmiregistry, vous
+pouvez utiliser les commandes suivantes par exemple : 
+
+      pkill java ; pkill rmiregistry
+
+Exercice 1 :  Hello de Lu
+-------------------------
+
+Dans le repertoire MessageExercice, votre premier code RMI.
+Voila un exemple simple d'appel java RMI. Vous devez le completer
+pour qu'il fonctionne (grace au cours !), puis le compiler et 
+l'executer. Dans un premier temps lancer toute les commandes sur 
+votre propre ordinateur. Dans un second temps, placer le serveur 
+et le client sur deux machines differentes (parmi les machines 
+dista[1-20] en fonctionnement). 
+
+1) Effectuez la compilation avec les commandes :
+   javac *.java
+   rmic MessageImpl
+   
+2) lancer le serveur de noms sur une machine 
+   (ici a l'exoute sur le port 2001) :
+	rmiregistry 2001 & (Linux) 
+        start rmiregistry 2001 (Windows)
+
+   puis lancer le serveur sur la meme machine
+	java Serveur 2001 & (Linux) 
+	start java Serveur 2001 (Windows)
+	
+3) lancer le client 
+	java Client <machine serveur>:2001
+
+question subsidiaire) ecrire le graphe de classes pour cette Application RMI en
+   utilisant la commande "rmic -keep MessageImpl" au lieu de "rmic MessageImpl".
+   C'est a dire donner la liste des dependances de type "heritage" ou 
+   "implemente" ou "utilise" qu'ont toutes les classes de l'exercice. Exemple :
+   - java.rmi.server.RemoteObject implemente Remote, Serializable
+   - java.rmi.server.RemoteServer herite de  java.rmi.server.RemoteObject
+   - java.rmi.server.UnicastRemoteObject herite de java.rmi.server.RemoteServer
+
+Exercice 2 : Applet et RMI
+--------------------------
+
+Rendez-vous dans le repertoire TelephoneExercice.
+Voila un exemple simple d'appel java RMI depuis une applet. 
+Vous devez le compiler puis le faire fonctionner. 
+
+1) lancer le serveur de noms sur votre propre machine
+	rmiregistry 2002 &
+	(ou sous windows : start rmiregistry 2002)
+   puis lancer le serveur 
+	java AnnuaireImpl 2002 &
+	(ou sous windows : start java AnnuaireImpl 2002)
+	
+2) lancer le client sur la meme machine (votre machine).
+   Remarquer les parametres passe's dans le fichier
+   AppletClient.html.
+	appletviewer AppletClient.html
+
+3*) ajouter les fonctionnalites d'ajout d'une entree dans
+   l'annuaire telephonique et d'effacement d'une entree.
+   Vous concevrez ensuite deux petits clients distincts
+   QUI NE SERONT PAS DES APPLETS (ils ressembleront au client de
+   l'exercice 1).
+   Il pourront etre appeler de la maniere suivante :
+              java Ajoute <nom d'une personne> <No Telephone>
+              java Supprime <nom d'une personne>
+   Ils contacteront l'annuaire distant pour realiser les
+   operations d'ajout et de suppression demande.
+   
+   Remarque : voir la documentation java, chercher la classe
+              Hashtable puis les methodes 'put' et 'remove'.
+
+4) ecrire un nouveau client "Lister" qui affiche la liste des 
+   entrees de l'annuaire a l'ecran.
+   
+   Remarque : vous pourrez utiliser dans la fonction que vous
+   ecrirez dans AnnuaireImpl.java, la ligne de code :
+	"Iterator it = numeros.keySet().iterator();"
+   A l'aide de cet iterateur, vous pourrez parcourir la liste
+   et en afficher chacun des elements.
+
+5) lancer le serveur de noms et le serveur d'Annuaire sur
+   une autre machine que la votre. Lancer l'applet depuis 
+   votre machine. Cela ne doit pas marcher ! une
+   exception du type "acces denied" est leve'e.
+   Pour resoudre le probleme de droit que cela pose :
+ $ appletviewer -J-Djava.security.policy=../TelephoneTelecharge/java.policy AppletClient.html
+
+Exercice 3 : Les classes genere'es par rmic
+-------------------------------------------
+
+Rendez-vous dans le repertoire MessageClone.
+Regardez puis executez le script "construit".
+1) Dans le repertoire "MessageClone" 
+   lancer "pkill rmir ; export CLASSPATH="."; rmiregistry &".
+2) Tapez "cd tServeur" puis executez le Serveur. 
+   Cela ne fonctionne pas ... Pourquoi ? 
+   Une fois cette question resolue et le Serveur 
+   lance' :
+4) Sur une autre machine (qui va heberger le Client), se 
+   deplacez dans le repertoire "MessageClone/tClient" et
+   executez le Client.
+   Vous constatez que le Client n'a pas besoin de la classe
+   'MessageImpl' correspondant a l'objet distant.
+
+Exercice 4 : Developpement de A a Z
+-----------------------------------
+
+On desire implanter un serveur de calcul sur des matrices n x n
+a coefficients reels qui offre comme service :
+ - la multiplication de deux matrices ;
+
+Vous utiliserez pour ce service distant l'interface 
+fournie dans le fichier "OpMatrice.java"
+
+Remarque : la formule a utiliser pour C=A*B : 		    
+   pour tout les i,j on a c[i][j] = (Somme sur k de) a[i][k]*b[k][j];
+
+Mettre en place un tel serveur. Il devra pouvoir 
+etre appele par un client depuis une autre machine.
+Vous appelerez a distance une methode qui effectuera la 
+multiplication des matrices (envoyees par le client) :
+      int[][] a = { {1, 0, 0}, {0, 2, 0}, {0, 0, 3} };
+      int[][] b = { {1, 2, 3}, {1, 2, 3}, {1, 2, 3} };
+Vous afficherez le resultat (pour cela 
+vous ecrirez une methode qui se chargera de l'affichage).
+
+Exercice 5 : Chargement dynamique de classes
+--------------------------------------------
+
+Dans l'exercice 3, nous avons vu que le serveur demandait a
+"rmiregistry" de charger les classes dont il avait besoin.
+Un autre moyen pour effectuer ce chargement a la demande est
+de passer par un serveur web qui propose le telechargement
+des classes necessaires. Ce mecanisme est extremement puissant.
+
+Dans cet exercice, vous allez faire fonctionner un mini-serveur
+web (qui se trouve dans le repertoire ServeurDeClasse). Puis vous 
+allez demander a un tout petit code java (Lance.java) de demarrer 
+telle ou telle classe accessible sur ce mini-serveur web.
+
+Cela veut dire que sur un certain site ou l'on souhaite executer, 
+soit le serveur, soit le client, on a pas besoin d'avoir le bytecode 
+(le fichier .class) de leur classe ! On lance simplement le programme 
+"Lance" en precisant sur quelle machine aller chercher le bytecode du 
+client ou du serveur. 
+Cette approche permet de faciliter grandement la maintenance d'une 
+application. Lorsque celle-ci evolue, les utilisateurs n'ont pas a se 
+soucier de telecharger une nouvelle version, la nouvelle version est 
+telechargee automatiquement (certes il faut que le cout de 
+la transmission ne soit pas exagere'e).
+Pour cet exercice vous aurez besoin de trois "fenetres" (shell) et 
+vous executerez une application dans chacune.
+
+Compilation (sur n'importe quelle machine !) :
+
+   cd Sources
+   javac *.java ; rmic AnnuaireImpl
+   cd ..
+
+   cd ServeurDeClasse
+   javac *.java
+   cd ..
+
+   javac Lance.java
+
+ServeurDeClasses sur machine1 : (cela cre'e' le mini serveur web)
+
+   <tuer tous les programmes java et rmiregistry qui tournent par precaution>
+   cd ServeurDeClasse
+   java -Djava.security.policy=java.policy ClassFileServer  2048 ../Sources &
+
+Serveur sur machine2 : (charge la classe AnnuaireImpl depuis le mini serveur web
+                          et demarre le serveur d'Annuaire)
+   
+   rmiregistry &
+   java Lance machine1 AnnuaireImpl
+   
+Client sur une machine3 : (lancement du Client 
+                           avec telechargement des classes necessaires)
+
+   java Lance machine1 Client machine2
+
+Reecrire l'une des applications vu dans les exos precedents en 
+utilisant le mecanisme de telechargement automatique.

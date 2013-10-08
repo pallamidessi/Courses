@@ -101,7 +101,7 @@ bool_t xdr_entiers2(xdr*,entiers2*)
 #endif
 
 bool_t xdr_entiers2(xdr*h,entiers2* e){
-	return xdr_init(h&(e->x))&&xdr_init(h&(e->y));
+	return xdr_int(h,&(e->x))&&xdr_int(h,&(e->y));
 }
 
 client.c

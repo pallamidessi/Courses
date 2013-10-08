@@ -1,0 +1,2 @@
+java -Djava.security.policy=java.policy -cp ServeurDeClasse ClassFileServer 2048 Sources
+

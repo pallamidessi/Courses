@@ -1,0 +1,27 @@
+compr () {
+ ARCH="$1"
+ shift
+ rm -f ${ARCH}.tgz ${ARCH}.zip
+ tar cvzof ${ARCH}.tgz $*
+ zip -r -9 ${ARCH}.zip $*
+} 
+cd TP2
+for i in *[a-z]*
+do
+  if (test -d $i); then
+    cd $i
+    echo $PWD
+    if (test -f clean) then ./clean; fi
+    if (test -f remove) then ./remove; fi
+    if (test -f detruit) then ./detruit; fi
+    rm -f *~ *.class \#* */*~ */*.class */\#*
+    ls -tla
+    cd ..
+  fi
+done
+cd ..
+set -v
+compr Tout_TP2 ttp2 TP2
+compr Corr_TP2 ttp2 TP2/Correc*
+compr TP2 ttp2 TP2/Me_Lire.txt TP2/ProdCons TP2/LectEcrivain  TP2/ExemplesDuCours TP2/Tri
+

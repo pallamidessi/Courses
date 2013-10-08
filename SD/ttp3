@@ -1,0 +1,24 @@
+compr () {
+ ARCH="$1"
+ shift
+ \rm -f ${ARCH}.tgz ${ARCH}.zip
+ tar cvzof ${ARCH}.tgz $*
+ zip -r -9 ${ARCH}.zip $*
+} 
+cd TP3
+rm -f *~ *.class \#* */*~ */*.class */\#*
+for i in *Exercice  *Corr TelephoneTelecharge MessageClone
+do
+  cd $i
+  echo $PWD
+  if (test -f clean) then ./clean; fi
+  if (test -f detruit) then ./detruit; fi
+  rm -f *~ *.class \#* */*~ */*.class */\#*
+  ls -tla
+  cd ..
+done
+cd ..
+set -v
+compr TP3 ttp3 TP3/*Exercice TP3/OpMatrice.java TP3/Me_Lire.txt TP3/MessageClone TP3/TelephoneTelecharge
+compr Corr_TP3 ttp3 TP3/Correction.* TP3/*Corr
+compr Tout_TP3 ttp3 TP3

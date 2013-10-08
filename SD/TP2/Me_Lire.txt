@@ -1,0 +1,134 @@
+Exercice 1
+----------
+
+Rendez-vous dans le repertoire 'ExempleDuCours'.
+   
+1) Lancez le programme ExempleConcurrent plusieurs de fois de suite.
+   Constatez que le resultat n'est pas toujours identique.
+   Comprenez pourquoi.
+   
+2) Lancez le programme EvtGenerator plusieurs de fois de suite.
+   Comprendre les appels a wait() et notifyall() realise's dans
+   le code.
+   
+Exercice 2
+----------
+   
+Rendez-vous dans les repertoire 'ProdCons'.
+   
+1) Il y a dans ce systeme deux types de threads :
+   
+   - un thread "producteur" qui produit periodiquement un objet 
+     (qui correspond ici a` ajouter un entier quelconque a la fin d'un 
+      tableau)
+   - un thread "consommateur" qui consomme periodiquement un objet
+     (le dernier entier du tableau est supprime')
+   
+   Tous les threads communiquent par l'intermediaire d'un entrepot
+   global, de taille fixee, initialement vide.
+   
+   Le probleme consiste a synchroniser tous les threads en jeu, de facon
+   a ce que les contraintes suivantes soient verifiees :
+   
+   - un thread producteur reste bloque tant que l'entrepot ne dispose
+     pas de place libre ;
+   - un thread consommateur reste bloque tant que l'entrepot ne
+     contient pas d'objet a` consommer.
+   
+   Completez le squelette de programme 'ProdCons.java' pour qu'il ait
+   les fonctionnalit'es d'ecrites ci-dessus.
+   
+   Rappel :
+   - synchronized(obj) : permet qu'une seule Thread ne rentrer 
+     dans le moniteur de obj.
+   - wait : relache le moniteur et attend l'emission d'un notify 
+     ou notifyall, a la sortie du wait, le thread reprend le moniteur.
+   - notify : si un thread est en attente, le reveiller.
+   - notifyall : reveille tous les threads en attente.
+   
+   Attention : 
+   - lorsque notify est appele' et qu'il n'y a aucune thread en attente,
+     cette notification est perdue (elle ne sera pas re'e'mise).
+   
+
+Exercice 3
+----------
+
+Rendez-vous dans les repertoire 'LectEcrivain'.
+
+1) On se place ici dans le cadre d'un syste`me disposant d'une donne'e
+   partage'e et comportant deux types de threads :
+   
+   - un thread "lecteur" est un thread qui ne fait que consulter
+     l'e'tat de la donne'e ;
+   - un thread "e'crivain" est un thread qui modifie l'e'tat de la
+     donne'e.
+   
+   Le proble`me de synchronisation est ici de'fini par les contraintes
+   suivantes :
+   
+   - a` tout moment, il peut y avoir plusieurs threads lecteurs
+     utilisant la donne'e partage'e (ils n'entrent pas en conflit) ;
+   - a` tout moment, il ne peut y avoir qu'un seul thread e'crivain
+     utilisant la donne'e partage'e, et ce thread y dispose d'un acce`s
+     exclusif (c'est-a`-dire qu'il n'admet ni un autre e'crivain, ni un
+     autre lecteur).
+   
+   Tel qu'il est de'fini, ce syste`me peut se trouver dans une situation
+   dite "de famine". En effet, imaginons qu'il y ait beaucoup de threads
+   lecteurs, a` un point tel qu'il y ait a` tout moment au moins un
+   thread lecteur utilisant la donne'e partage'e. Dans ce cas, un
+   e'ventuel thread e'crivain n'aura jamais acce`s a` la donne'e : il
+   sera en situation de famine.
+   
+   (Notez que dans certains cas particuliers la situation est syme'trique. 
+   Si il y a "beaucoup" d'e'crivains, les lecteurs risquent de rester a`
+   l'e'tat de famine. Toutefois, si l'attribution des acce`s est e'quitable,
+   cela ne devrait pas arriver.)
+   
+   Nous allons ici choisir de re'gler ce proble`me en e'noncant une re`gle de
+   priorite' :
+   
+   - a` partir du moment ou` un e'crivain a demande' un acce`s exclusif a`
+     la donne'e globale (me^me si il ne peut pas l'obtenir imme'diatement
+     pour cause de pre'sence de lecteurs), aucun lecteur ne peut obtenir
+     d'acce`s a` la donne'e jusqu'a` ce que l'e'crivain ait termine' son acce`s.
+   
+   Pour comprendre l'influence de cette re`gle, examinons un exemple
+   impliquant 3 threads, deux lecteurs L1 et L2 et un e'crivain
+   E1, dans la se'quence suivante :
+   
+   - L1 demande l'acce`s a` la donne'e : accorde'
+   - E1 demande l'acce`s a` la donne'e : bloque'
+   - L2 demande l'acce`s a` la donne'e
+   
+   Dans ce cas, la re`gle de priorite' modifie le comportement global. En
+   effet :
+   
+   - sans la re`gle de priorite', L2 obtient son acce`s, et
+     "de'passe" E1, qui risque la famine ;
+   - avec la re`gle de priorite', L2 est bloque', et E1 obtiendra
+     l'acce`s lorsque L1 aura termine' le sien ; L2 quant a` lui
+     obtiendra l'acce`s apre`s que E1 aura fini le sien.
+   
+   (Tout ceci suppose qu'il n'y a pas d'autre demande d'acce`s entre
+   temps.)
+   
+   Completez le squelette de programme 'LectEcrivain.java' pour qu'il ait
+   les fonctionnalit'es de'crites ci-dessus.
+
+2) Imaginer une autre strate'gie pour qu'il n'y ait plus de situation
+   de famine. Dans le syst`eme que vous proposez, un lecteur/ecrivain
+   devra attendre uniquement les lecteurs/e'crivains arrive's avant
+   lui. Il vous faudra donc ge'rer une file d'attente.
+
+Exercice 4
+----------
+
+    Rendez-vous dans le repertoire 'Tri'.
+    Paralleliser l'algorithme de Tri du fichier 'Tri.java' en
+    utilisant les threads. Avec des mesures de temps sur une grande
+    liste d'entiers, vous montrerez que votre solution est efficace
+    sur une machine multiprocesseur. Pour cela vous utiliserez
+    'turing' (quadri pro) comme machine finale de test.
+   
