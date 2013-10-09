@@ -148,56 +148,61 @@ void display()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	
-	/*Tete*/
-	glPushMatrix();
-	glTranslatef(0.2,1.8,0);
-	glPushMatrix();
-	glScalef(0.5,1,1);
-	drawCube();
-	glPopMatrix();
-	glPopMatrix();
 
 	/*Torse*/
 	glPushMatrix();
-	glTranslatef(0,0,0);
-	glPushMatrix();
 	glScalef(1,1.7,1);
+	glRotatef(theta1,0,1,0);
+	glPushMatrix();
+	glScalef(1,1,0.6);
+	glTranslatef(0,0,0.3);
 	drawCube();
+	glPopMatrix();
+
+	/*Tete*/
+	glPushMatrix();
+	glTranslatef(0.2,1.05,0.3);
+	glScalef(0.5,0.3,0.5);
+	drawCube();
+	glPopMatrix();
 
 	/*Bras gauche*/
 	
 	glPushMatrix();
-	glTranslatef(1.3,0,0);
-	glPushMatrix();
-	glRotatef(30,0,0,1);
-	glPushMatrix();
-	glScalef(0.3,1,1);
+	glScalef(1,0.6,1);
+	glTranslatef(1.2,0.15,0.2);
+	glRotatef(20,0,0,1);
+	glScalef(0.3,1.5,0.5);
 	drawCube();
 	glPopMatrix();
-	glPopMatrix();
-	glPopMatrix();
-	glPopMatrix();
-	glPopMatrix();
-	/*Bras droit*/
-	/*
-	glTranslatef(0,0,0);
-	drawCube();
-	glPopMatrix();
-	
-	glTranslatef(0,0,0);
-	drawCube();
-	glPopMatrix();
-	
-	glRotatef(theta2,1,0,0);
-	glTranslatef(0,2,0);
-	drawCube();
-	glRotatef(theta3,0,0,1);
-	glTranslatef(0,0,2);
-	glScalef(2,1,1);
-	drawCube();
 
+	/*Bras droit*/
+	glPushMatrix();
+	glScalef(1,0.6,1);
+	glTranslatef(-0.5,0.25,0.2);
+	glRotatef(-20,0,0,1);
+	glScalef(0.3,1.5,0.5);
 	drawCube();
-	*/
+	glPopMatrix();
+
+	/*jambe gauche*/
+	glPushMatrix();
+	glTranslatef(0.8,-1,0.2);
+	glRotatef(10,0,0,1);
+	glScalef(0.3,1.2,0.5);
+	drawCube();
+	glPopMatrix();
+	
+	/*jambe droite*/
+	glPushMatrix();
+	glTranslatef(0,-1,0.2);
+	glRotatef(-10,0,0,1);
+	glScalef(0.3,1.2,0.5);
+	drawCube();
+	glPopMatrix();
+	glPopMatrix();
+
+
 	glutSwapBuffers();
 
 }
