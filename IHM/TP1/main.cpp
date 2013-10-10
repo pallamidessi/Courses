@@ -1,6 +1,7 @@
 #include <iostream>
 #include "wx/wx.h" 
 #include "mainframe.h"
+#include "dialogs.h"
 #include <wx/menu.h>
 #include <wx/toolbar.h>
 #include <wx/tbarbase.h>
