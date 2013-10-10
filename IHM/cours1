@@ -1,0 +1,166 @@
+	IHM
+
+Jérôme Grosjean
+grosjean@unistra.fr
+
+Une application informatique qui prends en compte,au cours de son exécution, des
+informations communiquées par un ou plusieurs utilisateurs et produit au cours 
+de son exécution une représentation perceptible de son état interne.
+
+Sens principal : la vue . on a une présentation de l'information essentiellement visuelle.
+Système visuel imparfait: peut être facilement trompé.
+
+caractéristiques de la vue 
+	champ: 180°
+	acuité: Trait d'un pixel, 0.3mm
+	couleur: Complexe, dépend souvent de la couleur de fond 
+	mouvement: Persistance rétinienne
+	profondeur: Active, stéréoscopique
+
+Couplage action-perception 
+	Difficile de séparer la perception de l'action
+	Boucle perception-action 
+
+	Exemple: saisie d'un objet
+
+Action physique 
+
+	La main est la plus utilisé par les système intéractif
+	La main est guidé par la vue
+	Système périphériques ne sont pas équivalent:
+	Souris,tablette,etc ...
+
+
+
+Loi de Fitts
+
+	t=0.1 log(2D/L) (Souris)
+
+Rôle des main 
+	
+	rôle distinct: main non-dominante situe le contexte
+	main dominante agit
+
+Cognition
+
+	mémoire sensorielle : associé au sens 
+	mémoire à court terme : stocke un nombre limité de mnèmes (environ 7)
+	mémoire à long terme : capacité infinie, temps infinie
+
+	Tenir compte de ces proriété cognitive dans la conception d'un système intéractif
+		
+		A court terme:
+
+		ne pas obliger de garder en mémoire l'état de la machine
+		limiter à 7 le nombre d'item d'un menu
+
+		A long terme:
+
+		la répétition permet de mémorisation
+		utilisateur régulier se sert de raccourcis pour les actions les plus utilisé
+
+	Théorie de l'action (de Don Norman)
+		cf. wikipédia
+
+	Adaptation constante de l'homme au contexte
+
+	La résolution de problème est un processus incrémental et pas planifié.
+	Le comportement d'usager sont très variable et invente leurs propre méthode de
+	résolution de problème.
+
+Historique de l'IHM
+
+	1945 : "As We May Think"
+		indexation,navigation entre les données,anotation
+
+	1963: "SketchPad" (Outil de dessin)
+		1ere GUI
+
+	1968: "NLS-augment"
+		souris,hypertext,fenêtre.
+
+	70's:Alto,écran et souris 
+
+	1981: star
+		Bureau,Icônes,WYSIWYG
+
+	Années 70-80: peu de code pour l'interface
+		utilisateur expert
+		Machine lente
+
+	Années 90: l'interface atteint parfois 80% du code
+		orienté grand publique
+		Machine rapide
+
+UNIX
+	
+	interface standard sous UNIX -> X-window système
+
+
+Style d'intéraction 
+
+	->style conversationnelle
+	->style par manipulation directe
+	->style par reconnaissance de traces
+
+	--Conversationnelle--
+
+		Terminal,taper du texte au clavier
+		Possibilité de programmer ses propres commandes
+		L'utilisateur doit apprendre le langage de commande
+		Séquencement des actions/réponses
+		
+	--transition--
+
+		Menu,formulaire
+		Pas programmable,bouton OK
+		Navigation hypertexte:
+			Ensemble de noeuds,système de lien pour les relier
+			ex. WWW,Emacs
+
+	--Manipulation directe--
+
+		Objet informatique <--> objet physique
+		Widget association d'un élément graphique et d'une action associée
+		Commande plus intuitive
+
+		4 principes:
+			-affichage permanent des objet d'interet
+			-action directe sur ces objets
+			-actions incrémentale et réservible dont l'effet est immédiatemment visible 
+			-structuration de l'interface en couche
+
+		Avantages:
+			-permet de traiter des tâches non prédéfinies
+			-couplé avec le multi-fenêtrage
+
+		inconvénient:
+			-programmation par l'utilisateur difficile
+			-mal exploité --> manipulation indirecte
+
+		Deux catégorie répendu d'interface à manipulation directe:
+			-Edition de document
+				--> WYSIWYG
+			-intéraction Iconique
+				--> icone = représentation grapique dun objet ou d'un concept
+
+	--Reconnaissance de trace--
+		
+		Principe: reconnaitre le mouvement du périphérique de localisation par rapport à un
+		vocabulaire gestuel prédéfi.
+		ex. PDA
+
+	--Autre style--
+
+		Réalité augmenté
+		Réalité virtuelle
+		Interaction multimodale
+
+
+Classification des périphérique d'entrée
+
+	absolu (x,y) != relatif(Dx,Dy)
+
+	gestion des entrée:
+
+		

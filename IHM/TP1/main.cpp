@@ -57,6 +57,8 @@ bool MyApp::OnInit()
 	
 	m_MainFrame->SetMenuBar(menu_bar);
 	
+	VersionDialog vdlg(p_MainFrame,-1,wxT("Version"));
+	vdlg.ShowModal();
 	return TRUE;
 } 
 

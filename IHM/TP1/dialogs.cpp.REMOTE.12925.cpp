@@ -12,11 +12,6 @@ VersionDialog::VersionDialog( wxWindow *parent, wxWindowID id,
 	wxButton* item2=new wxButton(this,wxID_OK,wxT("OK"),wxDefaultPosition);
 
 	item0->Add(item1,0,wxALIGN_CENTRE|wxALL,5);
-<<<<<<< HEAD
-	item0->Add(item2,0,wxALIGN_CENTRE|wxALL,5);
-	item0->Add(item2,0,wxALIGN_CENTRE|wxALL,5);
-=======
->>>>>>> 2f7fa52b62714b1f0d81bff852e0c48761d7f503
 
 	this->SetAutoLayout(TRUE);
 	this->SetSizer(item0);
