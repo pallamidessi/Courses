@@ -68,21 +68,21 @@ Vector V_substract(Vector v1, Vector v2){
 
 }
 float det_from_vectors(Vector v1,Vector v2,Vector v3){
-	return	(	v1.x*v2.y*v3.z 
+	return	((v1.x*v2.y*v3.z 
 					+ v2.x*v1.z*v3.y 
-					+ v1.y*v2.z*v3.x 
-					- v1.z*v2.y*v3.x 
-					- v1.y*v2.x*v3.z 
-					- v1.x*v2.y*v3.z );
+					+ v1.y*v2.z*v3.x) 
+					- (v1.z*v2.y*v3.x 
+					+ v1.y*v2.x*v3.z 
+					+ v1.x*v3.y*v2.z) );
 }
 
 bool are_segments_intersected(Vector p1,Vector p2,Vector q1,Vector q2){
-	int s1,s2,s3,s4;
+	float s1,s2,s3,s4;
 
 	s1=det_from_vectors(p1,p2,q1);
 	s2=det_from_vectors(p1,p2,q2);
 	s3=det_from_vectors(q1,q2,p1);
-	s4=det_from_vectors(p1,p2,p2);
+	s4=det_from_vectors(q1,q2,p2);
 
 	/*Cas simple*/
 	if (s1*s2<0 && s3*s4<0) {
@@ -130,13 +130,14 @@ bool are_segments_intersected(Vector p1,Vector p2,Vector q1,Vector q2){
 
 
 int main(int argc, char* argv[]){
-	if (argc !=7) {
+	if (argc !=13) {
 		printf("usage: %s p1 p2 q1 q2 (Vector) \n",argv[0]);
+		exit(1);
 	}
-	Vector p1=V_new(atoi(argv[1]),atoi(argv[2]),atoi(argv[3]));
-	Vector p2=V_new(atoi(argv[4]),atoi(argv[5]),atoi(argv[6]));
-	Vector q1=V_new(atoi(argv[7]),atoi(argv[8]),atoi(argv[9]));
-	Vector q2=V_new(atoi(argv[10]),atoi(argv[11]),atoi(argv[12]));
+	Vector p1=V_new(atof(argv[1]),atof(argv[2]),atof(argv[3]));
+	Vector p2=V_new(atof(argv[4]),atof(argv[5]),atof(argv[6]));
+	Vector q1=V_new(atof(argv[7]),atof(argv[8]),atof(argv[9]));
+	Vector q2=V_new(atof(argv[10]),atof(argv[11]),atof(argv[12]));
 
 	if (are_segments_intersected(p1,p2,q1,q2)==TRUE) {
 		printf("Les segments s'intersectent .\n");
