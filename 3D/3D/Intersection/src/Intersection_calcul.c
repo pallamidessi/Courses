@@ -37,8 +37,10 @@ void calcul_intersection(Vector a,Vector b,Vector c,Vector d,unsigned char m[4],
         //B entre C et D
         if(V_dot(V_substract(c,b),V_dot(V_substract(d,b)))<=0){
           r->singular_point='b';
-          if(first_edge)
+          if(first_edge){
             r->egde[0]=b;
+            first_edge=false;
+          }
           else{
             egde[1]=b;
             return ;
@@ -48,8 +50,10 @@ void calcul_intersection(Vector a,Vector b,Vector c,Vector d,unsigned char m[4],
         //C entre A et B
         if(V_dot(V_substract(a,c),V_dot(V_substract(b,c)))<=0){
           r->singular_point='a';
-          if(first_edge)
+          if(first_edge){
             r->egde[0]=c;
+            first_edge=false;
+          }
           else{
             egde[1]=c;
             return ;
