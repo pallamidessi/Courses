@@ -13,6 +13,7 @@ void calcul_intersection(Vector a,Vector b,Vector c,Vector d,unsigned char m[4],
   int discriminant;
   float paramS;
   float paramT;
+  bool first_edge=true;
 
   if(are_segment_intersected(a,b,c,d,m)){
     r->is_intersect=true;
@@ -25,11 +26,41 @@ void calcul_intersection(Vector a,Vector b,Vector c,Vector d,unsigned char m[4],
 
     if (discriminant==0) {
       //determinant de ABC pour vérifier l'alignement  
-      if(det_from_vectors(a,b,c)=0){
+      if(det_from_vectors(a,b,c)=0 ){
+        
         //A entre C et D
+        if(V_dot(V_substract(c,a),V_dot(V_substract(d,a)))<=0){
+          r->egde[0]=a;
+          first_edge=false;
+        }
+        
         //B entre C et D
+        if(V_dot(V_substract(c,b),V_dot(V_substract(d,b)))<=0){
+          r->singular_point='b';
+          if(first_edge)
+            r->egde[0]=b;
+          else{
+            egde[1]=b;
+            return ;
+          }
+        }
+        
         //C entre A et B
+        if(V_dot(V_substract(a,c),V_dot(V_substract(b,c)))<=0){
+          r->singular_point='a';
+          if(first_edge)
+            r->egde[0]=c;
+          else{
+            egde[1]=c;
+            return ;
+          }
+        }
+        
         //D entre A et B
+        if(V_dot(V_substract(a,d),V_dot(V_substract(b,d)))<=0){
+          egde[1]=b;
+          return ;
+        }
       }  
     }else {
       paramS=((DC.x*CA.y)-(CA.x*DC.y))/discriminant;
