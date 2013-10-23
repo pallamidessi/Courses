@@ -5,13 +5,17 @@
 #include "wx/wx.h"
 #include <wx/toolbar.h>
 #include <wx/tbarbase.h>
+#include <wx/filedlg.h>
 #include "dialogs.h"
+#include "triangle.h"
 
 enum {MENU_NEW,MENU_OPEN,MENU_VERSION,MENU_SAVE,MENU_QUIT,MENU_WIDTHLINE,MENU_COLOR,MENU_TRIANGLE,MENU_TOOLBAR,TOOLBAR_TOOLS,MENU_CHECK};
 
 class CMainFrame: public wxFrame {
 public:
-	
+  int num_tri=0;
+  Triangle tab_tri[5];
+
 	int epaisseurTraitCourant=1;
 	wxColour couleurCourante= new wxCoulour(wxT("green"));
 	bool is_drawing=false;

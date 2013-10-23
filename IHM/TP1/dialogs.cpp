@@ -126,7 +126,7 @@ TriangleDialog::TriangleDialog( wxWindow *parent, wxWindowID id,
 
 void TriangleDialog::OnWIDGET_PROPRIETY(wxCommandEvent& event){
 	
-	ProprietyDialog::ProprietyDialog pdlg(this,-1,wxT("Propriété"));
+	ProprietyDialog pdlg(this,-1,wxT("Propriété"));
 
 	wxString current=this->getParent().CMainFrame::getColour().GetAsString(wxC2S_NAME);
 	
