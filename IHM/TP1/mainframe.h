@@ -11,9 +11,20 @@ enum {MENU_NEW,MENU_OPEN,MENU_VERSION,MENU_SAVE,MENU_QUIT,MENU_WIDTHLINE,MENU_CO
 
 class CMainFrame: public wxFrame {
 public:
-	CMainFrame(const wxString& title, const wxPoint& pos, const wxSize& size);
+	
+	int epaisseurTraitCourant=1;
+	wxColour couleurCourante= new wxCoulour(wxT("green"));
+	bool is_drawing=false;
+	
+	int get_width();
+	wxColour get_color();
+	bool get_drawing_active();
+	
+	void set_width(int width);
+	void set_color(String color);
+	void set_drawing(bool b);
 
-public:
+	CMainFrame(const wxString& title, const wxPoint& pos, const wxSize& size);
 	void CreateMyToolbar();
 
 private:

@@ -56,9 +56,23 @@ bool MyApp::OnInit()
 	menu_bar->Enable(MENU_TRIANGLE,false);
 	
 	m_MainFrame->SetMenuBar(menu_bar);
-	
-	VersionDialog vdlg(p_MainFrame,-1,wxT("Version"));
+
+	/*
+	VersionDialog vdlg(m_MainFrame,-1,wxT("Version"));
 	vdlg.ShowModal();
+
+	WidthLineDialog wdlg(m_MainFrame,-1,wxT("Version"));
+	wdlg.ShowModal();
+	
+	ColorDialog cdlg(m_MainFrame,-1,wxT("Version"));
+	cdlg.ShowModal();
+	
+	TriangleDialog tdlg(m_MainFrame,-1,wxT("Version"));
+	tdlg.ShowModal();
+	
+	ProprietyDialog pdlg(m_MainFrame,-1,wxT("Version"));
+	pdlg.ShowModal();
+	*/
 	return TRUE;
 } 
 

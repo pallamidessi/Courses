@@ -74,14 +74,45 @@ void CMainFrame::OnMENU_CHECK(wxCommandEvent& event){
 }
 
 void CMainFrame::OnMENU_WIDTHLINE(wxCommandEvent& event){
+	WidthLineDialog wdlg(this,-1,wxT("Epaisseur"));
+	wdlg.ShowModal();
 }
 void CMainFrame::OnMENU_TRIANGLE(wxCommandEvent& event){
+	TriangleDialog tdlg(this,-1,wxT("Gestion des triangles"));
+	tdlg.ShowModal();
 }
 void CMainFrame::OnMENU_COLOR(wxCommandEvent& event){
+	ColorDialog cdlg(this,-1,wxT("Couleur"));
+	cdlg.ShowModal();
 }
 void CMainFrame::OnMENU_VERSION(wxCommandEvent& event){
 
-	VersionDialog::VersionDialog vdlg(this,-1,wxT("Version"));
+	VersionDialog vdlg(this,-1,wxT("Version"));
 	
 	vdlg.ShowModal();
 }
+
+int CMainFrame::get_width(){
+	return epaisseurTraitCourant;	
+}
+
+wxColour CMainFrame::get_color(){
+	return couleurCourante;
+}
+
+bool CMainFrame::get_drawing_active(){
+	return is_drawing;
+}
+
+void CMainFrame::set_width(int width){
+	epaisseurTraitCourant=width;
+}
+
+void CMainFrame::set_color(wxColour color){
+	couleurCourante=color;
+}
+
+void CMainFrame::set_drawing(bool mode){
+	is_drawing=b;
+}
+

@@ -4,7 +4,7 @@
 	END_EVENT_TABLE ()
 
 VersionDialog::VersionDialog( wxWindow *parent, wxWindowID id,
-														const wxString &title="Version") : 
+														const wxString &title=wxT("Version")) : 
 														wxDialog( parent, id, title){
 
 	wxBoxSizer* item0=new wxBoxSizer(wxVERTICAL);
@@ -23,16 +23,17 @@ VersionDialog::VersionDialog( wxWindow *parent, wxWindowID id,
 }
 	
 	BEGIN_EVENT_TABLE(WidthLineDialog, wxDialog)
+		EVT_SCROLL(ID_SLIDER_WIDTH,WidthLineDialog::OnWIDGET_SLIDER)
 	END_EVENT_TABLE ()
 
 WidthLineDialog::WidthLineDialog( wxWindow *parent, wxWindowID id,
-														const wxString &title="Epaisseur") : 
+														const wxString &title=wxT("Epaisseur")) : 
 														wxDialog( parent, id, title){
 
 	wxBoxSizer* item0=new wxBoxSizer(wxVERTICAL);
 	wxStaticText* item1=new wxStaticText(this,ID_TEXT_WIDTHLINE,wxT("Choisir la nouvelle épaisseur de trait"),wxDefaultPosition,wxDefaultSize,wxALIGN_CENTRE);
 	wxButton* item2=new wxButton(this,wxID_OK,wxT("OK"),wxDefaultPosition);
-	wxSlider* item3=new wxSliderwxSlider(this, ID_SLIDER_WIDTH,1 , 1, 10, const wxPoint& point = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxSL_HORIZONTAL, const wxValidator& validator = wxDefaultValidator, const wxString& name = "slider")
+	wxSlider* item3=new wxSlider(this, ID_SLIDER_WIDTH,getParent::CMainFrame::get_width() , 1, 10,wxDefaultPosition,wxDefaultSize,wxSL_HORIZONTAL,wxDefaultValidator, wxT("slider"));
 	
 	item0->Add(item1,0,wxALIGN_CENTRE|wxALL,5);
 	item0->Add(item3,0,wxALIGN_CENTRE|wxALL,5);
@@ -43,12 +44,17 @@ WidthLineDialog::WidthLineDialog( wxWindow *parent, wxWindowID id,
 	item0->Fit(this);
 	item0->SetSizeHints(this);
 }
+
+void WidthLineDialog::OnWIDGET_SLIDER(wxScrollEvent& event){
+	getParent().CMainFrame::set_width(event->getPosition());
+}
 								
 	BEGIN_EVENT_TABLE(ColorDialog, wxDialog)
+		EVT_RADIOBOX(ID_RADIO_COLOR,ColorDialog::OnWIDGET_RADIO)
 	END_EVENT_TABLE ()
 
 ColorDialog::ColorDialog( wxWindow *parent, wxWindowID id,
-														const wxString &title="Couleur") : 
+														const wxString &title=wxT("Couleur")) : 
 														wxDialog( parent, id, title){
 
 	wxBoxSizer* item0=new wxBoxSizer(wxVERTICAL);
@@ -57,7 +63,7 @@ ColorDialog::ColorDialog( wxWindow *parent, wxWindowID id,
 	
 	wxString strs8[] = { wxT("Rouge"), wxT("Vert"), wxT("Bleu")};
 
-	wxRadioBox* item3=wxRadioBox(this, ID_RADIO_COLOR, wxT("Couleur"),wxDefaultPosition, wxDefaultSize, 3, strs8);
+	wxRadioBox* item3=new wxRadioBox(this, ID_RADIO_COLOR, wxT("Couleur"),wxDefaultPosition, wxDefaultSize, 3, strs8);
 
 	item0->Add(item1,0,wxALIGN_CENTRE|wxALL,5);
 	item0->Add(item3,0,wxALIGN_CENTRE|wxALL,5);
@@ -69,26 +75,38 @@ ColorDialog::ColorDialog( wxWindow *parent, wxWindowID id,
 	item0->SetSizeHints(this);
 
 }
+void ColorDialog::OnWIDGET_RADIOBOX(wxCommandEvent& event){
+	if(event->getInt()==0)
+		getParent().CMainFrame::set_color(wxColour("red"));
+	else if(event->getInt()==1)
+		getParent().CMainFrame::set_color(wxColour("green"));
+	else if(event->getInt()==2)
+		getParent().CMainFrame::set_color(wxColour("blue"));
+}
+
+void ColorDialog::OnWIDGET_RADIO(wxCommandEvent& event){}
 								
 	BEGIN_EVENT_TABLE(TriangleDialog, wxDialog)
+		EVT_BUTTON(ID_PROP_BUTTON,TriangleDialog::OnWIDGET_PROPRIETY)
+		EVT_BUTTON(ID_DEL_BUTTON,TriangleDialog::OnWIDGET_DELETE)
 	END_EVENT_TABLE ()
 
 TriangleDialog::TriangleDialog( wxWindow *parent, wxWindowID id,
-														const wxString &title="Gestion des triangles") : 
+														const wxString &title=wxT("Gestion des triangles")) : 
 														wxDialog( parent, id, title){
 
 	wxBoxSizer* item0=new wxBoxSizer(wxHORIZONTAL);
 	wxBoxSizer* list_container=new wxBoxSizer(wxVERTICAL);
 	wxBoxSizer* button_container=new wxBoxSizer(wxVERTICAL);
 	
-	wxStaticText* desc_title=new wxStaticText(this,ID_TEXT,wxT("Liste des triangles"),wxDefaultPosition,wxDefaultSize,wxALIGN_CENTRE);
+	wxStaticText* desc_title=new wxStaticText(this,ID_TEXT_TRIANGLE,wxT("Liste des triangles"),wxDefaultPosition,wxDefaultSize,wxALIGN_CENTRE);
 	
 	wxButton* ok_button=new wxButton(this,wxID_OK,wxT("OK"),wxDefaultPosition);
 	wxButton* propriety_button=new wxButton(this,ID_PROP_BUTTON,wxT("Propriété"),wxDefaultPosition);
 	wxButton* delete_button=new wxButton(this,ID_DEL_BUTTON,wxT("Supprimer"),wxDefaultPosition);
 
 	
-	wxListBox* triangle_list = wxListBox(this,ID_LISTBOX_TRIANGLE,wxDefaultPosition,wxDefaultSize, 0, NULL, long style = 0);
+	wxListBox* triangle_list =new wxListBox(this,ID_LISTBOX_TRIANGLE,wxDefaultPosition,wxDefaultSize, 0);
 
 	item0->Add(desc_title,0,wxALIGN_CENTRE|wxALL,5);
 	item0->Add(list_container,0,wxALIGN_CENTRE|wxALL,5);
@@ -106,8 +124,34 @@ TriangleDialog::TriangleDialog( wxWindow *parent, wxWindowID id,
 								
 }
 
+void TriangleDialog::OnWIDGET_PROPRIETY(wxCommandEvent& event){
+	
+	ProprietyDialog::ProprietyDialog pdlg(this,-1,wxT("Propriété"));
+
+	wxString current=this->getParent().CMainFrame::getColour().GetAsString(wxC2S_NAME);
+	
+	if(current.cmp(wxT("red")))
+		pdlg->radio->SetSelection(0);
+	else if(current.cmp(wxT("green"))){
+		pdlg->radio->SetSelection(1);
+	else if(current.cmp(wxT("blue"))){
+		pdlg->radio->SetSelection(2);
+	}
+
+	pdlg.ShowModal();
+}
+
+void TriangleDialog::OnWIDGET_DELETE(wxCommandEvent& event){
+}
+
+	BEGIN_EVENT_TABLE(ProprietyDialog, wxDialog)
+		EVT_RADIOBOX(ID_RADIO_PROPRIETY,ProprietyDialog::OnWIDGET_RADIO)
+		EVT_SPINCRL(ID_SPINCTRL,ProprietyDialog::OnWIDGET_SPIN)
+
+	END_EVENT_TABLE ()
+
 ProprietyDialog::ProprietyDialog( wxWindow *parent, wxWindowID id,
-														const wxString &title="Propriété") : 
+														const wxString &title=wxT("Propriété")) : 
 														wxDialog( parent, id, title){
 
 	wxBoxSizer* item0=new wxBoxSizer(wxHORIZONTAL);
@@ -121,14 +165,13 @@ ProprietyDialog::ProprietyDialog( wxWindow *parent, wxWindowID id,
 	wxButton* ok_button=new wxButton(this,wxID_OK,wxT("OK"),wxDefaultPosition);
 
 	wxString strs8[] = { wxT("Rouge"), wxT("Vert"), wxT("Bleu")};
-	wxRadioBox* radio=wxRadioBox(this, ID_RADIO_PROPRIETY, wxT("Couleur"),wxDefaultPosition, wxDefaultSize, 3, strs8);
+	wxRadioBox* radio=new wxRadioBox(this, ID_RADIO_PROPRIETY, wxT("Couleur"),wxDefaultPosition, wxDefaultSize, 3, strs8);
 	
- wxTextCtrl* textCtrl=wxTextCtrl(this, ID_TEXTCTRL,"",wxDefaultPosition,wxDefaultSize, long style = 0);
+ wxTextCtrl* textCtrl=new wxTextCtrl(this, ID_TEXTCTRL,wxT(""),wxDefaultPosition,wxDefaultSize, 0);
 	
 
- wxSpinCtrl* spin= wxSpinCtrl(this,ID_SPINCTRL,wxEmptyString,wxDefaultPosition, wxDefaultSize, long style = wxSP_ARROW_KEYS, int min = 0, int max = 100, int initial = 0, const wxString& name = _T("wxSpinCtrl"));
+ wxSpinCtrl* spin=new  wxSpinCtrl(this,ID_SPINCTRL,wxEmptyString,wxDefaultPosition, wxDefaultSize,wxSP_ARROW_KEYS,0,100, 0,wxT("wxSpinCtrl"));
 
-	item0->Add(desc_title,0,wxALIGN_CENTRE|wxALL,5);
 	item0->Add(radio_container,0,wxALIGN_CENTRE|wxALL,5);
 	item0->Add(misc_container,0,wxALIGN_CENTRE|wxALL,5);
 
@@ -143,4 +186,12 @@ ProprietyDialog::ProprietyDialog( wxWindow *parent, wxWindowID id,
 	item0->Fit(this);
 	item0->SetSizeHints(this);
 								
+}
+
+void ProprietyDialog::OnWIDGET_RADIO(wxCommandEvent& event){
+	getParent().getParent().CMainFrame::set_color(event->GetSelection());
+}
+
+void ProprietyDialog::OnWIDGET_SPIN(wxCommandEvent& event){
+	getParent().getParent().CMainFrame::set_width(spin->GetValue());
 }
