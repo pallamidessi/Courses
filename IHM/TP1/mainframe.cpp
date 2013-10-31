@@ -180,3 +180,15 @@ void CMainFrame::set_drawing(bool mode){
   is_drawing=b;
 }
 
+int CMainFrame::get_num_tri(){
+   return num_tri;
+}
+
+Triangle get_triangle(int index){
+  if (index>num_tri) {
+    return NULL;
+  }
+  else {
+    return tab_tri[index];  
+  }
+}

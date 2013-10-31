@@ -17,10 +17,11 @@ public:
   Triangle tab_tri[5];
 
 	int epaisseurTraitCourant=1;
-	wxColour couleurCourante= new wxCoulour(wxT("green"));
+	wxColour couleurCourante= new wxColour(wxT("green"));
 	bool is_drawing=false;
 	
 	int get_width();
+	int get_num_tri();
 	wxColour get_color();
 	bool get_drawing_active();
 	
