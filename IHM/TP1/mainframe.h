@@ -3,35 +3,40 @@
 #define __MAINFRAME_H__
 
 #include "wx/wx.h"
+#include "openglcanvas.h"
+#include <cstring> 
+#include <fstream> 
 #include <wx/toolbar.h>
 #include <wx/tbarbase.h>
 #include <wx/filedlg.h>
 #include "dialogs.h"
 #include "triangle.h"
 
-enum {MENU_NEW,MENU_OPEN,MENU_VERSION,MENU_SAVE,MENU_QUIT,MENU_WIDTHLINE,MENU_COLOR,MENU_TRIANGLE,MENU_TOOLBAR,TOOLBAR_TOOLS,MENU_CHECK};
+enum {MENU_NEW,MENU_OPEN,MENU_VERSION,MENU_SAVE,MENU_QUIT,MENU_WIDTHLINE,MENU_COLOR,MENU_TRIANGLE,MENU_TOOLBAR,TOOLBAR_TOOLS,MENU_CHECK,ID_CANVAS};
 
+class OpenGLCanvas;
 class CMainFrame: public wxFrame {
 public:
-  int num_tri=0;
+  int num_tri;
   Triangle tab_tri[5];
 
-	int epaisseurTraitCourant=1;
-	wxColour couleurCourante= new wxColour(wxT("green"));
-	bool is_drawing=false;
+	int epaisseurTraitCourant;
+	wxColour* couleurCourante;
+	bool is_drawing;
 	
 	int get_width();
 	int get_num_tri();
-	wxColour get_color();
+	wxColour* get_color();
 	bool get_drawing_active();
+	Triangle get_triangle(int index);
 	
 	void set_width(int width);
-	void set_color(String color);
+	void set_color(wxString color);
 	void set_drawing(bool b);
 
 	CMainFrame(const wxString& title, const wxPoint& pos, const wxSize& size);
 	void CreateMyToolbar();
-
+	OpenGLCanvas* drawing_zone;
 private:
 	wxToolBar *m_toolbar;
 	void OnMENU_NEW(wxCommandEvent& event);

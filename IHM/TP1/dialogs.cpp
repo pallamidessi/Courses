@@ -23,7 +23,7 @@ VersionDialog::VersionDialog( wxWindow *parent, wxWindowID id,
 }
 	
 	BEGIN_EVENT_TABLE(WidthLineDialog, wxDialog)
-		EVT_SCROLL(ID_SLIDER_WIDTH,WidthLineDialog::OnWIDGET_SLIDER)
+		EVT_SCROLL(WidthLineDialog::OnWIDGET_SLIDER)
 	END_EVENT_TABLE ()
 
 WidthLineDialog::WidthLineDialog( wxWindow *parent, wxWindowID id,
@@ -33,7 +33,7 @@ WidthLineDialog::WidthLineDialog( wxWindow *parent, wxWindowID id,
 	wxBoxSizer* item0=new wxBoxSizer(wxVERTICAL);
 	wxStaticText* item1=new wxStaticText(this,ID_TEXT_WIDTHLINE,wxT("Choisir la nouvelle épaisseur de trait"),wxDefaultPosition,wxDefaultSize,wxALIGN_CENTRE);
 	wxButton* item2=new wxButton(this,wxID_OK,wxT("OK"),wxDefaultPosition);
-	wxSlider* item3=new wxSlider(this, ID_SLIDER_WIDTH,getParent::CMainFrame::get_width() , 1, 10,wxDefaultPosition,wxDefaultSize,wxSL_HORIZONTAL,wxDefaultValidator, wxT("slider"));
+	wxSlider* item3=new wxSlider(this, ID_SLIDER_WIDTH,((CMainFrame*)GetParent())->get_width() , 1, 10,wxDefaultPosition,wxDefaultSize,wxSL_HORIZONTAL,wxDefaultValidator, wxT("slider"));
 	
 	item0->Add(item1,0,wxALIGN_CENTRE|wxALL,5);
 	item0->Add(item3,0,wxALIGN_CENTRE|wxALL,5);
@@ -46,7 +46,7 @@ WidthLineDialog::WidthLineDialog( wxWindow *parent, wxWindowID id,
 }
 
 void WidthLineDialog::OnWIDGET_SLIDER(wxScrollEvent& event){
-	getParent().CMainFrame::set_width(event->getPosition());
+	((CMainFrame*)GetParent())->set_width(event.GetPosition());
 }
 								
 	BEGIN_EVENT_TABLE(ColorDialog, wxDialog)
@@ -75,16 +75,15 @@ ColorDialog::ColorDialog( wxWindow *parent, wxWindowID id,
 	item0->SetSizeHints(this);
 
 }
-void ColorDialog::OnWIDGET_RADIOBOX(wxCommandEvent& event){
-	if(event->getInt()==0)
-		getParent().CMainFrame::set_color(wxColour("red"));
-	else if(event->getInt()==1)
-		getParent().CMainFrame::set_color(wxColour("green"));
-	else if(event->getInt()==2)
-		getParent().CMainFrame::set_color(wxColour("blue"));
+void ColorDialog::OnWIDGET_RADIO(wxCommandEvent& event){
+	if(event.GetInt()==0)
+		((CMainFrame*)GetParent())->set_color(wxT("red"));
+	else if(event.GetInt()==1)
+		((CMainFrame*)GetParent())->set_color(wxT("green"));
+	else if(event.GetInt()==2)
+		((CMainFrame*)GetParent())->set_color(wxT("blue"));
 }
 
-void ColorDialog::OnWIDGET_RADIO(wxCommandEvent& event){}
 								
 	BEGIN_EVENT_TABLE(TriangleDialog, wxDialog)
 		EVT_BUTTON(ID_PROP_BUTTON,TriangleDialog::OnWIDGET_PROPRIETY)
@@ -128,14 +127,15 @@ void TriangleDialog::OnWIDGET_PROPRIETY(wxCommandEvent& event){
 	
 	ProprietyDialog pdlg(this,-1,wxT("Propriété"));
 
-	wxString current=this->getParent().CMainFrame::getColour().GetAsString(wxC2S_NAME);
+	wxString current=((CMainFrame*)GetParent())->get_color()->GetAsString(wxC2S_NAME);
 	
-	if(current.cmp(wxT("red")))
-		pdlg->radio->SetSelection(0);
-	else if(current.cmp(wxT("green"))){
-		pdlg->radio->SetSelection(1);
-	else if(current.cmp(wxT("blue"))){
-		pdlg->radio->SetSelection(2);
+	if(current.Cmp(wxT("red")))
+		pdlg.radio->SetSelection(0);
+	else if(current.Cmp(wxT("green"))){
+		pdlg.radio->SetSelection(1);
+	}
+	else if(current.Cmp(wxT("blue"))){
+		pdlg.radio->SetSelection(2);
 	}
 
 	pdlg.ShowModal();
@@ -146,7 +146,7 @@ void TriangleDialog::OnWIDGET_DELETE(wxCommandEvent& event){
 
 	BEGIN_EVENT_TABLE(ProprietyDialog, wxDialog)
 		EVT_RADIOBOX(ID_RADIO_PROPRIETY,ProprietyDialog::OnWIDGET_RADIO)
-		EVT_SPINCRL(ID_SPINCTRL,ProprietyDialog::OnWIDGET_SPIN)
+		EVT_SPINCTRL(ID_SPINCTRL,ProprietyDialog::OnWIDGET_SPIN)
 
 	END_EVENT_TABLE ()
 
@@ -180,6 +180,7 @@ ProprietyDialog::ProprietyDialog( wxWindow *parent, wxWindowID id,
 	misc_container->Add(textCtrl,0,wxALIGN_CENTRE|wxALL);	
 	misc_container->Add(width,0,wxALIGN_CENTRE|wxALL);	
 	misc_container->Add(spin,0,wxALIGN_CENTRE|wxALL);	
+	misc_container->Add(ok_button,0,wxALIGN_CENTRE|wxALL);	
 
 	this->SetAutoLayout(TRUE);
 	this->SetSizer(item0);
@@ -189,9 +190,9 @@ ProprietyDialog::ProprietyDialog( wxWindow *parent, wxWindowID id,
 }
 
 void ProprietyDialog::OnWIDGET_RADIO(wxCommandEvent& event){
-	getParent().getParent().CMainFrame::set_color(event->GetSelection());
+	//((CMainFrame*)(GetParent()->GetParent()))->set_color(event.GetSelection());
 }
 
-void ProprietyDialog::OnWIDGET_SPIN(wxCommandEvent& event){
-	getParent().getParent().CMainFrame::set_width(spin->GetValue());
+void ProprietyDialog::OnWIDGET_SPIN(wxSpinEvent& event){
+	((CMainFrame*)(GetParent()->GetParent()))->set_width(spin->GetValue());
 }

@@ -13,11 +13,6 @@ OpenGLCanvas::OpenGLCanvas(wxWindow *parent, wxWindowID id,
       long style, const wxString& name):
     wxGLCanvas(parent, id, pos, size, style, name){
       
-        
-
-
-
-
 }
 
 OpenGLCanvas::~OpenGLCanvas(void)
@@ -43,6 +38,7 @@ void OpenGLCanvas::OnEraseBackground( wxEraseEvent& event ){}
 
 void OpenGLCanvas::Draw(){
   int w, h;
+	int i;
   int num_triangle;
   Triangle current;
   glMatrixMode( GL_PROJECTION );
@@ -58,10 +54,10 @@ void OpenGLCanvas::Draw(){
   glClearColor( .3f, .4f, .6f, 1 );
   glClear( GL_COLOR_BUFFER_BIT);
   
-  num_triangle=GetParent.get_num_tri();
+  num_triangle=((CMainFrame*)GetParent())->get_num_tri();
   
   for (i = 0; i < num_triangle; i++) {
-    current=GetParent.get_triangle(i);
+    current=((CMainFrame*)GetParent())->get_triangle(i);
     
     /*Triangle background*/
     glColor3d(current.colour.Red(),current.colour.Green(),current.colour.Blue());

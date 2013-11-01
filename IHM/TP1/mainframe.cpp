@@ -24,6 +24,10 @@ END_EVENT_TABLE()
   CMainFrame::CMainFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
 : wxFrame((wxFrame *)NULL, -1, title, pos, size) 
 {
+	num_tri=0;
+	epaisseurTraitCourant=3;
+	is_drawing=false;
+	couleurCourante=new wxColour(wxT("RGB(0,255,0)"));
 } //constructor
 
 void CMainFrame::CreateMyToolbar(){
@@ -53,7 +57,9 @@ void CMainFrame::OnMENU_NEW(wxCommandEvent& event){
 
 void CMainFrame::OnMENU_OPEN(wxCommandEvent& event){
   int r,g,b;
-  wxFileDialog fd= new wxFileDialog(this,wxT("Fichier à ouvrir :"),wxT(".",wxT(""),wxT("*.tri"),wxOPEN));
+	int i;
+
+  wxFileDialog fd(this,wxT("Fichier à ouvrir :"),wxT("."),wxT(""),wxT("*.tri"),wxOPEN);
 
   if(fd.ShowModal()==wxID_OK){
     std::ifstream fo(fd.GetPath().fn_str(), std::ios::in);
@@ -62,7 +68,7 @@ void CMainFrame::OnMENU_OPEN(wxCommandEvent& event){
     {
       wxString errormsg, caption;
       errormsg.Printf(wxT("Unable to open file "));
-      errormsg.Append(filedialog.GetPath());
+      errormsg.Append(fd.GetPath());
       caption.Printf(wxT("Erreur"));
       wxMessageDialog msg(this, errormsg, caption, wxOK | wxCENTRE | wxICON_ERROR);
       msg.ShowModal();
@@ -86,7 +92,7 @@ void CMainFrame::OnMENU_OPEN(wxCommandEvent& event){
         fo>>r;
         fo>>g;
         fo>>b;
-        tab_tri[i].colour=new colour(r,g,b);
+        tab_tri[i].colour.Set((unsigned char)r,(unsigned char)g,(unsigned char)b);
         fo>>tab_tri[i].thickness;
     }
   }
@@ -94,12 +100,14 @@ void CMainFrame::OnMENU_OPEN(wxCommandEvent& event){
 }
 
 void CMainFrame::OnMENU_SAVE(wxCommandEvent& event){
-  wxFileDialog fd= new wxFileDialog(this,wxT("Enregistrer vers :"),wxT(".",wxT(""),wxT("*.tri"),wxSAVE));
+  int i;
+
+	wxFileDialog fd(this,wxT("Enregistrer vers :"),wxT("."),wxT(""),wxT("*.tri"),wxSAVE);
   std::ofstream fs((char*)fd.GetPath().c_str(), std::ios::out);
 
   fs << num_tri<<std::endl;
 
-  if(fs.ShowModal()==wxID_OK){
+  if(fd.ShowModal()==wxID_OK){
     for (i = 0; i < num_tri; i++) {
       fs<<tab_tri[i].p1.x;
       fs<<tab_tri[i].p1.y;
@@ -112,7 +120,7 @@ void CMainFrame::OnMENU_SAVE(wxCommandEvent& event){
       fs<<std::endl;
       fs<<tab_tri[i].colour.Red();
       fs<<tab_tri[i].colour.Green();
-      fs<<tab_tri[i].colour.Bleu();
+      fs<<tab_tri[i].colour.Blue();
       fs<<std::endl;
       fs<<tab_tri[i].thickness;
       fs<<std::endl;
@@ -160,7 +168,7 @@ int CMainFrame::get_width(){
   return epaisseurTraitCourant;	
 }
 
-wxColour CMainFrame::get_color(){
+wxColour* CMainFrame::get_color(){
   return couleurCourante;
 }
 
@@ -172,23 +180,23 @@ void CMainFrame::set_width(int width){
   epaisseurTraitCourant=width;
 }
 
-void CMainFrame::set_color(wxColour color){
-  couleurCourante=color;
+void CMainFrame::set_color(wxString color){
+  couleurCourante->Set(color);
 }
 
 void CMainFrame::set_drawing(bool mode){
-  is_drawing=b;
+  is_drawing=mode;
 }
 
 int CMainFrame::get_num_tri(){
    return num_tri;
 }
 
-Triangle get_triangle(int index){
-  if (index>num_tri) {
-    return NULL;
-  }
-  else {
+Triangle CMainFrame::get_triangle(int index){
+ // if (index>num_tri) {
+ //   return NULL;
+ // }
+ // else {
     return tab_tri[index];  
-  }
+ // }
 }

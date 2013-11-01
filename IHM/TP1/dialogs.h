@@ -2,6 +2,7 @@
 #define __DIALOGS_H__
 
 #include "wx/wx.h"
+#include "wx/event.h"
 #include "wx/dialog.h"
 #include "wx/slider.h"
 #include "wx/spinctrl.h"
@@ -29,7 +30,7 @@ class WidthLineDialog: public wxDialog{
  		WidthLineDialog(wxWindow *parent, wxWindowID id,const wxString &title);
 		enum{ID_TEXT_WIDTHLINE=10001,ID_SLIDER_WIDTH=10002};
 	private :
-		OnWIDGET_SLIDER(wx);
+		void OnWIDGET_SLIDER(wxScrollEvent& event);
 		
 		
 	DECLARE_EVENT_TABLE();	
@@ -41,7 +42,7 @@ class ColorDialog: public wxDialog{
  		ColorDialog(wxWindow *parent, wxWindowID id,const wxString &title);
 		enum{ID_TEXT_COLOR=10003,ID_RADIO_COLOR=10004};
 	private :
-		OnWIDGET_RADIO(wxCommandEvent& event);
+		void OnWIDGET_RADIO(wxCommandEvent& event);
 		
 		
 	DECLARE_EVENT_TABLE();	
@@ -53,8 +54,9 @@ class TriangleDialog: public wxDialog{
  		TriangleDialog(wxWindow *parent, wxWindowID id,const wxString &title);
 		enum{ID_TEXT_TRIANGLE=10005,ID_PROP_BUTTON=10006,ID_DEL_BUTTON=10007,ID_LISTBOX_TRIANGLE=10008};
 	private :
-		OnWIDGET_PROPRIETY(wxCommandEvent& event);
-		OnWIDGET_DELETE(wxCommandEvent& event);
+		wxRadioBox* radio;
+		void OnWIDGET_PROPRIETY(wxCommandEvent& event);
+		void OnWIDGET_DELETE(wxCommandEvent& event);
 		
 		
 	DECLARE_EVENT_TABLE();	
@@ -63,11 +65,13 @@ class TriangleDialog: public wxDialog{
 class ProprietyDialog: public wxDialog{
 	
 	public :
+		wxSpinCtrl* spin;
+		wxRadioBox* radio;
  		ProprietyDialog(wxWindow *parent, wxWindowID id,const wxString &title);
 		enum{ID_TEXT_PROPRIETY1=10009,ID_TEXT_PROPRIETY2=10010,ID_RADIO_PROPRIETY=10011,ID_TEXTCTRL=10012,ID_SPINCTRL=10013};
 	private :
-		OnWIDGET_RADIO(wxCommandEvent& event);
-		OnWIDGET_SPIN(wxCommandEvent& event);
+		void OnWIDGET_RADIO(wxCommandEvent& event);
+		void OnWIDGET_SPIN(wxSpinEvent& event);
 		
 		
 	DECLARE_EVENT_TABLE();	

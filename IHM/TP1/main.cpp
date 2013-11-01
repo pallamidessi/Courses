@@ -1,6 +1,7 @@
 #include <iostream>
 #include "wx/wx.h" 
 #include "mainframe.h"
+#include "openglcanvas.h"
 #include "dialogs.h"
 #include <wx/menu.h>
 #include <wx/toolbar.h>
@@ -30,11 +31,11 @@ bool MyApp::OnInit()
 	wxMenu *display_menu = new wxMenu;
 	wxMenu *option_menu = new wxMenu;
 	wxMenu *help_menu = new wxMenu;
-
+	m_MainFrame->drawing_zone=new OpenGLCanvas(m_MainFrame,ID_CANVAS,wxDefaultPosition,wxDefaultSize,0,wxT("Drawing zone"));
 	menu_bar->Append(file_menu, wxT("Fichier"));
 	menu_bar->Append(display_menu, wxT("Affichage"));
 	menu_bar->Append(option_menu, wxT("Option"));
-	menu_bar->Append(help_menu, wxT("Fichier"));
+	menu_bar->Append(help_menu, wxT("Aide"));
 
 	file_menu->Append(MENU_NEW,wxT("Nouveau\tCtrl-N"));
 	file_menu->AppendSeparator();
