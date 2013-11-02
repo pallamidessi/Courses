@@ -17,6 +17,7 @@ BEGIN_EVENT_TABLE(CMainFrame, wxFrame)
   EVT_MENU(MENU_WIDTHLINE,CMainFrame::OnMENU_WIDTHLINE)
   EVT_MENU(MENU_COLOR,CMainFrame::OnMENU_COLOR)
   EVT_MENU(MENU_TRIANGLE,CMainFrame::OnMENU_TRIANGLE)
+	EVT_MENU(MENU_CHECK,CMainFrame::OnMENU_DRAWINGMODE)
 END_EVENT_TABLE()
 
 
@@ -52,7 +53,16 @@ void CMainFrame::CreateMyToolbar(){
   SetToolBar(m_toolbar);
 }
 
+void CMainFrame::OnMENU_DRAWINGMODE(wxCommandEvent& event){
+	if(is_drawing==false)
+		is_drawing=true;
+	else
+		is_drawing=false;
+}
+
 void CMainFrame::OnMENU_NEW(wxCommandEvent& event){
+	num_tri=0;
+  >GetMenuBar()->Enable(MENU_TRIANGLE,false);
 }
 
 void CMainFrame::OnMENU_OPEN(wxCommandEvent& event){
@@ -77,7 +87,7 @@ void CMainFrame::OnMENU_OPEN(wxCommandEvent& event){
 
     fo >> num_tri;
     if (num_tri>0) {
-      //activer gestion de triangle
+      GetMenuBar()->Enable(MENU_TRIANGLE,true);
     }
     for (i = 0; i < num_tri; i++) {
         fo>>tab_tri[i].p1.x;
@@ -102,8 +112,19 @@ void CMainFrame::OnMENU_OPEN(wxCommandEvent& event){
 void CMainFrame::OnMENU_SAVE(wxCommandEvent& event){
   int i;
 
-	wxFileDialog fd(this,wxT("Enregistrer vers :"),wxT("."),wxT(""),wxT("*.tri"),wxSAVE);
+	wxFileDialog fd(this,wxT("Enregistrer vers :"),wxT("."),wxT(""),wxT("*.tri"),wxFD_SAVE|wxFD_OVERWRITE_PROMPT);
   std::ofstream fs((char*)fd.GetPath().c_str(), std::ios::out);
+
+	if (!fs)
+	{
+		wxString errormsg, caption;
+		errormsg.Printf(wxT("Unable to save file "));
+		errormsg.Append(fd.GetPath());
+		caption.Printf(wxT("Erreur"));
+		wxMessageDialog msg(this, errormsg, caption, wxOK | wxCENTRE | wxICON_ERROR);
+		msg.ShowModal();
+		return ;
+	}
 
   fs << num_tri<<std::endl;
 
@@ -141,7 +162,7 @@ void CMainFrame::OnMENU_CHECK(wxCommandEvent& event){
       tool->Show(false);
     else
       tool->Show(true);
-
+	
   }
 }
 
@@ -199,4 +220,24 @@ Triangle CMainFrame::get_triangle(int index){
  // else {
     return tab_tri[index];  
  // }
+}
+
+void CMainFrame::copy_triangle_to_tab(Triangle t){
+	if (num_tri!=5) {
+			tab_tri[num_tri].p1.x=t.p1.x;
+			tab_tri[num_tri].p1.y=t.p1.y;
+
+			tab_tri[num_tri].p2.x=t.p2.x;
+			tab_tri[num_tri].p2.y=t.p2.y;
+
+			tab_tri[num_tri].p3.x=t.p3.x;
+			tab_tri[num_tri].p3.y=t.p3.y;
+
+
+			tab_tri[num_tri].thickness=epaisseurTraitCourant;
+			tab_tri[num_tri].colour.Set(couleurCourante->Red(),couleurCourante->Green(),couleurCourante->Blue());
+		}
+	
+	num_tri++;
+
 }

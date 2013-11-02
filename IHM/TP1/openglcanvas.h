@@ -17,7 +17,12 @@ class OpenGLCanvas: public wxGLCanvas{
 		void OnMouseMove(wxMouseEvent& event);
 		void OnLeftDown(wxMouseEvent& event);
 		void OnLeftUp(wxMouseEvent& event);
+		bool is_first_point;
+		bool is_second_point;
+		bool is_third_point;
 
+		Triangle* drawn;
+		point cursor;
   private:
 		void Draw();
     void OnPaint( wxPaintEvent& event );

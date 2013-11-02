@@ -53,10 +53,12 @@ class TriangleDialog: public wxDialog{
 	public :
  		TriangleDialog(wxWindow *parent, wxWindowID id,const wxString &title);
 		enum{ID_TEXT_TRIANGLE=10005,ID_PROP_BUTTON=10006,ID_DEL_BUTTON=10007,ID_LISTBOX_TRIANGLE=10008};
+		int selected_triangle;
 	private :
 		wxRadioBox* radio;
 		void OnWIDGET_PROPRIETY(wxCommandEvent& event);
 		void OnWIDGET_DELETE(wxCommandEvent& event);
+		void OnWIDGET_LISTBOX(wxCommandEvent& event);
 		
 		
 	DECLARE_EVENT_TABLE();	
@@ -67,6 +69,7 @@ class ProprietyDialog: public wxDialog{
 	public :
 		wxSpinCtrl* spin;
 		wxRadioBox* radio;
+		wxTextCtrl* textCtrl;
  		ProprietyDialog(wxWindow *parent, wxWindowID id,const wxString &title);
 		enum{ID_TEXT_PROPRIETY1=10009,ID_TEXT_PROPRIETY2=10010,ID_RADIO_PROPRIETY=10011,ID_TEXTCTRL=10012,ID_SPINCTRL=10013};
 	private :

@@ -13,6 +13,11 @@ OpenGLCanvas::OpenGLCanvas(wxWindow *parent, wxWindowID id,
       long style, const wxString& name):
     wxGLCanvas(parent, id, pos, size, style, name){
       
+	is_first_point=true;
+	is_second_point=false;
+	is_third_point=false;
+
+	drawn=new Triangle();
 }
 
 OpenGLCanvas::~OpenGLCanvas(void)
@@ -68,7 +73,7 @@ void OpenGLCanvas::Draw(){
     glEnd();
     
     /*Triangle outlines*/
-    glColor3d(255,255,255);
+    glColor3d(0,0,0);
     glLineWidth(current.thickness);
     glBegin(GL_LINE_LOOP);
     glVertex2d(current.p1.x,current.p1.y);
@@ -80,9 +85,132 @@ void OpenGLCanvas::Draw(){
 
     glVertex2d(current.p3.x,current.p3.y);
     glVertex2d(current.p1.x,current.p1.y);
-
+		glEnd();
   }
+	/*Dessin du triangle en cours*/
+	if (is_first_point==false && is_second_point==true) {
+    int thickness =((CMainFrame*)GetParent())->get_width();
+		glColor3d(0,0,0);
+		glLineWidth(thickness);
+		glBegin(GL_LINES);
+		glVertex2d(drawn->p1.x,drawn->p1.y);
+		glVertex2d(cursor.x,cursor.y);
+		glEnd();
+	}else if (is_second_point==false && is_third_point==true) {
+    wxColour* cur_colour=((CMainFrame*)GetParent())->get_color();
+		/*Triangle background*/
+    glColor3d(cur_colour->Red(),cur_colour->Green(),cur_colour->Blue());
+    glBegin(GL_TRIANGLES);
+		glVertex2d(drawn->p1.x,drawn->p1.y);
+		glVertex2d(drawn->p2.x,drawn->p2.y);
+		glVertex2d(cursor.x,cursor.y);
+    glEnd();
+    
+    /*Triangle outlines*/
+    glColor3d(0,0,0);
+    glLineWidth(((CMainFrame*)GetParent())->get_width());
+
+    glBegin(GL_LINE_LOOP);
+		glVertex2d(drawn->p1.x,drawn->p1.y);
+		glVertex2d(drawn->p2.x,drawn->p2.y);
+    
+		glVertex2d(drawn->p2.x,drawn->p2.y);
+		glVertex2d(cursor.x,cursor.y);
+
+		glVertex2d(cursor.x,cursor.y);
+		glVertex2d(drawn->p1.x,drawn->p1.y);
+		glEnd();
+	}
 }
-void OpenGLCanvas::OnMouseMove(wxMouseEvent& event){}
-void OpenGLCanvas::OnLeftDown(wxMouseEvent& event){}
+
+
+void OpenGLCanvas::OnMouseMove(wxMouseEvent& event){
+
+  int w, h;
+  GetClientSize(&w, &h);
+
+	cursor.x=event.GetX();
+	cursor.y=event.GetY();
+
+	if(cursor.x<w/2.)
+		cursor.x=-(w/2.-cursor.x);
+	else
+		cursor.x=(cursor.x-w/2.);
+	if(cursor.y>h/2.)
+		cursor.y=-(cursor.y-h/2.);
+	else
+		cursor.y=(h/2.-cursor.y);
+
+	
+  wxPaintDC dc(this);
+
+         SetCurrent();
+         Draw();
+         SwapBuffers();
+}
+
+void OpenGLCanvas::OnLeftDown(wxMouseEvent& event){
+  int w, h;
+  GetClientSize(&w, &h);
+
+	if (((CMainFrame*)GetParent())->get_num_tri()==5) {
+		return;
+	}
+	
+	if(((CMainFrame*)GetParent())->is_drawing==false){
+		return;
+	}
+
+	if(is_first_point==true){
+		drawn->p1.x=event.GetX();
+		drawn->p1.y=event.GetY();
+		
+		if(drawn->p1.x<w/2.)
+			drawn->p1.x=-(w/2.-drawn->p1.x);
+		else
+			drawn->p1.x=(drawn->p1.x-w/2.);
+		if(drawn->p1.y>h/2.)
+			drawn->p1.y=-(drawn->p1.y-h/2.);
+		else
+			drawn->p1.y=(h/2.-drawn->p1.y);
+		
+		is_first_point=false;
+		is_second_point=true;
+	}
+	else if(is_second_point==true) {
+		drawn->p2.x=event.GetX();
+		drawn->p2.y=event.GetY();
+		
+		if(drawn->p2.x<w/2.)
+			drawn->p2.x=-(w/2.-drawn->p2.x);
+		else
+			drawn->p2.x=(drawn->p2.x-w/2.);
+		if(drawn->p2.y>h/2.)
+			drawn->p2.y=-(drawn->p2.y-h/2.);
+		else
+			drawn->p2.y=(h/2.-drawn->p2.y);
+		
+		is_second_point=false;
+		is_third_point=true;
+	}
+	else if (is_third_point==true) {
+		drawn->p3.x=event.GetX();
+		drawn->p3.y=event.GetY();
+		
+		if(drawn->p3.x<w/2.)
+			drawn->p3.x=-(w/2.-drawn->p3.x);
+		else
+			drawn->p3.x=(drawn->p3.x-w/2.);
+		if(drawn->p3.y>h/2.)
+			drawn->p3.y=-(drawn->p3.y-h/2.);
+		else
+			drawn->p3.y=(h/2.-drawn->p3.y);
+		
+		((CMainFrame*)GetParent())->copy_triangle_to_tab(*drawn);
+
+		is_third_point=false;
+		is_first_point=true;
+    ((CMainFrame*)GetParent())->GetMenuBar()->Enable(MENU_TRIANGLE,true);
+	}
+}
 void OpenGLCanvas::OnLeftUp(wxMouseEvent& event){}

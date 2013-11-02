@@ -33,6 +33,7 @@ public:
 	void set_width(int width);
 	void set_color(wxString color);
 	void set_drawing(bool b);
+	void copy_triangle_to_tab(Triangle t);
 
 	CMainFrame(const wxString& title, const wxPoint& pos, const wxSize& size);
 	void CreateMyToolbar();
@@ -48,6 +49,7 @@ private:
 	void OnMENU_WIDTHLINE(wxCommandEvent& event);
 	void OnMENU_COLOR(wxCommandEvent& event);
 	void OnMENU_TRIANGLE(wxCommandEvent& event);
+	void OnMENU_DRAWINGMODE(wxCommandEvent& event);
 
 	DECLARE_EVENT_TABLE();
 
