@@ -6,6 +6,9 @@ BEGIN_EVENT_TABLE(OpenGLCanvas,wxGLCanvas)
   EVT_MOTION(OpenGLCanvas::OnMouseMove)
   EVT_LEFT_DOWN(OpenGLCanvas::OnLeftDown)
   EVT_LEFT_UP(OpenGLCanvas::OnLeftUp)
+  EVT_RIGHT_DOWN(OpenGLCanvas::OnRightDown)
+	EVT_MENU(POPUP_PROP_TRIANGLE,OpenGLCanvas::OnContextPptes)
+	EVT_MENU(POPUP_DEL_TRIANGLE,OpenGLCanvas::OnContextSuppr)
 END_EVENT_TABLE()
 
 OpenGLCanvas::OpenGLCanvas(wxWindow *parent, wxWindowID id,
@@ -18,6 +21,7 @@ OpenGLCanvas::OpenGLCanvas(wxWindow *parent, wxWindowID id,
 	is_third_point=false;
 
 	drawn=new Triangle();
+	selected_tri=-1;
 }
 
 OpenGLCanvas::~OpenGLCanvas(void)
@@ -214,3 +218,109 @@ void OpenGLCanvas::OnLeftDown(wxMouseEvent& event){
 	}
 }
 void OpenGLCanvas::OnLeftUp(wxMouseEvent& event){}
+void OpenGLCanvas::OnRightDown(wxMouseEvent& event){
+	int res=EstDansTriangle(event.GetX(),event.GetY());
+	wxMenu MainMenu;
+	
+	if(res!=-1){
+		wxMenuItem* ProprietyTriangle=new wxMenuItem(&MainMenu,POPUP_PROP_TRIANGLE,wxT("Propriete de ce triangle"));
+		wxMenuItem* DeleteTriangle=new wxMenuItem(&MainMenu,POPUP_DEL_TRIANGLE,wxT("Supprimer ce triangle"));
+			
+		MainMenu.Append(ProprietyTriangle);
+		MainMenu.Append(DeleteTriangle);
+		
+		PopupMenu( &MainMenu, event.GetX(), event.GetY());
+	
+	}		
+	else{
+
+		wxMenu* File=new wxMenu;
+		wxMenu* Management=new wxMenu;
+		wxMenu* CurrentValue=new wxMenu;
+
+		File->Append(MENU_OPEN,wxT("Ouvrir fichier"));
+		File->Append(MENU_SAVE,wxT("Sauvegarder fichier"));
+
+		
+		Management->Append(MENU_TRIANGLE,wxT("Gestion des triangles"));
+
+		CurrentValue->Append(MENU_COLOR,wxT("Couleurs Courantes"));
+		CurrentValue->Append(MENU_WIDTHLINE,wxT("Epaisseur Courante"));
+
+		MainMenu.Append(POPUP_FILE,wxT("Fichiers"),File);
+		MainMenu.Append(POPUP_MANAGEMENT,wxT("Gestion"),Management);
+		MainMenu.Append(POPUP_CURRENT_VALUES,wxT("Valeurs courantes"),CurrentValue);
+		
+		PopupMenu( &MainMenu, event.GetX(), event.GetY());
+	}
+}
+
+int OpenGLCanvas::EstDansTriangle(int x, int y){
+  	
+		int w,h,i;
+  	GetClientSize(&w, &h);
+		
+		if(x<w/2.)
+			x=-(w/2.-x);
+		else
+			x=(x-w/2.);
+
+		if(y>h/2.)
+			y=-(y-h/2.);
+		else
+			y=(h/2.-y);
+
+	for (i = 0; i < ((CMainFrame*)GetParent())->get_num_tri(); i++) {
+		if(((CMainFrame*)GetParent())->get_triangle(i).IsPointInTriangle(x,y)){
+			selected_tri=i;
+			return i;
+		}
+	}
+	return -1;
+}
+
+void OpenGLCanvas::OnContextPptes(wxCommandEvent& event){
+	ProprietyDialog pdlg(this,-1,wxT("Propriété"));
+	pdlg.isFromPopup=true;	
+	Triangle tri=((CMainFrame*)GetParent())->get_triangle(selected_tri);
+	wxString name;
+	wxColour cur_colour=tri.colour;
+	
+	if(cur_colour.Red())
+		pdlg.radio->SetSelection(0);
+	else if(cur_colour.Green()){
+		pdlg.radio->SetSelection(1);
+	}
+	else if(cur_colour.Blue()){
+		pdlg.radio->SetSelection(2);
+	}
+	
+	name.Printf(wxT("Triangle %d"),selected_tri);
+
+	pdlg.textCtrl->ChangeValue(name);
+	pdlg.spin->SetValue((int)tri.thickness);
+
+	pdlg.ShowModal();
+}
+
+void OpenGLCanvas::OnContextSuppr(wxCommandEvent& event){
+	int i;
+
+	if (selected_tri==((CMainFrame*)GetParent())->num_tri-1) {
+		((CMainFrame*)GetParent())->num_tri-=1;
+	}
+	else{
+		for (i = selected_tri; i < ((CMainFrame*)GetParent())->num_tri; i++) {
+			((CMainFrame*)GetParent())->tab_tri[i]=((CMainFrame*)GetParent())->tab_tri[i+1];
+		}
+		((CMainFrame*)GetParent())->num_tri-=1;
+	}
+
+	if(((CMainFrame*)GetParent())->num_tri==0){
+    ((CMainFrame*)GetParent())->GetMenuBar()->Enable(MENU_TRIANGLE,false);
+	}
+	
+	
+	((CMainFrame*)GetParent())->Update();
+
+}

@@ -1,6 +1,8 @@
 #ifndef __TRIANGLE_H__
 #define __TRIANGLE_H__
 
+#include <wx/colour.h>
+
 typedef struct 
 {
 	float x;	
@@ -19,6 +21,7 @@ public:
 	wxColour colour;
 
 	float thickness;
+	bool IsPointInTriangle(int x, int y);
 };
 
 

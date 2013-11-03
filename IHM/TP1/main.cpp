@@ -49,6 +49,7 @@ bool MyApp::OnInit()
 	option_menu->Append(MENU_TRIANGLE,wxT("Gestion Triangle"));
 
 	help_menu->Append(MENU_VERSION,wxT("Version"));
+	help_menu->Append(MENU_HELP,wxT("ouvrir l'aide"));
 	
 	display_menu->AppendCheckItem(MENU_TOOLBAR,wxT("Afficher la barre d'outil"));
 	display_menu->Check(MENU_TOOLBAR,TRUE);

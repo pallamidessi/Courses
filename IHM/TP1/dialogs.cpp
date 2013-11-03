@@ -163,7 +163,6 @@ void TriangleDialog::OnWIDGET_PROPRIETY(wxCommandEvent& event){
 
 	pdlg.textCtrl->ChangeValue(name);
 	pdlg.spin->SetValue((int)tri.thickness);
-	std::cout<<tri.thickness<<std::endl;
 	pdlg.ShowModal();
 }
 
@@ -188,6 +187,7 @@ void TriangleDialog::OnWIDGET_DELETE(wxCommandEvent& event){
     ((CMainFrame*)GetParent())->GetMenuBar()->Enable(MENU_TRIANGLE,false);
 	}
 	
+	
 	((CMainFrame*)GetParent())->Update();
 }
 
@@ -205,7 +205,7 @@ void TriangleDialog::OnWIDGET_LISTBOX(wxCommandEvent& event){
 ProprietyDialog::ProprietyDialog( wxWindow *parent, wxWindowID id,
 														const wxString &title=wxT("Propriété")) : 
 														wxDialog( parent, id, title){
-
+	isFromPopup=false;
 	wxBoxSizer* item0=new wxBoxSizer(wxHORIZONTAL);
 	wxBoxSizer* radio_container=new wxBoxSizer(wxVERTICAL);
 	wxBoxSizer* misc_container=new wxBoxSizer(wxVERTICAL);
@@ -253,10 +253,15 @@ void ProprietyDialog::OnWIDGET_RADIO(wxCommandEvent& event){
 	else if (event.GetSelection()==2) {
 		chose_colour.Printf(wxT("RGB(0,0,255)"));
 	}
-	
-	((CMainFrame*)(GetParent()->GetParent()))->tab_tri[((TriangleDialog*)GetParent())->selected_triangle].colour.Set(chose_colour);
+	if(!isFromPopup)
+		((CMainFrame*)(GetParent()->GetParent()))->tab_tri[((TriangleDialog*)GetParent())->selected_triangle].colour.Set(chose_colour);
+	else
+		((CMainFrame*)(GetParent()->GetParent()))->tab_tri[((OpenGLCanvas*)GetParent())->selected_tri].colour.Set(chose_colour);
 }
 
 void ProprietyDialog::OnWIDGET_SPIN(wxSpinEvent& event){
+	if(!isFromPopup)
 	((CMainFrame*)(GetParent()->GetParent()))->tab_tri[((TriangleDialog*)GetParent())->selected_triangle].thickness=spin->GetValue();
+	else
+	((CMainFrame*)(GetParent()->GetParent()))->tab_tri[((OpenGLCanvas*)GetParent())->selected_tri].thickness=spin->GetValue();
 }

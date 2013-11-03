@@ -67,6 +67,7 @@ class TriangleDialog: public wxDialog{
 class ProprietyDialog: public wxDialog{
 	
 	public :
+		bool isFromPopup;
 		wxSpinCtrl* spin;
 		wxRadioBox* radio;
 		wxTextCtrl* textCtrl;

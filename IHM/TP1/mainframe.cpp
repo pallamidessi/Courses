@@ -62,7 +62,7 @@ void CMainFrame::OnMENU_DRAWINGMODE(wxCommandEvent& event){
 
 void CMainFrame::OnMENU_NEW(wxCommandEvent& event){
 	num_tri=0;
-  >GetMenuBar()->Enable(MENU_TRIANGLE,false);
+  GetMenuBar()->Enable(MENU_TRIANGLE,false);
 }
 
 void CMainFrame::OnMENU_OPEN(wxCommandEvent& event){
