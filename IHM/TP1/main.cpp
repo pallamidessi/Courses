@@ -26,7 +26,8 @@ bool MyApp::OnInit()
 	m_MainFrame->Show(TRUE);
 	
 	wxMenuBar *menu_bar = new wxMenuBar;
-
+	
+	/*Creation des sous-menus*/
 	wxMenu *file_menu = new wxMenu;
 	wxMenu *display_menu = new wxMenu;
 	wxMenu *option_menu = new wxMenu;

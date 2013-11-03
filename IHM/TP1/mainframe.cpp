@@ -2,11 +2,10 @@
 #include <stdlib.h>
 #include <wx/wx.h>
 #include <wx/accel.h>
-
 #include "mainframe.h"
 
 
-
+/*Function table for CMainFrame (Menu and toolbar)*/
 BEGIN_EVENT_TABLE(CMainFrame, wxFrame)
   EVT_MENU(MENU_QUIT,CMainFrame::OnMENU_QUIT)
   EVT_MENU(MENU_OPEN,CMainFrame::OnMENU_OPEN)
@@ -21,7 +20,14 @@ BEGIN_EVENT_TABLE(CMainFrame, wxFrame)
 END_EVENT_TABLE()
 
 
-
+/**
+* /brief		Constructor of CMainFrame
+*	/details	Use wxFrame constructor
+*
+*	@param	title title of the CMainFrame instance
+*	@param	pos position for the wxWidget environnement
+*	@param	size size for the wxWidget environnemnt
+**/
   CMainFrame::CMainFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
 : wxFrame((wxFrame *)NULL, -1, title, pos, size) 
 {
@@ -31,6 +37,11 @@ END_EVENT_TABLE()
 	couleurCourante=new wxColour(wxT("RGB(0,255,0)"));
 } //constructor
 
+/**
+* /brief		Create and attach a toolbar to the CMainFrame instance
+*	/details	Use external image for the buttons
+*
+**/
 void CMainFrame::CreateMyToolbar(){
 
   m_toolbar=CreateToolBar( wxTB_HORIZONTAL,TOOLBAR_TOOLS);
@@ -53,19 +64,40 @@ void CMainFrame::CreateMyToolbar(){
   SetToolBar(m_toolbar);
 }
 
-void CMainFrame::OnMENU_DRAWINGMODE(wxCommandEvent& event){
+/**
+* /brief		Function triggered when the drawing button is pressed
+*	/details	Enable or disable drawing depending of the button state
+*
+*	@param	event The event which triggered the button
+**/
+
+void CMainFrame::OnMENU_DRAWINGMODE(wxCommandFunction& event){
 	if(is_drawing==false)
 		is_drawing=true;
 	else
 		is_drawing=false;
 }
-
-void CMainFrame::OnMENU_NEW(wxCommandEvent& event){
+/**
+* /brief		Function triggered when the "new" item menu or toolbar icon is 
+* 					pressed
+*	/details	Destroy all triangle contained in the triangle array
+*
+*	@param	event The event sent when the item menu or the icon was pressed
+**/
+void CMainFrame::OnMENU_NEW(wxCommandFunction& event){
 	num_tri=0;
   GetMenuBar()->Enable(MENU_TRIANGLE,false);
 }
 
-void CMainFrame::OnMENU_OPEN(wxCommandEvent& event){
+/**
+* /brief		Function triggered when the "open" item menu or toolbar icon is 
+* 					pressed
+*	/details	Load all triangle contained in the specified .tri file in the triangle array
+*
+*	@param	event The event sent when the item menu or the icon was pressed
+**/
+
+void CMainFrame::OnMENU_OPEN(wxCommandFunction& event){
   int r,g,b;
 	int i;
 
@@ -108,8 +140,16 @@ void CMainFrame::OnMENU_OPEN(wxCommandEvent& event){
   }
 
 }
+/**
+* /brief		Function triggered when the "save" item menu or toolbar icon is 
+* 					pressed
+*	/details	Save (and overwrite) all triangle contained in the triangle array to the specified .tri file
+*
+*	@param	event The event sent when the item menu or the icon was pressed
+**/
 
-void CMainFrame::OnMENU_SAVE(wxCommandEvent& event){
+
+void CMainFrame::OnMENU_SAVE(wxCommandFunction& event){
   int i;
 
 	wxFileDialog fd(this,wxT("Enregistrer vers :"),wxT("."),wxT(""),wxT("*.tri"),wxFD_SAVE|wxFD_OVERWRITE_PROMPT);
@@ -150,11 +190,25 @@ void CMainFrame::OnMENU_SAVE(wxCommandEvent& event){
   }
 }
 
-void CMainFrame::OnMENU_QUIT(wxCommandEvent& event){
+/**
+* /brief		Function triggered when the "Quit" item menu is clicked on
+*	/details	Quit the application 
+*
+*	@param	event The event sent when the item menu was pressed
+**/
+
+void CMainFrame::OnMENU_QUIT(wxCommandFunction& event){
   Close(TRUE);
 }
 
-void CMainFrame::OnMENU_CHECK(wxCommandEvent& event){
+/**
+* /brief		Function triggered when the "open" item menu pressed
+*	/details	Show or hide the toolbar depending on the check menu item
+*
+*	@param	event The event sent when the item menu was pressed
+**/
+
+void CMainFrame::OnMENU_CHECK(wxCommandFunction& event){
   wxToolBar* tool=NULL;
 
   if ((tool=GetToolBar())!=NULL) {
@@ -166,53 +220,123 @@ void CMainFrame::OnMENU_CHECK(wxCommandEvent& event){
   }
 }
 
-void CMainFrame::OnMENU_WIDTHLINE(wxCommandEvent& event){
+/**
+* /brief		Function triggered when the "Epaisseur" item menu is clicked on
+*	/details	Create and show a WidthLineDialog box
+*
+*	@param	event The event sent when the item menu was pressed
+**/
+void CMainFrame::OnMENU_WIDTHLINE(wxCommandFunction& event){
   WidthLineDialog wdlg(this,-1,wxT("Epaisseur"));
   wdlg.ShowModal();
 }
-void CMainFrame::OnMENU_TRIANGLE(wxCommandEvent& event){
+/**
+* /brief		Function triggered when the "Gestion Triangle" item menu is clicked on
+*	/details	Create and show a TriangleDialog box
+*
+*	@param	event The event sent when the item menu was pressed
+**/
+void CMainFrame::OnMENU_TRIANGLE(wxCommandFunction& event){
   TriangleDialog tdlg(this,-1,wxT("Gestion des triangles"));
   tdlg.ShowModal();
 }
-void CMainFrame::OnMENU_COLOR(wxCommandEvent& event){
+/**
+* /brief		Function triggered when the "Couleur" item menu is clicked on
+*	/details	Create and show a ColorDialog box
+*
+*	@param	event The event sent when the item menu was pressed
+**/
+void CMainFrame::OnMENU_COLOR(wxCommandFunction& event){
   ColorDialog cdlg(this,-1,wxT("Couleur"));
   cdlg.ShowModal();
 }
-void CMainFrame::OnMENU_VERSION(wxCommandEvent& event){
+/**
+* /brief		Function triggered when the "Version" item menu is clicked on
+*	/details	Create and show a VersionDialog box
+*
+*	@param	event The event sent when the item menu was pressed
+**/
+void CMainFrame::OnMENU_VERSION(wxCommandFunction& event){
 
   VersionDialog vdlg(this,-1,wxT("Version"));
-
   vdlg.ShowModal();
 }
-
+/**
+* /brief		Get the current line width 
+*	/details	Getter for CMainFrame member epaisseurTraitCourant
+*
+* @return	epaisseurTraitCourant The current line width (int)
+**/
 int CMainFrame::get_width(){
   return epaisseurTraitCourant;	
 }
 
+/**
+* /brief		Get the current colour 
+*	/details	Getter for CMainFrame member couleurCourante;
+*
+* @return	couleurCourante The current colour (wxColour*)
+**/
 wxColour* CMainFrame::get_color(){
   return couleurCourante;
 }
 
+/**
+* /brief		To known is the drawing mode is enabled or not
+*	/details	Getter for CMainFrame member is_drawing
+*
+* @return	is_drawing Return True if drawing mode is enble, false otherwise
+**/
 bool CMainFrame::get_drawing_active(){
   return is_drawing;
 }
 
+/**
+* /brief		Set the line width of the CMainFrame instance
+*	/details	Setter for CMainFrame member epaisseurTraitCourant
+*
+*	@param	width The new line width
+**/
 void CMainFrame::set_width(int width){
   epaisseurTraitCourant=width;
 }
 
+/**
+* /brief		Set the current coloour of the CMainFrame instance
+*	/details	Setter for CMainFrame member couleurCourante using wxC2S_NAME convention
+*
+*	@param	color wxString designing the new color 
+**/
 void CMainFrame::set_color(wxString color){
   couleurCourante->Set(color);
 }
 
+/**
+* /brief		Set the drawing mode of the CMainFrame instance
+*	/details	Setter for CMainFrame member is_drawing
+*
+*	@param	mode The mode to set 
+**/
 void CMainFrame::set_drawing(bool mode){
   is_drawing=mode;
 }
 
+/**
+* /brief		Get the number of active triangle in the triangle array
+*	/details	Getter for CMainFrame member numTri
+*
+* @return	numTri Return the number of active triangle
+**/
 int CMainFrame::get_num_tri(){
    return num_tri;
 }
 
+/**
+* /brief		Get the triangle given by the index in the Triangle array 
+*	/details	Getter for CMainFrame member tabTri
+*
+* @return	tri The wanted triangle
+**/
 Triangle CMainFrame::get_triangle(int index){
  // if (index>num_tri) {
  //   return NULL;
@@ -221,7 +345,12 @@ Triangle CMainFrame::get_triangle(int index){
     return tab_tri[index];  
  // }
 }
-
+/**
+* /brief		Copy the given Triangle to the Triangle array
+*	/details	The triangle is not inserted if the array is full
+*
+*	@param	t The Triangle to insert
+**/
 void CMainFrame::copy_triangle_to_tab(Triangle t){
 	if (num_tri!=5) {
 			tab_tri[num_tri].p1.x=t.p1.x;
