@@ -42,6 +42,8 @@ void M_init(Mesh *M);
 void M_addQuad(Mesh *M, Quad q);
 // ajoute au Mesh le quadrilatère q
 
+void drawQuad(Quad q);
+
 void M_draw(Mesh *M);
 // dessine le Mesh M
 
