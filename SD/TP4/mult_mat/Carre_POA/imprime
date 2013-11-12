@@ -1,0 +1,5 @@
+rm -f *~ 
+(for i in Icarre.idl IcarreImpl.java Serveur.java Client.java; do echo "======"; echo $i; echo "====="; cat $i ; done) > pok~
+mv pok~ pok.java
+a2ps -1 --line-numbers=2 -b" " --left-title=" " --left-footer=" " --footer=" " --right-title=" " --center-title="Corba Intro" -L 85 --right-footer=" " pok.java -o pok.ps
+mv pok.java pok.java~ 

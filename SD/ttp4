@@ -1,0 +1,25 @@
+compr () {
+ ARCH="$1"
+ shift
+ rm -f ${ARCH}.tgz ${ARCH}.zip
+ tar cvzof ${ARCH}.tgz $*
+ zip -r -9 ${ARCH}.zip $*
+} 
+
+cd TP4
+for i in Carre* Telephone*RMI *Corr
+do
+  cd $i
+  echo $PWD
+  if (test -f clean) then ./clean; fi
+  if (test -f detruit) then ./detruit; fi
+  rm -f *~ *.class \#* */*~ */*.class */\#*
+  ls -tla
+  cd ..
+done
+cd ..
+set -v
+compr Tout_TP4 ttp4 TP4
+compr Corr_TP4 ttp4 TP4/Carre_* TP4/*Corr
+compr TP4 ttp4 TP4/Carre TP4/*.idl TP4/Me_Lire.txt TP4/TelephoneExerciceRMI
+

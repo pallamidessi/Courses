@@ -2,7 +2,8 @@
 
 entiers2 * divise(entiers2 *e) { 
   static entiers2 res; 
-	res.y=e->x%e->y;
+
+  res.y=e->x%e->y;
 	res.x=(e->x/e->y);
 	
 	return &res;

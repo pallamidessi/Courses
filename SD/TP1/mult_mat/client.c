@@ -8,7 +8,12 @@ int main (int argc, char **argv) {
 	char choix;
 
   matrix_couple donnee;
+  if (argc!=2) {
+    printf("Usage : %s [IP server]\n",argv[0]);
+    exit(1);
+  }
 
+  //Rempli aleatoirement une matrice 2x2
 	srand(time(NULL));
 	for (i = 0; i < 2; i++) {
 		for (j = 0; j < 2; j++) {
@@ -46,6 +51,7 @@ int main (int argc, char **argv) {
     clnt_perrno(stat);      fprintf(stderr, "\n");
   } else {
 		
+    //lit le matrice resultat recu
 		for (i = 0; i < 2; i++) {
 			for (j = 0; j < 2; j++) {
 				printf("%f ",res.mat[i][j]);

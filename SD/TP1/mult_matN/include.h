@@ -23,11 +23,12 @@ typedef struct str_matrix_couple{
 } matrix_couple,*Matrix_couple;
 
 typedef struct { int x; int y; } entiers2;
-bool_t xdr_matrix(XDR *, Matrix);
-bool_t xdr_matrix_couple(XDR *, Matrix_couple );
+bool_t xdr_matrix(XDR *, Matrix*);
+bool_t xdr_matrix_couple(XDR *, Matrix_couple* );
 
 Matrix new_matrix(int dim);
 Matrix_couple new_matrix_couple(int dim);
+void xdr_freep(void* p);
 void print_matrix(Matrix m);
 void print_matrix_couple(Matrix_couple m);
 void fill_random_matrix(Matrix m);

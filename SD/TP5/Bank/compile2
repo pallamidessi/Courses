@@ -1,0 +1,6 @@
+#!/bin/bash
+set -v
+idlj -fall  Compte.idl
+javac CompteImpl.java
+javac Serveur.java 
+javac Client.java 

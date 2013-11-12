@@ -5,7 +5,13 @@ int main (int argc, char **argv) {
   enum clnt_stat stat;
   entiers2 res;
   entiers2 donnees = {13 , 5};
-  stat = callrpc(/* host */ host,
+ 
+ if (argc !=2) {
+   printf("Usage:%s [IP server]\n",argv[0]);
+   exit(1);
+ }
+ 
+ stat = callrpc(/* host */ host,
 		 /* prognum */ PROGNUM,
 		 /* versnum */ VERSNUM,
 		 /* procnum */ PROCNUM,

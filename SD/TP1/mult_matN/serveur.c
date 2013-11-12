@@ -1,33 +1,56 @@
 #include "include.h"
 
-matrix * addition(matrix_couple *m) { 
-  Matrix c,a,b;
+Matrix * addition(Matrix_couple* m) { 
+  Matrix a,b;
+  static Matrix c;
 	int i,j;
-	int dim=m->dim;
+  static int dim;
 
-	c=new_matrix(dim);
-	a=m->a;
-	b=m->b;
+  if (c!= NULL) {
+    for (i = 0; i < dim; i++) {
+      xdr_freep(c->mat[i]);
+    }
+    xdr_freep(c);
+  }
+  
+  dim=(*m)->dim;
 
-	print_matrix_couple(m);
+	c=new_matrix(dim); //to free
+	a=(*m)->a;
+	b=(*m)->b;
+
+	print_matrix_couple(*m);
 
 	for (i = 0; i < dim; i++) {
 		for (j = 0; j < dim; j++) {
 			c->mat[i][j]=a->mat[i][j]+b->mat[i][j];
 		}
 	}
-	return c;
-}
-matrix * multiplication(matrix_couple *m) { 
-  Matrix c,a,b;
-	int i,j,k;
-	int dim=m->dim;
-	
-	c=new_matrix(dim);
-	a=m->a;
-	b=m->b;
+  Matrix* res=&c;
 
-	print_matrix_couple(m);
+	return res;
+}
+
+Matrix * multiplication(Matrix_couple *m) { 
+  Matrix a,b;
+  static Matrix c;
+	int i,j,k;
+	static int dim;
+
+  if (c!= NULL) {
+    for (i = 0; i < dim; i++) {
+      xdr_freep(c->mat[i]);
+    }
+    xdr_freep(c);
+  }
+  
+  dim=(*m)->dim;
+
+	c=new_matrix(dim); //to free
+	a=(*m)->a;
+	b=(*m)->b;
+
+	print_matrix_couple(*m);
 	for (i = 0; i < dim; i++) {
 		for (j = 0; j < dim; j++) {
 			for (k = 0; k < dim; k++) {
@@ -35,7 +58,9 @@ matrix * multiplication(matrix_couple *m) {
 			}
 		}
 	}
-	return c;
+  Matrix* res=&c;
+	
+  return res;
 }
 
 int main (void) {

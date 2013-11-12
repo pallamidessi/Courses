@@ -1,0 +1,25 @@
+compr () {
+ ARCH="$1"
+ shift
+ rm -f ${ARCH}.tgz ${ARCH}.zip
+ tar cvzof ${ARCH}.tgz $*
+ zip -r -9 ${ARCH}.zip $*
+} 
+
+cd TP5
+for i in Correction Nommage Mystere
+do
+  cd $i
+  echo $PWD
+  if (test -f clean) then ./clean; fi
+  if (test -f detruit) then ./detruit; fi
+  rm -f *~ *.class \#* */*~ */*.class */\#*
+  ls -tla
+  cd ..
+done
+cd ..
+set -v
+compr Tout_TP5 ttp5 TP5
+compr Corr_TP5 ttp5 TP5/Correction
+compr TP5 ttp5 TP5/Nommage TP5/Mystere TP5/Me_Lire.txt 
+

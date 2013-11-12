@@ -4,10 +4,14 @@ int main (int argc, char **argv) {
   char *host = argv[1];
   enum clnt_stat stat;
   Matrix res;
-	int i,j;
+	int i,j,dim;
 	char choix;
 
 	srand(time(NULL));
+   
+  if (argc!=2) {
+    printf("Usage :%s [IP serveur]\n",argv[0]);
+  }
 
   Matrix_couple donnee=new_matrix_couple(rand()%10+1);
 	fill_random_matrix_couple(donnee);
@@ -22,7 +26,7 @@ int main (int argc, char **argv) {
 			 /* versnum */ VERSNUM,
 			 /* procnum */ PROCNUM_MULT,
 			 /* encodage argument */ (xdrproc_t) xdr_matrix_couple,
-			 /* argument */ (char *)donnee,
+			 /* argument */ (char *)&donnee,
 			 /* decodage retour */ (xdrproc_t)xdr_matrix,
 			 /* retour de la fonction distante */(char *)&res);
 	}
@@ -32,7 +36,7 @@ int main (int argc, char **argv) {
 			 /* versnum */ VERSNUM,
 			 /* procnum */ PROCNUM_ADD,
 			 /* encodage argument */ (xdrproc_t) xdr_matrix_couple,
-			 /* argument */ (char *)donnee,
+			 /* argument */ (char *)&donnee,
 			 /* decodage retour */ (xdrproc_t)xdr_matrix,
 			 /* retour de la fonction distante */(char *)&res);
 	}
@@ -41,8 +45,9 @@ int main (int argc, char **argv) {
     clnt_perrno(stat);      fprintf(stderr, "\n");
   } else {
 		
-		for (i = 0; i < 2; i++) {
-			for (j = 0; j < 2; j++) {
+    dim=res->dim;
+		for (i = 0; i < dim; i++) {
+			for (j = 0; j < dim; j++) {
 				printf("%f ",res->mat[i][j]);
 			}
     	printf("\n");

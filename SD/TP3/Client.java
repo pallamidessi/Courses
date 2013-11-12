@@ -6,8 +6,9 @@ import java.net.MalformedURLException ;
 
 public class Client {
    
-	public void print_matrice(int[][] m){
+	public static void print_matrice(int[][] m){
 		int dim=m.length;
+    int i,j;
 
 		for (i = 0; i < dim; i++) {
 			for (j = 0; j < dim; j++) {
@@ -25,16 +26,16 @@ public class Client {
 	    System.exit(0);
 	}
 	try {
-	    OpMatrice b =(OpMatrice) Naming.lookup("//"+args[0]+"/OpMatrice" );
+	    OpMatrice m =(OpMatrice) Naming.lookup("//"+args[0]+"/OpMatrice" );
       int[][] a = { {1, 0, 0}, {0, 2, 0}, {0, 0, 3} };
       int[][] b = { {1, 2, 3}, {1, 2, 3}, {1, 2, 3} };
 			
 	    System.out.println("Soit la matrice A:");
-			print_matrice(a);
+			Client.print_matrice(a);
 	    System.out.println("Soit la matrice B:");
-			print_matrice(b);
+			Client.print_matrice(b);
 
-			int[][] result= b.multiplicationMatrice(a,b);
+			int[][] result= m.multiplicationMatrice(a,b);
 	    
 			System.out.println("Le résultat de AB:");
 			print_matrice(result);

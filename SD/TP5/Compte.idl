@@ -1,0 +1,8 @@
+interface Compte{
+  int solde
+
+  void deposeBillets(in float depot){
+  boolean retireBillets(in float retrait,out boolean result){
+  float afficheMontant(out float montant){
+  //boolean virementCompteaCompte(in float somme, in CompteImpl destinataire){
+}

@@ -1,5 +1,5 @@
 #!/bin/bash
 set -v
+idlj -Fall Annuaire.idl
 javac *.java
-rmic AnnuaireImpl
 

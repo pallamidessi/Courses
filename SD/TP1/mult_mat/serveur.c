@@ -1,10 +1,9 @@
 #include "include.h"
 
-matrix * addition(matrix_couple *m) { 
+matrix * addition(Matrix_couple m) { 
   static matrix c;
 	int i,j;
 	
-	print_matrix_couple(m);
 
 	for (i = 0; i < 2; i++) {
 		for (j = 0; j < 2; j++) {
@@ -13,11 +12,11 @@ matrix * addition(matrix_couple *m) {
 	}
 	return &c;
 }
-matrix * multiplication(matrix_couple *m) { 
+
+matrix * multiplication(Matrix_couple m) { 
   static matrix c;
 	int i,j,k;
 	
-	print_matrix_couple(m);
 	for (i = 0; i < 2; i++) {
 		for (j = 0; j < 2; j++) {
 			for (k = 0; k < 2; k++) {
@@ -30,6 +29,7 @@ matrix * multiplication(matrix_couple *m) {
 
 int main (void) {
   bool_t stat;
+  bool_t stat2;
  
   stat = registerrpc(/* prognum */ PROGNUM,
 		     /* versnum */ VERSNUM,
@@ -38,18 +38,20 @@ int main (void) {
 		     /* decodage arguments */ (xdrproc_t)xdr_matrix_couple,
 		     /* encodage retour de fonction */ (xdrproc_t)xdr_matrix);
   
-	stat = registerrpc(/* prognum */ PROGNUM,
+	stat2 = registerrpc(/* prognum */ PROGNUM,
 		     /* versnum */ VERSNUM,
 		     /* procnum */ PROCNUM_ADD,
 		     /* pointeur sur fonction */  addition,
 		     /* decodage arguments */ (xdrproc_t)xdr_matrix_couple,
 		     /* encodage retour de fonction */ (xdrproc_t)xdr_matrix);
 
-  if (stat != 0) {
+  if (stat != 0 && stat2 != 0) {
     fprintf(stderr,"Echec de l'enregistrement\n");
     exit(1);
   }
+
   svc_run(); /* le serveur est en attente de clients eventuels */
+  
   return(0); /* on y passe jamais ! */
 }
 
