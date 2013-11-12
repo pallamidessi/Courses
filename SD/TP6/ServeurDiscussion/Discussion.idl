@@ -1,0 +1,16 @@
+module Discussion {
+    interface ClientDisc {
+	oneway void receiveEnter(in string name);
+	oneway void receiveExit(in string name);
+	oneway void receiveChat(in string name, in string message);
+    };
+
+    struct UserInfo { string name; ClientDisc chatter; };
+
+    interface ServeurDisc {
+	oneway void login(in string name, in ClientDisc chatter);
+	oneway void logout(in string name);
+        oneway void chat(in string name, in string message);
+        string ping();
+    };
+};

@@ -1,0 +1,4 @@
+idlj -fall Hello.idl
+javac HelloApp/*.java
+javac -classpath ".:HelloApp" *.java
+

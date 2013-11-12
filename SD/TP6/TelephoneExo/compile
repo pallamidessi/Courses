@@ -1,0 +1,3 @@
+idlj -fall Annuaire.idl
+javac  *.java
+

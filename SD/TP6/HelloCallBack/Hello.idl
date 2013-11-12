@@ -1,0 +1,9 @@
+module HelloApp {
+   interface HelloCallback {
+        void callback(in string message);
+   };
+   interface Hello {
+        string sayHello(in HelloCallback objRef, in string message);
+        oneway void shutdown();
+    };
+};
