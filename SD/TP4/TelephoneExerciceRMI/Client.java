@@ -49,7 +49,7 @@ implements ActionListener {
   public void actionPerformed(ActionEvent ae) {
     try {
       StringHolder message=new StringHolder();
-       annuaire.chercheNom(texte.getText(),message);
+      annuaire.chercheNom(texte.getText(),message);
       intitule.setText(message.value);
     } catch (Exception e) {
       System.out.println(e.getMessage());

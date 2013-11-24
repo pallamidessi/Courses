@@ -5,9 +5,9 @@ import java.io.*;
 
 class CompteImpl extends ComptePOA{
   public float solde;
-  
+
   public CompteImpl(){}
-  
+
   public CompteImpl(int somme){
     solde=somme;
   }
@@ -33,7 +33,7 @@ class CompteImpl extends ComptePOA{
       destinataire.deposeBillets(somme);
       return true;
     }
-      return false;
+    return false;
   }
 
 

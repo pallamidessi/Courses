@@ -32,18 +32,18 @@ public class Serveur {
       // ETAPE 2
       org.omg.CosNaming.NamingContext nc=NamingContextHelper.narrow(obj);
       // ETAPE 3
-      
+
       //Agency name,context and binding to nc
       NameComponent[] agencyNameContext=new NameComponent[1];
       agencyNameContext[0]=new NameComponent("agence","");
-      
+
       NamingContext agencyContext=nc.new_context();
       nc.rebind_context(agencyNameContext,agencyContext);
-      
+
       //Client name,context and binding to agency
       NameComponent[] clientNameContext1=new NameComponent[1];
       clientNameContext1[0]=new NameComponent("Client1","");
-      
+
       NameComponent[] clientNameContext2=new NameComponent[1];
       clientNameContext2[0]=new NameComponent("Client2","");
 
@@ -52,14 +52,14 @@ public class Serveur {
 
       NamingContext client2=agencyContext.new_context();
       agencyContext.rebind_context(clientNameContext2,client2);
-      
+
       //Client 1 compte name,object, and binding to client 1
       NameComponent[] firstClientCompte1=new NameComponent[1];
       firstClientCompte1[0]=new NameComponent("Compte1","");
-      
+
       NameComponent[] firstClientCompte2=new NameComponent[1];
       firstClientCompte2[0]=new NameComponent("Compte2","");
-      
+
       poaobj = poa.servant_to_reference( co1 );
       client1.bind(firstClientCompte1,poaobj);
       poaobj= poa.servant_to_reference(co2);

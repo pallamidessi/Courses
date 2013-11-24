@@ -31,7 +31,7 @@ public class Client2 {
       String[] adress={"-ORBInitialHost",args[1],"-ORBInitialPort",args[2]};
       ORB orb = ORB.init( adress, null ); 
       org.omg.CORBA.Object o= orb.resolve_initial_references("NameService");
-      
+
       if (o==null) {
         System.out.println("Erreur:Pas de contexte de ce nom !");
         return ;
@@ -42,7 +42,7 @@ public class Client2 {
 
       NameComponent[] agenceName=new NameComponent[1];
       agenceName[0]=new NameComponent(args[0],"");
-      
+
       try{
         o=nc.resolve(agenceName);
       }catch(Exception e){

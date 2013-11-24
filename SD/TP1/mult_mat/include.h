@@ -12,12 +12,12 @@
 #define PROCNUM_ADD 2 //Addition
 
 typedef struct str_matrix{
-	float mat[2][2];
+  float mat[2][2];
 }matrix,*Matrix;
 
 typedef struct str_couple_matrix{
-	matrix a;
-	matrix b;
+  matrix a;
+  matrix b;
 } matrix_couple,*Matrix_couple;
 
 typedef struct { int x; int y; } entiers2;

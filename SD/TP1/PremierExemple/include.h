@@ -6,8 +6,8 @@
 #include <rpc/xdr.h>
 #include <rpc/rpc.h>
 /*Sur une machine SPARC, ajouter :
-  #include <rpc/clnt_soc.h>
-  #include <rpc/svc_soc.h> */
+#include <rpc/clnt_soc.h>
+#include <rpc/svc_soc.h> */
 
 /* regarder dans /usr/include/types.h et /usr/include/rpc/xdr.h
    les definitions de bool_t et xdrproc_t qui correspondent respectivement

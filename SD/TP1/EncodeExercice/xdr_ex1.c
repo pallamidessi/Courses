@@ -59,27 +59,27 @@ int main (int argc, char *argv[]) {
 
 /*
 
--------------------------------------------
-Affichage a l'execution (#define TAILLE 256)
--------------------------------------------
-Entier lu : -1001
-Reel lu : 3.140000
-les pointeurs sur les chaines : 0 8049bd8
-Chaine lue : Bingo !
-Chaine lue : Re Bingo !
-les pointeurs sur les chaines : 8049bf0 8049bd8
+   -------------------------------------------
+   Affichage a l'execution (#define TAILLE 256)
+   -------------------------------------------
+   Entier lu : -1001
+   Reel lu : 3.140000
+   les pointeurs sur les chaines : 0 8049bd8
+   Chaine lue : Bingo !
+   Chaine lue : Re Bingo !
+   les pointeurs sur les chaines : 8049bf0 8049bd8
 
 
--------------------------------------------
-Affichage a l'execution (#define TAILLE 16)
--------------------------------------------
-Erreur d'encodage de la chaine 0
-Erreur d'encodage de la chaine 1
-Entier lu : -1001
-Reel lu : 3.140000
-les pointeurs sur les chaines : 0 8049b70
-Erreur decodage chaine 0
-Erreur decodage chaine 1
-les pointeurs sur les chaines : 8049b88 8049b70
+   -------------------------------------------
+   Affichage a l'execution (#define TAILLE 16)
+   -------------------------------------------
+   Erreur d'encodage de la chaine 0
+   Erreur d'encodage de la chaine 1
+   Entier lu : -1001
+   Reel lu : 3.140000
+   les pointeurs sur les chaines : 0 8049b70
+   Erreur decodage chaine 0
+   Erreur decodage chaine 1
+   les pointeurs sur les chaines : 8049b88 8049b70
 
 */

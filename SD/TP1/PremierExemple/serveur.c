@@ -14,11 +14,11 @@ int * proc_dist(int *n) {
 int main (void) {
   bool_t stat;
   stat = registerrpc(/* prognum */ PROGNUM,
-		     /* versnum */ VERSNUM,
-		     /* procnum */ PROCNUM,
-		     /* pointeur sur fonction */  proc_dist,
-		     /* decodage arguments */ (xdrproc_t)xdr_int,
-		     /* encodage retour de fonction */ (xdrproc_t)xdr_int);
+      /* versnum */ VERSNUM,
+      /* procnum */ PROCNUM,
+      /* pointeur sur fonction */  proc_dist,
+      /* decodage arguments */ (xdrproc_t)xdr_int,
+      /* encodage retour de fonction */ (xdrproc_t)xdr_int);
   if (stat != 0) {
     fprintf(stderr,"Echec de l'enregistrement\n");
     exit(1);
@@ -28,9 +28,9 @@ int main (void) {
 }
 /*
 Affichage :
-  serveur: variable n (debut) : 1094861636,
-  serveur: variable n (fin) : 1094861637,
-  serveur: variable res : 1094861637
+serveur: variable n (debut) : 1094861636,
+serveur: variable n (fin) : 1094861637,
+serveur: variable res : 1094861637
 */
 
 

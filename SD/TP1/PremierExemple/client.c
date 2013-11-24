@@ -8,13 +8,13 @@ int main (int argc, char **argv) {
   if (argc != 2) { printf("Usage: %s machine_serveur\n",argv[0]); exit(0); }
   printf("client: variable n (debut) : %d %s,\n",n,(char *)&n);
   stat = callrpc(/* host */ host,
-		 /* prognum */ PROGNUM,
-		 /* versnum */ VERSNUM,
-		 /* procnum */ PROCNUM,
-		 /* encodage argument */ (xdrproc_t) xdr_int,
-		 /* argument */ (char *)&n,
-		 /* decodage retour */ (xdrproc_t)xdr_int,
-		 /* retour de la fonction distante */(char *)&res);
+      /* prognum */ PROGNUM,
+      /* versnum */ VERSNUM,
+      /* procnum */ PROCNUM,
+      /* encodage argument */ (xdrproc_t) xdr_int,
+      /* argument */ (char *)&n,
+      /* decodage retour */ (xdrproc_t)xdr_int,
+      /* retour de la fonction distante */(char *)&res);
 
   if (stat != RPC_SUCCESS) { 
     fprintf(stderr, "Echec de l'appel distant\n");
@@ -27,30 +27,30 @@ int main (int argc, char **argv) {
 }
 
 /*  L'affichage sur un PC:
-      client: variable n (debut) : 1094861636 DCBA,
-      client: variable n (fin) : 1094861636,
-      client: variable res : 1094861637
+client: variable n (debut) : 1094861636 DCBA,
+client: variable n (fin) : 1094861636,
+client: variable res : 1094861637
 
-    L'affichage de la premiere ligne differe sur une SPARC :
-      client: variable n (debut) : 1094861636 ABCD,
+L'affichage de la premiere ligne differe sur une SPARC :
+client: variable n (debut) : 1094861636 ABCD,
 
 
- Questions :
+Questions :
 
 1) Ligne 7, pourquoi declare'e la variable 'res' static ?
 
 2) Expliquez pourquoi l'affichage au niveau du client est
-   different selon que l'on utilise une SPARC ou un PC.
+different selon que l'on utilise une SPARC ou un PC.
 
 3) Lignes 56 et 57, comprendre la declaration de type qui
-   est faite.
+est faite.
 
 4) Pourquoi la valeur finale de (*n) est differente
-   sur le serveur et sur le client ?
+sur le serveur et sur le client ?
 
 5) Ecrire une application client/serveur permettant de 
-   calculer le quotient et le reste de la division de 
-   deux nombres en un seul appel distant.
+calculer le quotient et le reste de la division de 
+deux nombres en un seul appel distant.
 
 
 

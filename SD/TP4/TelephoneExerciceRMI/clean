@@ -1,1 +1,1 @@
-\rm -f *~ *.class
+\rm -f *~ *.class *Holder.java *Helper.java *POA.java *Operations.java  *Stub.java _*

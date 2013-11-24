@@ -2,12 +2,12 @@ import java.rmi.server.UnicastRemoteObject ;
 import java.rmi.RemoteException ;
 
 public class MessageImpl 
-    extends UnicastRemoteObject
-    implements Message  {
+extends UnicastRemoteObject
+implements Message  {
 
-    public MessageImpl () throws RemoteException {super();};
-    public String messageDistant() 
-			throws RemoteException { 
-			return("Test" );
+  public MessageImpl () throws RemoteException {super();};
+  public String messageDistant() 
+    throws RemoteException { 
+      return("Test" );
     }
 }

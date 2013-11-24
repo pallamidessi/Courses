@@ -13,13 +13,13 @@
 
 
 typedef struct matrix{
-	float **mat;
-	int dim;
+  float **mat;
+  int dim;
 }str_matrix,Matrix*;
 
 typedef struct{
-	matrix a;
-	matrix b;
+  matrix a;
+  matrix b;
 } matrix_couple;
 
 typedef struct { int x; int y; } entiers2;
