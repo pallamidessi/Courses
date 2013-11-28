@@ -49,9 +49,18 @@ void P_draw(Polygon *P){
 		bool is_closed=P->_is_closed;
 	Vector current;
 	Vector current2;
+	
+	if (P->_is_convex) {
+		//glColor rouge
+		glColor3d(255,0,0);	
+	}
+	else{
+		//glColor bleu
+		glColor3d(0,0,255);	
+	}
 
 	if(is_closed){
-		//glColor...
+		
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glBegin(GL_POLYGON);
 
@@ -92,4 +101,64 @@ void  P_tournerAutourDeLAxeY(Polygon *P, double radians){}
 // radians autour de l'axe Y.
 
 
+void P_close(Polygon *P){
+	
+	if (!P->_is_closed &&){
+		if(P_simple(P))	
+			P->_is_closed=TRUE;
+	}
+}
+
+//Marche uniquement pour de s point avec z=0;
+int P_isConvex(Polygon *P){
+	int i;
+	int nb_vertices=P->_nb_vertices;
+	
+	if (nb_vertices<3) {
+		return TRUE;
+	}
+	
+	Vector* vertices=P->_vertices;
+	Vector V1;
+	Vector V2;
+	Vector crossProduct;
+
+	V1=V_substract(vertices[i+1],vertices[i]);
+	V2=V_substract(vertices[i+2],vertices[i+1]);
+	crossProduct=V_cross(V1,v2);
+
+	if(crossProduct.z>0)
+		signe=1;
+	else
+		signe=0;
+
+	for (i = 1; i < nb_vertices-2; i++) {
+		V1=V_substract(vertices[i+1],vertices[i]);
+		V2=V_substract(vertices[i+2],vertices[i+1]);
+		crossProduct=V_cross(V1,v2);
+		if(!((crossProduct.z>0 && signe==1) || (crossProduct.z<0 && signe==0)))
+			return FALSE;
+	}
+
+	return TRUE;
+}
+
+int P_simple(Polygon *P){
+	Vector* tab=P->_vertices;
+	int nb_vertices=P->_nb_vertices;
+	Vector last_vertex=vertices[_nb_vertices-1];
+	Vector before_last_vertex=vertices[_nb_vertices-2];
+	
+	if (nb_vertices<3) {
+		return TRUE;
+	}
+
+	for (i = 0; i < nb_vertices-2; i++) {
+		if (V_segmentsIntersect(last_vertex,before_last_vertex,vertices[i],vertices[i+1])) {
+			return FALSE;
+		}
+	}
+
+	return TRUE;
+}
 #endif // __POLYGON_H__

@@ -96,6 +96,12 @@ double V_length(Vector v){
 	return lenght;
 }
 
+Vector V_unit(Vector v){
+	
+	double  length=V_length(v);
+	return V_new(v.x/length,v.y/length,v.z/lenght)
+}
+
 int V_segmentsIntersect(Vector p1, Vector p2, Vector q1, Vector q2){
 
 	if (V_isOnTheRight(p1,q1,q2) && !V_isOnTheRight(p2,q1,q2) || 

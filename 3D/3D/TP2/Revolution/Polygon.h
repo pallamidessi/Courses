@@ -13,6 +13,7 @@
 #include <math.h>
 
 #include "Vector.h"
+#include "bool.h"
 
 #define P_MAX_VERTICES 1000
 
@@ -40,6 +41,9 @@ void P_addVertex(Polygon *P, Polygon pos);
 void P_removeLastVertex(Polygon *P);
 // enlève le dernier sommet de P
 
+void P_close(Polygon *P);
+// Ferme un polygone pas encore fini
+
 void P_draw(Polygon *P);
 // dessine le polygone P
 
@@ -51,4 +55,11 @@ void  P_tournerAutourDeLAxeY(Polygon *P, double radians);
 // tourne tous les points de P d'un angle de radians
 // radians autour de l'axe Y.
 
+void P_simple(Polygon *P);
+//Test si un polygon est simple lors de sa construction
+//Si le polygone n'est pas simple alors,on enleve le dernier vertex.
+//
+int P_isConvex(Polygon *P);
+//Renvoye 1 si le polygone est convexe, 0 sinon
+//Convexe par defaut <= 2 sommet
 #endif // __POLYGON_H__

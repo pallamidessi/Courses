@@ -19,6 +19,9 @@ int height = 600;
 
 /*Polygon courant */
 Polygon poly;
+
+/*Saisie*/
+unsigned int stop=0;
 //------------------------------------------------------------
 
 void drawRepere()
@@ -100,6 +103,12 @@ void keyboard(unsigned char keycode, int x, int y)
 	/* touche ECHAP */
 	if (keycode==27)
 		exit(0);
+	if (keycode=='c') {
+		stop=1;
+	}
+	if (keycode=='c') {
+		P_close(&poly);
+	}
 	glutPostRedisplay();
 }
 
@@ -128,15 +137,24 @@ void mouse(int button, int state, int x, int y)
     case GLUT_LEFT_BUTTON :
 		if(state==GLUT_DOWN){
 			fprintf(stderr,"Clic gauche\n");
-      if(!poly._is_closed)
-      P_addVertex(&poly,V_new(x,y,1));
+      
+			if(!poly._is_closed || stop==0)
+				P_addVertex(&poly,V_new(x,y,1));
+				
+				if(!P_simple(&poly))
+					P_removeLastVertex(&poly);
+
+				if (P_isConvex(&poly)) {
+					poly._is_convex=TRUE;
+				}
     }
 		break;
 
     case GLUT_MIDDLE_BUTTON :
-		if(state==GLUT_DOWN)
+		if(state==GLUT_DOWN){
 			fprintf(stderr,"Clic milieu\n");
-      
+    	stop=1;
+		}
 		break;
 
     case GLUT_RIGHT_BUTTON :
