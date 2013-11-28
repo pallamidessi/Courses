@@ -45,8 +45,9 @@ void P_removeLastVertex(Polygon *P){
 
 void P_draw(Polygon *P){
 	Vector* tab=P->_vertices;
-	int nb_vertices=P->_nb_vertices
-		bool is_closed=P->_is_closed;
+	int nb_vertices=P->_nb_vertices;
+	bool is_closed=P->_is_closed;
+	
 	Vector current;
 	Vector current2;
 
@@ -91,5 +92,50 @@ void  P_tournerAutourDeLAxeY(Polygon *P, double radians){}
 // tourne tous les points de P d'un angle de radians
 // radians autour de l'axe Y.
 
+
+Vector P_center(Polygon *P){
+	int i;
+	int x=0,y=0,z=0;
+
+	Vector* vertices=P->_vertices;
+	int nb_vertices=P->_nb_vertices;
+
+	for (i = 0; i <nb_vertices; i++) {
+		x+=vertices[i].x;
+		y+=vertices[i].y;
+		z+=vertices[i].z;
+	}
+
+	return V_new(x/nb_vertices,y/nb_vertices,z/nb_vertices);
+}
+
+Vector P_normal(Polygon *P){
+	if (!P->_is_closed) {
+		return V_new(0,0,0);
+	}
+	
+	Vector* vertices=P->_vertices;
+	
+	Vector V1=V_substract(vertices[1],vertices[0]);
+	Vector V2=V_substract(vertices[2],vertices[1]);
+
+	Vector normal=V_cross(V1,V2);
+	Vector normal_unit=V_multiply(normal,1/V_length(normal));
+	return normal_unit;
+}
+
+
+void P_translate(Polygon *P, Vector trans){
+	int i;
+	Vector* tab=P->_vertices;
+	int nb_vertices=P->_nb_vertices;
+
+	for (i = 0; i < nb_vertices; i++) {
+		vertices[i].x=trans.x;
+		vertices[i].y=trans.y;
+		vertices[i].z=trans.z;
+	}
+
+}
 
 #endif // __POLYGON_H__

@@ -26,7 +26,8 @@ typedef struct
 } Quad;
 
 Quad Q_new(Vector v1, Vector v2, Vector v3, Vector v4);
-
+void Q_draw(Quad q,int mode)
+void Q_print(Quad q){
 //--------------------------------------------
 
 typedef struct
@@ -45,6 +46,6 @@ void M_addSlice(Mesh *P, Polygon *p1, Polygon *p2);
 void M_revolution(Mesh *P, Polygon *p1, int nb_slices);
 void M_perlinExtrude(Mesh *QM, Polygon *p, int nb_slices);
 
-void M_draw(Mesh *P);
+void M_draw(Mesh *P,int mode);
 
 #endif // _MESH_H_
