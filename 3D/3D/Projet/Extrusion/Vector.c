@@ -92,24 +92,40 @@ int V_isOnTheRight(Vector M, Vector A, Vector B){
 
 double V_length(Vector v){
 
-	double length=sqrt(x*x+y*y+z*z);
-	return lenght;
+	double length=sqrt(v.x*v.x+v.y*v.y+v.z*v.z);
+	return length;
+}
+
+Vector V_unit(Vector v){
+	
+	double  length=V_length(v);
+	return V_new(v.x/length,v.y/length,v.z/length);
 }
 
 int V_segmentsIntersect(Vector p1, Vector p2, Vector q1, Vector q2){
 
-	if (V_isOnTheRight(p1,q1,q2) && !V_isOnTheRight(p2,q1,q2) || 
-			V_isOnTheRight(p2,q1,q2) && !V_isOnTheRight(p1,q1,q2)){
-		return=1;
+	if ((V_isOnTheRight(p1,q1,q2) && !V_isOnTheRight(p2,q1,q2)) || 
+			(V_isOnTheRight(p2,q1,q2) && !V_isOnTheRight(p1,q1,q2))){
+		return TRUE;
 	}
+	return FALSE;
 }
 
 int V_rayIntersectsSegment(Vector M, Vector u_ray, Vector p1, Vector p2){
 	
-	if(V_cross(u_ray,V_substract(p2,p1).z>0))
+	//if(V_cross(u_ray,V_substract(p2,p1).z>0))
+	return 0;
 }
 
 double V_decompose(Vector p, Vector u){
-	return 
+	return 0.; 
 }
 
+Vector V_recompose(double x, double y, double z, Vector u, Vector v, Vector w){
+	Vector result=V_new(0,0,0);
+	return result;
+}
+
+void V_uxUyFromUz(Vector u_z, Vector *u_x, Vector *u_y){
+	
+}

@@ -11,21 +11,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-
+#include "bool.h"
 typedef struct
 {
 	float x, y, z;
 } Vector;
 
 Vector V_new(float x, float y, float z);
+// retourne un vecteur de composantes x, y et z
 
 void V_print(Vector v, char *message);
+// affiche à l'écran les coordonnées de v + un message (debug)
+
 Vector V_add(Vector v1, Vector v2);
+// retourne v1+v2
+
 Vector V_substract(Vector v1, Vector v2);
+// retourne v1-v2
+
 Vector V_multiply(double lambda, Vector v);
 Vector V_cross(Vector v1, Vector v2);
 float  V_dot(Vector v1, Vector v2);
-float  V_length(Vector v);
+double  V_length(Vector v);
 Vector V_unit(Vector v);
 int    V_isOnTheRight(Vector M, Vector A, Vector B);
 int    V_segmentsIntersect(Vector p1, Vector p2, Vector q1, Vector q2);

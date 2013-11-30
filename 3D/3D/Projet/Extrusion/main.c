@@ -1,9 +1,9 @@
 
 /*======================================================*\
-  Wednesday September the 25th 2013
-  Arash HABIBI
-  Question1.c
-\*======================================================*/
+	Wednesday September the 25th 2013
+	Arash HABIBI
+	Question1.c
+	\*======================================================*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,7 +13,9 @@
 
 #include "Vector.h"
 #include "Polygon.h"
-#include "QuadMesh.h"
+#include "Mesh.h"
+#include "bool.h"
+#include "utils.h"
 
 #define DIM2 0
 #define DIM3 1
@@ -25,18 +27,15 @@ int height = 650;
 
 GLfloat p_light[4];
 
-//------------------------------------------------------------
+/*Polygon courant */
+Polygon poly;
+/*Mesh courant*/
+Mesh* mesh;
 
-void drawLine(Vector p1, Vector p2)
-{
-	glBegin(GL_LINES);
-	glVertex3d(p1.x,p1.y,p1.z);
-	glVertex3d(p2.x,p2.y,p2.z);
-	glEnd();
-}
+/*Saisie*/
+unsigned int stop=0;
 
 //------------------------------------------------------------
-
 void initShade()
 {
 	GLfloat mat_diffuse[] = {1,1,1,1.0};
@@ -93,7 +92,12 @@ void keyboard(unsigned char keycode, int x, int y)
 
 	if (keycode==27) // ECHAP
 		exit(0);
-
+	if (keycode=='c') {
+		stop=1;
+	}
+	if (keycode=='c') {
+		P_close(&poly);
+	}
 	glutPostRedisplay();
 }
 
@@ -103,15 +107,15 @@ void special(int keycode, int x, int y)
 {
 	int mod = glutGetModifiers();
 	switch(keycode)
-    {
-    case GLUT_KEY_UP        : printf("Flèche haut\n"); break;
-    case GLUT_KEY_DOWN      : printf("Flèche bas\n"); break;
-    case GLUT_KEY_LEFT      : printf("Flèche gauche\n"); break;
-    case GLUT_KEY_RIGHT     : printf("Flèche droite\n"); break;
-    case GLUT_KEY_PAGE_UP   : printf("Flèche avant\n"); break;
-    case GLUT_KEY_PAGE_DOWN : printf("Flèche arriere\n"); break;
-    default : fprintf(stderr,"function special : unknown keycode %d\n",keycode); break;
-    }
+	{
+		case GLUT_KEY_UP        : printf("Flèche haut\n"); break;
+		case GLUT_KEY_DOWN      : printf("Flèche bas\n"); break;
+		case GLUT_KEY_LEFT      : printf("Flèche gauche\n"); break;
+		case GLUT_KEY_RIGHT     : printf("Flèche droite\n"); break;
+		case GLUT_KEY_PAGE_UP   : printf("Flèche avant\n"); break;
+		case GLUT_KEY_PAGE_DOWN : printf("Flèche arriere\n"); break;
+		default : fprintf(stderr,"function special : unknown keycode %d\n",keycode); break;
+	}
 	if(mod==GLUT_ACTIVE_CTRL)
 		glLightfv(GL_LIGHT0, GL_POSITION, p_light);
 }
@@ -120,8 +124,36 @@ void special(int keycode, int x, int y)
 
 void mouse(int button, int state, int x, int y)
 {
-	printf("Clic at %d %d \n",x,y);
+	switch(button)
+	{
+		case GLUT_LEFT_BUTTON :
+			if(state==GLUT_DOWN){
+				fprintf(stderr,"Clic gauche\n");
 
+				if(!poly._is_closed || stop==0)
+					P_addVertex(&poly,V_new(x,y,1));
+
+				if(!P_simple(&poly))
+					P_removeLastVertex(&poly);
+
+				if (P_isConvex(&poly)) {
+					poly._is_convex=TRUE;
+				}
+			}
+			break;
+
+		case GLUT_MIDDLE_BUTTON :
+			if(state==GLUT_DOWN){
+				fprintf(stderr,"Clic milieu\n");
+				stop=1;
+			}
+			break;
+
+		case GLUT_RIGHT_BUTTON :
+			if(state==GLUT_DOWN)
+				fprintf(stderr,"Clic droit.\n");
+			break;
+	}
 	glutPostRedisplay();
 }
 
@@ -141,15 +173,15 @@ void idle()
 int main(int argc, char *argv[])
 {
 	glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
+	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowSize(width, height);
 	glutInitWindowPosition(50, 50);
-    glutCreateWindow("Transformations matricielles");
-    glViewport(0, 0, width, height);
+	glutCreateWindow("Transformations matricielles");
+	glViewport(0, 0, width, height);
 	glClearColor(0,0,0,0);
 
 	glutDisplayFunc(display);
-//	glutReshapeFunc(reshape);
+	//	glutReshapeFunc(reshape);
 	glutKeyboardFunc(keyboard);
 	glutSpecialFunc(special);
 	glutMouseFunc(mouse);
@@ -160,11 +192,10 @@ int main(int argc, char *argv[])
 	p_light[2]=0.0;
 	p_light[3]=1.0;
 
-	p_aim = V_new(0,0,-2.75);
-	P = P_new();
-	M = NULL;
+	Vector p_aim = V_new(0,0,-2.75);
+	mesh = NULL;
 
 	glutMainLoop();
 
-    return 0;
+	return 0;
 }

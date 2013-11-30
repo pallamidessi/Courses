@@ -26,8 +26,8 @@ typedef struct
 } Quad;
 
 Quad Q_new(Vector v1, Vector v2, Vector v3, Vector v4);
-void Q_draw(Quad q,int mode)
-void Q_print(Quad q){
+void Q_draw(Quad q,int mode);
+void Q_print(Quad q);
 //--------------------------------------------
 
 typedef struct
@@ -35,7 +35,7 @@ typedef struct
 	int _nb_quads;
 	Quad _quads[M_MAX_QUADS];
 	int _is_filled;
-	// int _is_smooth;
+	int _is_smooth;
 } Mesh;
 
 Mesh* M_new();

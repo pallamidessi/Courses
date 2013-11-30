@@ -1,4 +1,5 @@
-
+#include "Polygon.h"
+#include "utils.h"
 void P_init(Polygon *p){
 	p->_nb_vertices=0;
 	p->_is_closed=TRUE;
@@ -8,6 +9,8 @@ void P_init(Polygon *p){
 // initialise un polygone (0 sommets)
 
 void P_copy(Polygon *original, Polygon *copie){
+	int i;
+
 	copie->_nb_vertices=original->_nb_vertices;
 	copie->_is_closed=original->_is_closed;
 	copie->_is_filled=original->_is_filled;
@@ -24,11 +27,11 @@ void P_copy(Polygon *original, Polygon *copie){
 // deux polygones soient identiques.
 
 void P_addVertex(Polygon *P, Vector pos){
-	int pos=P->_nb_vertices-1;
+	int index=P->_nb_vertices-1;
 	bool is_filled=P->_is_filled;
 
 	if (!is_filled) {
-		P->_vertices[pos]=(Vector)pos;
+		P->_vertices[index]=(Vector)pos;
 	}
 
 }
@@ -47,9 +50,19 @@ void P_draw(Polygon *P){
 	Vector* tab=P->_vertices;
 	int nb_vertices=P->_nb_vertices;
 	bool is_closed=P->_is_closed;
-	
+	int i;
+
 	Vector current;
 	Vector current2;
+	
+	if (P->_is_convex) {
+		//glColor rouge
+		glColor3d(255,0,0);	
+	}
+	else{
+		//glColor bleu
+		glColor3d(0,0,255);	
+	}
 
 	if(is_closed){
 		//glColor...
@@ -77,8 +90,9 @@ void P_draw(Polygon *P){
 
 void P_print(Polygon *P, char *message){
 	Vector* tab=P->_vertices;
-	int nb_vertices=P->_nb_vertices
-		Vector current;
+	int nb_vertices=P->_nb_vertices;
+	Vector current;
+	int i;
 
 	for (i = 0; i < nb_vertices; i++) {
 		current=(Vector) tab[i];  
@@ -109,6 +123,15 @@ Vector P_center(Polygon *P){
 	return V_new(x/nb_vertices,y/nb_vertices,z/nb_vertices);
 }
 
+int P_close(Polygon *P){
+	
+	if (!P->_is_closed ){
+		if(P_simple(P))	
+			P->_is_closed=TRUE;
+	}
+	return FALSE;
+}
+
 Vector P_normal(Polygon *P){
 	if (!P->_is_closed) {
 		return V_new(0,0,0);
@@ -120,14 +143,14 @@ Vector P_normal(Polygon *P){
 	Vector V2=V_substract(vertices[2],vertices[1]);
 
 	Vector normal=V_cross(V1,V2);
-	Vector normal_unit=V_multiply(normal,1/V_length(normal));
+	Vector normal_unit=V_multiply(1/V_length(normal),normal);
 	return normal_unit;
 }
 
 
 void P_translate(Polygon *P, Vector trans){
 	int i;
-	Vector* tab=P->_vertices;
+	Vector* vertices=P->_vertices;
 	int nb_vertices=P->_nb_vertices;
 
 	for (i = 0; i < nb_vertices; i++) {
@@ -137,5 +160,58 @@ void P_translate(Polygon *P, Vector trans){
 	}
 
 }
+//Marche uniquement pour de s point avec z=0;
+int P_isConvex(Polygon *P){
+	int i;
+	int nb_vertices=P->_nb_vertices;
+	int signe;
 
-#endif // __POLYGON_H__
+	if (nb_vertices<3) {
+		return TRUE;
+	}
+	
+	Vector* vertices=P->_vertices;
+	Vector V1;
+	Vector V2;
+	Vector crossProduct;
+
+	V1=V_substract(vertices[i+1],vertices[i]);
+	V2=V_substract(vertices[i+2],vertices[i+1]);
+	crossProduct=V_cross(V1,V2);
+
+	if(crossProduct.z>0)
+		signe=1;
+	else
+		signe=0;
+
+	for (i = 1; i < nb_vertices-2; i++) {
+		V1=V_substract(vertices[i+1],vertices[i]);
+		V2=V_substract(vertices[i+2],vertices[i+1]);
+		crossProduct=V_cross(V1,V2);
+		if(!((crossProduct.z>0 && signe==1) || (crossProduct.z<0 && signe==0)))
+			return FALSE;
+	}
+
+	return TRUE;
+}
+
+int P_simple(Polygon *P){
+	Vector* vertices=P->_vertices;
+	int nb_vertices=P->_nb_vertices;
+	Vector last_vertex=vertices[nb_vertices-1];
+	Vector before_last_vertex=vertices[nb_vertices-2];
+	int i;
+
+	if (nb_vertices<3) {
+		return TRUE;
+	}
+
+	for (i = 0; i < nb_vertices-2; i++) {
+		if (V_segmentsIntersect(last_vertex,before_last_vertex,vertices[i],vertices[i+1])) {
+			return FALSE;
+		}
+	}
+
+	return TRUE;
+}
+
