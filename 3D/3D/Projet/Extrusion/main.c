@@ -68,7 +68,7 @@ void display()
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	if(dim==DIM2)	glOrtho(-1,1,-1,1,-1,1);
+	if(dim==DIM2)	glOrtho(0,650,650,0,-1,1);
 	else			gluPerspective( 40, (float)width/height, 1, 100);
 
 	glMatrixMode(GL_MODELVIEW);
@@ -78,8 +78,11 @@ void display()
 	// ...
 
 	// Repere du monde
-
 	drawRepere();
+	
+	drawLine(V_new(0,325,0),V_new(650,325,0));
+	drawLine(V_new(325,0,0),V_new(325,650,0));
+	P_draw(&poly);
 
 	glutSwapBuffers();
 }
@@ -130,14 +133,17 @@ void mouse(int button, int state, int x, int y)
 			if(state==GLUT_DOWN){
 				fprintf(stderr,"Clic gauche\n");
 
-				if(!poly._is_closed || stop==0)
-					P_addVertex(&poly,V_new(x,y,1));
+				if(!poly._is_closed && stop==0)
+					P_addVertex(&poly,V_new(x,y,0));
 
 				if(!P_simple(&poly))
 					P_removeLastVertex(&poly);
 
 				if (P_isConvex(&poly)) {
 					poly._is_convex=TRUE;
+				}
+				else{
+					poly._is_convex=FALSE;
 				}
 			}
 			break;
@@ -150,8 +156,10 @@ void mouse(int button, int state, int x, int y)
 			break;
 
 		case GLUT_RIGHT_BUTTON :
-			if(state==GLUT_DOWN)
+			if(state==GLUT_DOWN){
 				fprintf(stderr,"Clic droit.\n");
+				P_close(&poly);
+			}
 			break;
 	}
 	glutPostRedisplay();
@@ -179,7 +187,12 @@ int main(int argc, char *argv[])
 	glutCreateWindow("Transformations matricielles");
 	glViewport(0, 0, width, height);
 	glClearColor(0,0,0,0);
-
+	P_init(&poly);
+	
+	if(V_segmentsIntersect(V_new(0,325,0),V_new(650,325,0),V_new(325,0,0),V_new(325,650,0)))
+		printf("Intersection\n");
+	else
+		printf("pas intersection\n");
 	glutDisplayFunc(display);
 	//	glutReshapeFunc(reshape);
 	glutKeyboardFunc(keyboard);
@@ -191,8 +204,7 @@ int main(int argc, char *argv[])
 	p_light[1]=20.0;
 	p_light[2]=0.0;
 	p_light[3]=1.0;
-
-	Vector p_aim = V_new(0,0,-2.75);
+	//Vector p_aim = V_new(0,0,-2.75);
 	mesh = NULL;
 
 	glutMainLoop();

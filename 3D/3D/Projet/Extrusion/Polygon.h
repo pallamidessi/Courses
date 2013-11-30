@@ -29,6 +29,7 @@ typedef struct
 } Polygon;
 
 Polygon* P_new();
+void P_init(Polygon *P);
 
 void P_copy(Polygon *original, Polygon *copie);
 // original et copie sont deux polygones déjà alloués.

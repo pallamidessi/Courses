@@ -2,7 +2,7 @@
 #include "utils.h"
 void P_init(Polygon *p){
 	p->_nb_vertices=0;
-	p->_is_closed=TRUE;
+	p->_is_closed=FALSE;
 	p->_is_filled=FALSE;
 	p->_is_convex=TRUE;
 }
@@ -27,12 +27,21 @@ void P_copy(Polygon *original, Polygon *copie){
 // deux polygones soient identiques.
 
 void P_addVertex(Polygon *P, Vector pos){
-	int index=P->_nb_vertices-1;
+	int index;
 	bool is_filled=P->_is_filled;
+	
+	if (P->_nb_vertices==0) {
+		index=0;
+	}
+	else{
+		index=P->_nb_vertices;
+	}
 
 	if (!is_filled) {
 		P->_vertices[index]=(Vector)pos;
+		P->_nb_vertices++;
 	}
+
 
 }
 // ajoute un sommet au polygone P. Ce nouveau sommet est situé en pos.
@@ -40,8 +49,8 @@ void P_addVertex(Polygon *P, Vector pos){
 void P_removeLastVertex(Polygon *P){
 	P->_nb_vertices--;
 
-	if (P->_nb_vertices==0) {
-		P->_is_closed=TRUE;
+	if (P->_nb_vertices<0) {
+		P->_nb_vertices=0;
 	}
 }
 // enlève le dernier sommet de P
@@ -57,11 +66,11 @@ void P_draw(Polygon *P){
 	
 	if (P->_is_convex) {
 		//glColor rouge
-		glColor3d(255,0,0);	
+		glColor3d(1,0,0);	
 	}
 	else{
 		//glColor bleu
-		glColor3d(0,0,255);	
+		glColor3d(0,0,1);	
 	}
 
 	if(is_closed){
@@ -80,7 +89,7 @@ void P_draw(Polygon *P){
 		if (nb_vertices>1) {
 			for (i = 0; i < nb_vertices-1; i++) {
 				current=(Vector) tab[i];  
-				current=(Vector) tab[i+1];
+				current2=(Vector) tab[i+1];
 				drawLine(current,current2);
 			}
 		}
@@ -126,8 +135,17 @@ Vector P_center(Polygon *P){
 int P_close(Polygon *P){
 	
 	if (!P->_is_closed ){
-		if(P_simple(P))	
+		P_addVertex(P,P->_vertices[0]);
+		if(P_simple(P)){
+			P_removeLastVertex(P);
 			P->_is_closed=TRUE;
+			return TRUE;
+		}
+		else{
+			P_removeLastVertex(P);
+			P->_is_closed=FALSE;
+			return FALSE;
+		}
 	}
 	return FALSE;
 }
@@ -175,8 +193,8 @@ int P_isConvex(Polygon *P){
 	Vector V2;
 	Vector crossProduct;
 
-	V1=V_substract(vertices[i+1],vertices[i]);
-	V2=V_substract(vertices[i+2],vertices[i+1]);
+	V1=V_substract(vertices[1],vertices[0]);
+	V2=V_substract(vertices[2],vertices[1]);
 	crossProduct=V_cross(V1,V2);
 
 	if(crossProduct.z>0)
@@ -208,6 +226,7 @@ int P_simple(Polygon *P){
 
 	for (i = 0; i < nb_vertices-2; i++) {
 		if (V_segmentsIntersect(last_vertex,before_last_vertex,vertices[i],vertices[i+1])) {
+			printf("faux !!\n");
 			return FALSE;
 		}
 	}

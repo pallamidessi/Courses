@@ -37,7 +37,7 @@ Vector V_unit(Vector v);
 int    V_isOnTheRight(Vector M, Vector A, Vector B);
 int    V_segmentsIntersect(Vector p1, Vector p2, Vector q1, Vector q2);
 int    V_rayIntersectsSegment(Vector M, Vector u_ray, Vector p1, Vector p2);
-
+float det_from_vectors(Vector v1,Vector v2,Vector v3);
 Vector V_turnAroundY(Vector p, double angle);
 Vector V_turnAroundZ(Vector p, double angle);
 Vector V_projectOnPlane(Vector v, Vector normal);
