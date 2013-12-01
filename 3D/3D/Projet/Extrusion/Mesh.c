@@ -18,17 +18,19 @@ void Q_draw(Quad q,int mode)
 	Vector p2=q._vertices[1];
 	Vector p3=q._vertices[2];
 	Vector p4=q._vertices[3];
-
+	
+	glColor3d(0.5,0.3,0.1);
 	if(mode==0){
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	else
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	glBegin(GL_QUADS);
-	glVertex3f(p1.x,p1.y,p1.z);
-	glVertex3f(p2.x,p2.y,p2.z);
-	glVertex3f(p3.x,p3.y,p3.z);
-	glVertex3f(p4.x,p4.y,p4.z);
+	glVertex3f(p1.x,p1.y,p1.z+325);
+	glVertex3f(p2.x,p2.y,p2.z+325);
+	glVertex3f(p3.x,p3.y,p3.z+325);
+	glVertex3f(p4.x,p4.y,p4.z+325);
 	glEnd();
 }
 
@@ -49,11 +51,13 @@ void M_init(Mesh *M){
 // initialise un Mesh (0 quads)
 
 void M_addQuad(Mesh *M, Quad q){
-	int pos=M->_nb_quads-1;
+	int pos=M->_nb_quads;
 	bool is_filled=M->_is_filled;
+
 
 	if (!is_filled) {
 		M->_quads[pos]=(Quad) q;
+		M->_nb_quads++;
 	}
 
 }
@@ -112,6 +116,12 @@ void M_addSlice(Mesh *M, Polygon *P1, Polygon *P2){
 		verticesCurrent[3]=verticesP1[i+1];
 		M_addQuad(M,current);
 	}
+		verticesCurrent[0]=verticesP1[i];		
+		verticesCurrent[1]=verticesP2[i];		
+		verticesCurrent[2]=verticesP2[0];		
+		verticesCurrent[3]=verticesP1[0];
+		M_addQuad(M,current);
+
 }
 // P1 et P2 sont supposés être des polygones ayant le même
 // nombre N de sommets. Cette fonction ajoute à M les N quads
@@ -120,27 +130,32 @@ void M_addSlice(Mesh *M, Polygon *P1, Polygon *P2){
 void M_revolution(Mesh *M, Polygon *P, int nb_tranches){
 
 	Polygon rot;
+	Polygon tmp;
 	P_copy(P,&rot);
 	int nb_vertices=rot._nb_vertices;
 	int i,j;
 	Vector* vertices=rot._vertices;
-	double angle=2*3.14/nb_tranches;
+	double angle=(double)((720)/nb_tranches);
 
-	int newX,newZ;
-
-	for (i = 0; i < nb_tranches; i++) {
+	double newX,newZ;
+	P_copy(P,&tmp);
+	for (i = 1; i < nb_tranches; i++) {
 
 		for (j = 0; j < nb_vertices; j++) {
-			newX=vertices[j].x*cos(180/3.14*angle)+vertices[j].x*sin(180/3.14*angle);
-			newZ=vertices[j].z*cos(180/3.14*angle)+(-vertices[j].x)*sin(180/3.14*angle);
+			newX=(vertices[j].x)*cos((double)(180/3.14)*angle*i)+vertices[j].z*sin((double)(180/3.14)*angle*i);
+			newZ=vertices[j].z*cos((double)(180/3.14)*angle*i)-(vertices[j].x)*sin((double)(180/3.14)*angle*i);
+			
+			printf("X %f %f\n",vertices[j].x,newX);
+			printf("Z %f %f\n",vertices[j].z,newZ);
 			vertices[j].x=newX;
 			vertices[j].z=newZ;
 		}
-
-		M_addSlice(M,P,&rot);
-		rot=*P;
+		M_addSlice(M,&tmp,&rot);
+		P_copy(&rot,&tmp);
+		P_copy(P,&rot);
+		
 	}
-
+	M_addSlice(M,&tmp,P);
 	//finir le mesh ?
 
 }

@@ -80,7 +80,7 @@ void P_draw(Polygon *P){
 
 		for (i = 0; i < nb_vertices ; i++) {
 			current=(Vector) tab[i];  
-			glVertex3f(current.x,current.y,current.z);
+			glVertex3f(current.x,current.y,current.z+325);
 		}
 
 		glEnd();
@@ -90,6 +90,8 @@ void P_draw(Polygon *P){
 			for (i = 0; i < nb_vertices-1; i++) {
 				current=(Vector) tab[i];  
 				current2=(Vector) tab[i+1];
+				current.z++;
+				current2.z++;
 				drawLine(current,current2);
 			}
 		}
