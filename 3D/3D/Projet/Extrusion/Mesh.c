@@ -135,15 +135,15 @@ void M_revolution(Mesh *M, Polygon *P, int nb_tranches){
 	int nb_vertices=rot._nb_vertices;
 	int i,j;
 	Vector* vertices=rot._vertices;
-	double angle=(double)((720)/nb_tranches);
-
+	double angle=(double)((360.)/(double)(nb_tranches));
+	printf(" angle %f\n",angle);
 	double newX,newZ;
 	P_copy(P,&tmp);
-	for (i = 1; i < nb_tranches; i++) {
 
+	for (i = 1; i < nb_tranches; i++) {
 		for (j = 0; j < nb_vertices; j++) {
-			newX=(vertices[j].x)*cos((double)(180/3.14)*angle*i)+vertices[j].z*sin((double)(180/3.14)*angle*i);
-			newZ=vertices[j].z*cos((double)(180/3.14)*angle*i)-(vertices[j].x)*sin((double)(180/3.14)*angle*i);
+			newX= ((vertices[j].x)*cos(((float)(angle)*(float)(i)*3.14159)/180.))  +  (vertices[j].z*sin(((float)(3.14159)*(float)(angle)*(float)(i))/180.));
+			newZ=  (vertices[j].z*cos(((float)(3.14159)*(float)(angle)*(float)(i))/180.))    - ((vertices[j].x)*sin(((float)(3.14159)*(float)(angle)*(double)(i))/180.));
 			
 			printf("X %f %f\n",vertices[j].x,newX);
 			printf("Z %f %f\n",vertices[j].z,newZ);
@@ -153,8 +153,8 @@ void M_revolution(Mesh *M, Polygon *P, int nb_tranches){
 		M_addSlice(M,&tmp,&rot);
 		P_copy(&rot,&tmp);
 		P_copy(P,&rot);
-		
 	}
+
 	M_addSlice(M,&tmp,P);
 	//finir le mesh ?
 
