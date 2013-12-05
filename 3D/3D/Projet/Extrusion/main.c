@@ -31,6 +31,11 @@ float theta1=0;
 float theta2=0;
 float theta3=0;
 
+/*Eclairage*/
+Vector p_aim;
+float phi = -20;
+float theta = 20;
+
 GLfloat p_light[4];
 float zoom=400;
 
@@ -38,7 +43,7 @@ float zoom=400;
 Polygon poly;
 /*Mesh courant*/
 Mesh mesh;
-int nb_slice;
+int nb_slice=10;
 /*Mode de dessin du mesh*/
 int mode=1;
 /*Saisie*/
@@ -86,8 +91,8 @@ void display()
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	
-	
+
+
 	glTranslatef(325,325,0);
 	glRotatef(theta1,1,0,0);
 	glTranslatef(-325,-325,0);
@@ -95,7 +100,7 @@ void display()
 	glTranslatef(325,325,0);
 	glRotatef(theta2,0,1,0);
 	glTranslatef(-325,-325,0);
-	
+
 	glTranslatef(325,325,0);
 	glRotatef(theta3,0,0,1);
 	glTranslatef(-325,-325,0);
@@ -137,20 +142,36 @@ void keyboard(unsigned char keycode, int x, int y)
 	if (keycode=='m') {
 		if (mode==1) {
 			mode=0;
+			glDisable(GL_LIGHTING);
+			glDisable(GL_DEPTH_TEST);
 		}
 		else{
 			mode=1;
+			glEnable(GL_DEPTH_TEST);
+			initShade();
 		}
 	}
 	if (keycode=='+')
 		zoom+=4;
 	if (keycode=='-')
-		zoom+=4;
-		
-	if (keycode=='s')
+		zoom-=4;
+
+	if (keycode=='s'){
 		nb_slice++;
-	if (keycode=='S')
+		M_init(&mesh);
+		M_revolution(&mesh,&poly,nb_slice);
+		printf("%d\n",nb_slice);
+	}
+	if (keycode=='S'){
 		nb_slice--;
+		M_init(&mesh);
+		M_revolution(&mesh,&poly,nb_slice);
+		printf("%d\n",nb_slice);
+	}
+
+
+	if (keycode=='e')
+		M_perlinExtrude(&mesh,&poly,nb_slice);
 
 	if (keycode=='x')
 		theta1+=10;
@@ -175,12 +196,12 @@ void special(int keycode, int x, int y)
 	int mod = glutGetModifiers();
 	switch(keycode)
 	{
-		case GLUT_KEY_UP        : printf("Flèche haut\n"); break;
-		case GLUT_KEY_DOWN      : printf("Flèche bas\n"); break;
-		case GLUT_KEY_LEFT      : printf("Flèche gauche\n"); break;
-		case GLUT_KEY_RIGHT     : printf("Flèche droite\n"); break;
-		case GLUT_KEY_PAGE_UP   : printf("Flèche avant\n"); break;
-		case GLUT_KEY_PAGE_DOWN : printf("Flèche arriere\n"); break;
+		case GLUT_KEY_UP        : if(mod==GLUT_ACTIVE_CTRL) p_light[1]+=1; else if(mod==GLUT_ACTIVE_SHIFT) p_aim.y+=.1; else theta-= 10; break;
+		case GLUT_KEY_DOWN      : if(mod==GLUT_ACTIVE_CTRL) p_light[1]-=1; else if(mod==GLUT_ACTIVE_SHIFT) p_aim.y-=.1; else theta+= 10; break;
+		case GLUT_KEY_LEFT      : if(mod==GLUT_ACTIVE_CTRL) p_light[0]-=1; else if(mod==GLUT_ACTIVE_SHIFT) p_aim.x-=.1; else phi-= 10; break;
+		case GLUT_KEY_RIGHT     : if(mod==GLUT_ACTIVE_CTRL) p_light[0]+=1; else if(mod==GLUT_ACTIVE_SHIFT) p_aim.x+=.1; else phi+= 10; break;
+		case GLUT_KEY_PAGE_UP   : if(mod==GLUT_ACTIVE_CTRL) p_light[2]-=1; else p_aim.z-=1; break;
+		case GLUT_KEY_PAGE_DOWN : if(mod==GLUT_ACTIVE_CTRL) p_light[2]+=1; else p_aim.z+=1; break;
 		default : fprintf(stderr,"function special : unknown keycode %d\n",keycode); break;
 	}
 	if(mod==GLUT_ACTIVE_CTRL)
@@ -248,15 +269,11 @@ int main(int argc, char *argv[])
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowSize(width, height);
 	glutInitWindowPosition(50, 50);
-	glutCreateWindow("Transformations matricielles");
+	glutCreateWindow("Extrusion");
 	glViewport(0, 0, width, height);
 	glClearColor(0,0,0,0);
 	P_init(&poly);
 
-	if(V_segmentsIntersect(V_new(0,325,0),V_new(650,325,0),V_new(325,0,0),V_new(325,650,0)))
-		printf("Intersection\n");
-	else
-		printf("pas intersection\n");
 	glutDisplayFunc(display);
 	//	glutReshapeFunc(reshape);
 	glutKeyboardFunc(keyboard);
@@ -268,7 +285,7 @@ int main(int argc, char *argv[])
 	p_light[1]=20.0;
 	p_light[2]=0.0;
 	p_light[3]=1.0;
-	//Vector p_aim = V_new(0,0,-2.75);
+	p_aim = V_new(0,0,-2.75);
 
 	glutMainLoop();
 

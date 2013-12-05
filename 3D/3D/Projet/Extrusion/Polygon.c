@@ -163,7 +163,7 @@ Vector P_normal(Polygon *P){
 	Vector V2=V_substract(vertices[2],vertices[1]);
 
 	Vector normal=V_cross(V1,V2);
-	Vector normal_unit=V_multiply(1/V_length(normal),normal);
+	Vector normal_unit=V_multiply((double)(1./V_length(normal)),normal);
 	return normal_unit;
 }
 
@@ -174,9 +174,9 @@ void P_translate(Polygon *P, Vector trans){
 	int nb_vertices=P->_nb_vertices;
 
 	for (i = 0; i < nb_vertices; i++) {
-		vertices[i].x=trans.x;
-		vertices[i].y=trans.y;
-		vertices[i].z=trans.z;
+		vertices[i].x+=trans.x;
+		vertices[i].y+=trans.y;
+		vertices[i].z+=trans.z;
 	}
 
 }
@@ -236,3 +236,108 @@ int P_simple(Polygon *P){
 	return TRUE;
 }
 
+
+void P_rotate(Vector a,Vector b,Vector center,Polygon* P){
+	float V1z=a.z-center.z;
+	float V2z=b.z-center.z;
+	float V1x=a.x-center.x;
+	float V2x=b.x-center.x;
+
+	int signe[3];
+	double phi=0,tau=0,mu=0;
+	int i;
+	int nb_vertices=P->_nb_vertices;
+	Vector* vertices=P->_vertices;
+	Vector AO;
+	Vector BO;
+
+	a.x-=center.x;
+	a.y-=center.y;
+	a.z=0;
+
+	b.x-=center.x;
+	b.y-=center.y;
+	b.z=0;
+
+	//AO.x=-a.x;
+	//AO.y=-a.y;
+	//AO.z=-a.z;
+
+	//BO.x=-b.x;
+	//BO.y=-b.y;
+	//BO.z=-b.z;
+	printf("norme perlin%f\n",V_length(b));
+	printf("norme vector%f\n",V_length(a));
+	
+	//Angle de rotation autours de z
+	phi=acos(cos((V_dot(a,b)/180.)*3.14159));
+	printf("%f\n %f",phi,V_dot(a,b));
+	//phi/=(V_length(b));
+	printf("%f\n",phi);
+	signe[0]=V_cross(a,b).z;
+
+	a.z=V1z;
+	b.z=V2z;
+	
+	a.x=0;
+	b.x=0;
+	
+	AO.x=-a.x;
+	AO.y=-a.y;
+	AO.z=-a.z;
+
+	BO.x=-b.x;
+	BO.y=-b.y;
+	BO.z=-b.z;
+	//Angle de rotation autours de x
+	tau=acos(cos((V_dot(a,b)/180.)*3.14159));
+	//tau/=(V_length(b));
+	printf("%f\n %f",phi,V_dot(a,b));
+	printf("%f\n",tau);
+	signe[1]=V_cross(a,b).x;
+	a.x=V1x;
+	b.x=V2x;
+
+	a.y=0;
+	b.y=0;
+	
+	AO.x=-a.x;
+	AO.y=-a.y;
+	AO.z=-a.z;
+
+	BO.x=-b.x;
+	BO.y=-b.y;
+	BO.z=-b.z;
+	//Angle de rotation autours de y
+	mu=acos(cos((V_dot(a,b)/180.)*3.14159));
+	//mu/=V_length(b);
+	printf("%f\n",mu);
+	signe[2]=V_cross(a,b).y;
+	
+	if(signe[0]>=0)
+		signe[0]=1;
+	else
+		signe[0]=-1;
+
+	if(signe[1]>=0)
+		signe[1]=1;
+	else
+		signe[1]=-1;
+	
+	if(signe[2]>=0)
+		signe[2]=1;
+	else
+		signe[2]=-1;
+	
+	for (i = 0; i < nb_vertices; i++) {
+		vertices[i]=V_translate(vertices[i],center,-1);
+	//vertices[i]=V_rotateUx(vertices[i],tau*signe[1]);	
+	//vertices[i]=V_rotateUy(vertices[i],mu*signe[2]);	
+	//vertices[i]=V_rotateUx(vertices[i],phi*signe[0]);	
+	vertices[i]=V_rotateUx(vertices[i],tau);	
+	vertices[i]=V_rotateUy(vertices[i],mu);	
+	vertices[i]=V_rotateUx(vertices[i],phi);	
+		vertices[i]=V_translate(vertices[i],center,1);
+	}
+	
+}

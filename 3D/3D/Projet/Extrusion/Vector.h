@@ -46,5 +46,8 @@ double V_decompose(Vector p, Vector u);
 Vector V_recompose(double x, double y, double z, Vector u, Vector v, Vector w); 
 void V_uxUyFromUz(Vector u_z, Vector *u_x, Vector *u_y); 
 
-
+Vector V_rotateUz(Vector v,int angle);
+Vector V_rotateUx(Vector v,int angle);
+Vector V_rotateUy(Vector v,int angle);
+Vector V_translate(Vector V,Vector translate,int mult);
 #endif // __VECTOR_H__

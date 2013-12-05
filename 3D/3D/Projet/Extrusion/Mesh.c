@@ -12,14 +12,27 @@ Quad Q_new(Vector v1, Vector v2, Vector v3, Vector v4){
 	return q;
 }
 
+Vector Q_normal(Quad* q){
+	Vector* vertices=q->_vertices;
+
+	Vector V1=V_substract(vertices[1],vertices[0]);
+	Vector V2=V_substract(vertices[2],vertices[1]);
+
+	Vector normal=V_cross(V1,V2);
+	Vector normal_unit=V_multiply((double)(1./V_length(normal)),normal);
+	return normal_unit;
+	
+}
+
 void Q_draw(Quad q,int mode)
 {
 	Vector p1=q._vertices[0];
 	Vector p2=q._vertices[1];
 	Vector p3=q._vertices[2];
 	Vector p4=q._vertices[3];
+	Vector normal=Q_normal(&q);
 	
-	glColor3d(0.5,0.3,0.1);
+
 	if(mode==0){
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
@@ -27,6 +40,10 @@ void Q_draw(Quad q,int mode)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	glBegin(GL_QUADS);
+	
+	glNormal3f(normal.x,normal.y,normal.z);
+	glColor3d(0.5,0.3,0.1);
+	
 	glVertex3f(p1.x,p1.y,p1.z+325);
 	glVertex3f(p2.x,p2.y,p2.z+325);
 	glVertex3f(p3.x,p3.y,p3.z+325);
@@ -163,3 +180,25 @@ void M_revolution(Mesh *M, Polygon *P, int nb_tranches){
 // nb_tranches angles et ajoute à M les quads nécessaires pour
 // réaliser une révolution de P autour de l'axe Y (cf figure 1).
 
+void M_perlinExtrude(Mesh *QM, Polygon *p, int nb_slices){
+	int i;
+	Polygon tmp,tmp2;
+	P_copy(p,&tmp);
+	P_copy(p,&tmp2);
+	Vector perlin_from_polygon;
+
+	for (i = 0; i < nb_slices; i++) {
+		perlin_from_polygon=PRLN_vectorNoise(P_normal(&tmp));
+		V_print(perlin_from_polygon,"perlin");
+		V_print(P_normal(&tmp),"normal tmp");
+		P_translate(&tmp,V_multiply(100,perlin_from_polygon));
+		P_rotate(P_normal(&tmp),perlin_from_polygon,P_center(&tmp),&tmp);
+		V_print(P_normal(&tmp),"normal tmp");
+		M_addSlice(QM,&tmp,&tmp2);
+		P_copy(&tmp,&tmp2);
+		//P_print(&tmp,"polygon tmp");
+		//M_addQuad(QM,Q_new(tmp._vertices[0],tmp._vertices[1],tmp._vertices[2],tmp._vertices[3]));
+	}
+
+
+}

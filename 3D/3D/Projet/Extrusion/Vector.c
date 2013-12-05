@@ -167,3 +167,28 @@ Vector V_recompose(double x, double y, double z, Vector u, Vector v, Vector w){
 void V_uxUyFromUz(Vector u_z, Vector *u_x, Vector *u_y){
 
 }
+Vector V_rotateUx(Vector V,int angle){
+	V.y= ((V.y)*cos(((float)(angle)*3.14159)/180.))  -  (V.z*sin(((float)(3.14159)*(float)(angle))/180.));
+	V.z= (V.z*cos(((float)(3.14159)*(float)(angle))/180.))    + ((V.y)*sin(((float)(3.14159)*(float)(angle))/180.));
+	
+	return V;
+	
+}
+
+Vector V_rotateUy(Vector V,int angle){
+	V.x= ((V.x)*cos(((float)(angle)*3.14159)/180.))  +  (V.z*sin(((float)(3.14159)*(float)(angle))/180.));
+	V.z= (V.z*cos(((float)(3.14159)*(float)(angle))/180.))    - ((V.x)*sin(((float)(3.14159)*(float)(angle))/180.));
+	
+	return V;
+}
+
+Vector V_rotateUz(Vector V,int angle){
+	V.x= ((V.x)*cos(((float)(angle)*3.14159)/180.))  -  (V.y*sin(((float)(3.14159)*(float)(angle))/180.));
+	V.y= (V.y*cos(((float)(3.14159)*(float)(angle))/180.))    + ((V.x)*sin(((float)(3.14159)*(float)(angle))/180.));
+
+	return V;
+}
+
+Vector V_translate(Vector V,Vector translate,int mult){
+	return V_new(V.x+translate.x*mult,V.y+translate.y*mult,V.z+translate.z*mult);
+}

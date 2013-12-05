@@ -56,7 +56,8 @@ Vector P_center(Polygon *P);
 Vector P_normal(Polygon *P); 
 void P_scale(Polygon *P, double factor); 
 void P_translate(Polygon *P, Vector trans);
-void P_rotate(Polygon *P, Vector normal); 
+
+void P_rotate(Vector a,Vector b,Vector center,Polygon* P);
 
 void P_print(Polygon *P, char *message);
 // Affiche sur une console les données de P

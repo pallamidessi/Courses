@@ -28,6 +28,7 @@ typedef struct
 Quad Q_new(Vector v1, Vector v2, Vector v3, Vector v4);
 void Q_draw(Quad q,int mode);
 void Q_print(Quad q);
+Vector Q_normal(Quad* q);
 //--------------------------------------------
 
 typedef struct
@@ -41,6 +42,7 @@ typedef struct
 Mesh* M_new();
 void M_print(Mesh *P, char *message);
 
+void M_init(Mesh *M);
 void M_addQuad(Mesh *P, Quad q);
 void M_addSlice(Mesh *P, Polygon *p1, Polygon *p2);
 void M_revolution(Mesh *P, Polygon *p1, int nb_slices);
