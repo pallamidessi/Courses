@@ -19,6 +19,7 @@
 
 #define P_MAX_VERTICES 1000
 
+
 typedef struct
 {
 	int _nb_vertices;
@@ -43,7 +44,7 @@ void P_removeLastVertex(Polygon *P);
 void P_print(Polygon *P, char *message); 
 void P_draw(Polygon *P);
 
-
+void drawRepereTest(Vector x,Vector y, Vector z,Vector center);
 int P_close(Polygon *P);
 // Ferme un polygone pas encore fini
 int P_isConvex(Polygon *P);

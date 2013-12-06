@@ -32,14 +32,13 @@ void Q_draw(Quad q,int mode)
 	Vector p4=q._vertices[3];
 	Vector normal=Q_normal(&q);
 	
-
-	if(mode==0){
+	if(mode==1){
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 	else
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	glBegin(GL_QUADS);
+	
+  glBegin(GL_POLYGON);
 	
 	glNormal3f(normal.x,normal.y,normal.z);
 	glColor3d(0.5,0.3,0.1);
@@ -181,7 +180,7 @@ void M_perlinExtrude(Mesh *QM, Polygon *p, int nb_slices){
 	P_copy(p,&tmp);
 	P_copy(p,&tmp2);
 
-	for (i = 0; i < nb_slices; i++) {
+	for (i = 0; i < 1; i++) {
 		perlin_from_polygon=PRLN_vectorNoise(P_normal(&tmp));
 		
 		V_print(P_normal(&tmp),"normal tmp");

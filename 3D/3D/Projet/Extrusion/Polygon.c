@@ -1,5 +1,14 @@
 #include "Polygon.h"
 #include "utils.h"
+
+extern Vector perlinRx;
+extern Vector perlinRy;
+extern Vector perlinRz;
+
+extern Vector normalRx;
+extern Vector normalRy;
+extern Vector normalRz;
+
 void P_init(Polygon *p){
 	p->_nb_vertices=0;
 	p->_is_closed=FALSE;
@@ -248,6 +257,29 @@ int P_simple(Polygon *P){
 
 	return TRUE;
 }
+
+void drawRepereTest(Vector x,Vector y, Vector z,Vector center){
+  
+  glColor3d(1,0,0);
+	glBegin(GL_LINES);
+	glVertex3d(center.x,center.y,center.z);
+	glVertex3d(center.x+x.x,center.y-x.y,center.z+x.z);
+	glEnd();
+
+	glColor3d(0,1,0);
+	glBegin(GL_LINES);
+	glVertex3d(center.x,center.y,center.z);
+	glVertex3d(center.x+y.x,center.y-y.y,center.z+y.z);
+	glEnd();
+
+	glColor3d(0,0,1);
+	glBegin(GL_LINES);
+	glVertex3d(center.x,center.y,center.z);
+	glVertex3d(center.x+z.x,center.y-z.y,center.z+z.z);
+	glEnd();
+
+}
+
 //transform un vecteur de A dans B
 Vector transform(Vector Ax,Vector Ay,Vector Az,Vector Bx,Vector By,Vector Bz,Vector P){
 
@@ -259,7 +291,7 @@ Vector transform(Vector Ax,Vector Ay,Vector Az,Vector Bx,Vector By,Vector Bz,Vec
 	return V_new(newX,newY,newZ);
 }
 void P_rotate(Vector a,Vector b,Vector center,Polygon* P){
-	
+ /*	
 	float V1z=a.z;
 	float V2z=b.z;
 	
@@ -273,17 +305,40 @@ void P_rotate(Vector a,Vector b,Vector center,Polygon* P){
 	Vector* vertices=P->_vertices;
 	
 	b=V_unit(b);
-	//repere perlin
-	vector bx,by;
+	*/
+  int i;	
+  int nb_vertices=P->_nb_vertices;
+	Vector* vertices=P->_vertices;
+   
+	b=V_unit(b);
+  Vector P1;
+  Vector P2;
+  //repere perlin
+	Vector bx,by;
 	V_uxUyFromUz(b,&bx,&by);
-
-	
+  
+  perlinRx=bx;
+  perlinRy=by;
+  perlinRz=b;
 
 	//repere normal
-	vector ax,ay;
+	Vector ax,ay;
 	V_uxUyFromUz(a,&ax,&ay);
-	
-	double dcm[3][3];
+  
+  normalRx=ax;
+  normalRy=ay;
+  normalRz=a;
+  
+  for (i = 0; i <nb_vertices; i++) {
+    vertices[i]=V_translate(vertices[i],center,-1);
+    P1=V_new(V_decompose(vertices[i],bx),V_decompose(vertices[i],by),V_decompose(vertices[i],b));	
+    vertices[i]=V_recompose(P1.x,P1.y,P1.z,ax,ay,a);	
+    vertices[i]=V_translate(vertices[i],center,1);
+  }
+  
+  
+  /*
+  double dcm[3][3];
 
 	
 
@@ -318,7 +373,7 @@ void P_rotate(Vector a,Vector b,Vector center,Polygon* P){
 
 	//Vector angle=V_cross(V_new(angleC[2],angleC[1],angleC[0]),a);
 
-/*
+
 	a.x-=center.x;
 	a.y-=center.y;
 	a.z-=center.z;
@@ -386,6 +441,7 @@ void P_rotate(Vector a,Vector b,Vector center,Polygon* P){
 	printf("mu %f\n",mu);
 	
 */
+/*
 	for (i = 0; i < nb_vertices; i++) {
 		vertices[i]=V_translate(vertices[i],center,-1);
 		vertices[i]=V_rotateUx(vertices[i],angleC[2]);
@@ -395,5 +451,5 @@ void P_rotate(Vector a,Vector b,Vector center,Polygon* P){
 		vertices[i]=V_rotateUz(vertices[i],angleC[0]);	
 		vertices[i]=V_translate(vertices[i],center,1);
 	}
-	
+	*/
 }

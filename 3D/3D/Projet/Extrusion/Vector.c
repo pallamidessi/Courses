@@ -147,22 +147,32 @@ int V_rayIntersectsSegment(Vector M, Vector u_ray, Vector p1, Vector p2){
 }
 
 double V_decompose(Vector p, Vector u){
-	return 0.; 
+	return V_dot(p,u); 
 }
 
 Vector V_recompose(double x, double y, double z, Vector u, Vector v, Vector w){
-	Vector result=V_new(0,0,0);
+	Vector result;
+  result.x=x*(u.x+v.x+w.x);
+  result.y=y*(u.y+v.y+w.y);
+  result.z=z*(u.z+v.z+w.z);
+
 	return result;
 }
 
 void V_uxUyFromUz(Vector u_z, Vector *u_x, Vector *u_y){
 	Vector new=V_new(u_z.x+1,u_z.y+2,u_z.z+3);
-	
-	*u_x=V_cross(u_z,new);
-	*u_x=V_unit(*u_x);
+  
+  if (u_z.x==0 && u_z.z==0) {
+    *u_x=V_new(1,0,0);
+    *u_y=V_new(0,0,1);
+  }
+  else{
+	  *u_x=V_cross(u_z,new);
+	  *u_x=V_unit(*u_x);
 
-	*u_y=V_cross(u_z,*u_x);
-	*u_y=V_unit(*u_y);
+	  *u_y=V_cross(u_z,*u_x);
+	  *u_y=V_unit(*u_y);
+  }
 }
 
 Vector V_rotateUx(Vector V,double angle){

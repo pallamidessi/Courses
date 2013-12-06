@@ -21,6 +21,15 @@
 #define DIM3 1
 #define NB_SLICE 15
 
+Vector perlinRx;
+Vector perlinRy;
+Vector perlinRz;
+
+Vector normalRx;
+Vector normalRy;
+Vector normalRz;
+
+
 Vector test;
 /*Type d'affichage*/
 int dim=DIM2;
@@ -91,7 +100,7 @@ void display()
 	if(dim==DIM2)	
 		glOrtho(0,650,650,0,1,-650);
 	else{
-		gluPerspective( 60, (float)width/height,0.1, 3000);
+		gluPerspective( 60, (float)width/height,1, 3000);
 		gluLookAt(325,325,zoom,p_aim.x,p_aim.y,p_aim.z,0,-50,0);
 	}
 
@@ -137,6 +146,8 @@ void display()
 	drawRepere();
 	P_draw(&poly);
 	M_draw(&mesh,mode);
+  drawRepereTest(perlinRx,perlinRy,perlinRz,P_center(&poly));
+  drawRepereTest(normalRx,normalRy,normalRz,P_center(&poly));
 
 	glutSwapBuffers();
 }
@@ -295,6 +306,13 @@ int main(int argc, char *argv[])
 	P_init(&poly);
 	
 	test=V_new(0,30,30);
+ perlinRx=V_new(0,0,0);
+ perlinRx=V_new(0,0,0);
+ perlinRx=V_new(0,0,0);
+ perlinRx=V_new(0,0,0);
+ perlinRx=V_new(0,0,0);
+ perlinRx=V_new(0,0,0);
+ perlinRx=V_new(0,0,0);
 
 	glutDisplayFunc(display);
 	//	glutReshapeFunc(reshape);
