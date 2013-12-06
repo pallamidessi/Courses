@@ -79,8 +79,6 @@ Vector V_cross(Vector v1, Vector v2){
 }
 
 int V_isOnTheRight(Vector M, Vector A, Vector B){
-	//Vector AB=V_substract(B,A);
-	//Vector result=V_cross(A,AB);
 
 	double result= A.x*B.y
 		+B.x*M.y
@@ -88,14 +86,14 @@ int V_isOnTheRight(Vector M, Vector A, Vector B){
 		-M.x*B.y
 		-M.y*A.x
 		-B.x*A.y;
-	if (result>0) {
-		printf("retourne 1\n");
+	
+	if (result>0){
 		return 1;		
 	} 
 	else{
-		printf("retourne 0\n");
 		return 0;
 	}
+
 }
 
 double V_length(Vector v){
@@ -140,13 +138,6 @@ int V_segmentsIntersect(Vector p1, Vector p2, Vector q1, Vector q2){
 	}
 	return FALSE;
 
-	/*
-		 if ((V_isOnTheRight(p1,q1,q2) && !V_isOnTheRight(p2,q1,q2)) || 
-		 (V_isOnTheRight(p2,q1,q2) && !V_isOnTheRight(p1,q1,q2))){
-		 return TRUE;
-		 }
-		 return FALSE;
-		 */
 }
 
 int V_rayIntersectsSegment(Vector M, Vector u_ray, Vector p1, Vector p2){
@@ -165,26 +156,42 @@ Vector V_recompose(double x, double y, double z, Vector u, Vector v, Vector w){
 }
 
 void V_uxUyFromUz(Vector u_z, Vector *u_x, Vector *u_y){
+	Vector new=V_new(u_z.x+1,u_z.y+2,u_z.z+3);
+	
+	*u_x=V_cross(u_z,new);
+	*u_x=V_unit(*u_x);
 
+	*u_y=V_cross(u_z,*u_x);
+	*u_y=V_unit(*u_y);
 }
-Vector V_rotateUx(Vector V,int angle){
-	V.y= ((V.y)*cos(((float)(angle)*3.14159)/180.))  -  (V.z*sin(((float)(3.14159)*(float)(angle))/180.));
-	V.z= (V.z*cos(((float)(3.14159)*(float)(angle))/180.))    + ((V.y)*sin(((float)(3.14159)*(float)(angle))/180.));
+
+Vector V_rotateUx(Vector V,double angle){
+	float newY= ((V.y)*cos(((float)(angle)*3.14159)/180.))  -  (V.z*sin(((float)(3.14159)*(float)(angle))/180.));
+	float newZ= (V.z*cos(((float)(3.14159)*(float)(angle))/180.))    + ((V.y)*sin(((float)(3.14159)*(float)(angle))/180.));
+	
+	V.y=newY;
+	V.z=newZ;
 	
 	return V;
 	
 }
 
-Vector V_rotateUy(Vector V,int angle){
-	V.x= ((V.x)*cos(((float)(angle)*3.14159)/180.))  +  (V.z*sin(((float)(3.14159)*(float)(angle))/180.));
-	V.z= (V.z*cos(((float)(3.14159)*(float)(angle))/180.))    - ((V.x)*sin(((float)(3.14159)*(float)(angle))/180.));
+Vector V_rotateUy(Vector V,double angle){
+	float newX= ((V.x)*cos(((float)(angle)*3.14159)/180.))  +  (V.z*sin(((float)(3.14159)*(float)(angle))/180.));
+	float newZ= (V.z*cos(((float)(3.14159)*(float)(angle))/180.))    - ((V.x)*sin(((float)(3.14159)*(float)(angle))/180.));
+	
+	V.x=newX;
+	V.z=newZ;
 	
 	return V;
 }
 
-Vector V_rotateUz(Vector V,int angle){
-	V.x= ((V.x)*cos(((float)(angle)*3.14159)/180.))  -  (V.y*sin(((float)(3.14159)*(float)(angle))/180.));
-	V.y= (V.y*cos(((float)(3.14159)*(float)(angle))/180.))    + ((V.x)*sin(((float)(3.14159)*(float)(angle))/180.));
+Vector V_rotateUz(Vector V,double angle){
+	float newX= ((V.x)*cos(((float)(angle)*3.14159)/180.))  -  (V.y*sin(((float)(3.14159)*(float)(angle))/180.));
+	float newY= (V.y*cos(((float)(3.14159)*(float)(angle))/180.))    + ((V.x)*sin(((float)(3.14159)*(float)(angle))/180.));
+	
+	V.x=newX;
+	V.y=newY;
 
 	return V;
 }

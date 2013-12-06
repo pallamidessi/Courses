@@ -20,6 +20,9 @@
 #define DIM2 0
 #define DIM3 1
 #define NB_SLICE 15
+
+Vector test;
+/*Type d'affichage*/
 int dim=DIM2;
 
 /* dimensions de la fenetre */
@@ -31,7 +34,7 @@ float theta1=0;
 float theta2=0;
 float theta3=0;
 
-/*Eclairage*/
+/*Eclairage et camera*/
 Vector p_aim;
 float phi = -20;
 float theta = 20;
@@ -41,11 +44,14 @@ float zoom=400;
 
 /*Polygon courant */
 Polygon poly;
+
 /*Mesh courant*/
 Mesh mesh;
-int nb_slice=10;
+int nb_slice=30;
+
 /*Mode de dessin du mesh*/
 int mode=1;
+
 /*Saisie*/
 unsigned int stop=0;
 
@@ -86,28 +92,48 @@ void display()
 		glOrtho(0,650,650,0,1,-650);
 	else{
 		gluPerspective( 60, (float)width/height,0.1, 3000);
-		gluLookAt(325,325,zoom,325,325,325,0,-50,0);
+		gluLookAt(325,325,zoom,p_aim.x,p_aim.y,p_aim.z,0,-50,0);
 	}
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
 
-	glTranslatef(325,325,0);
+	glTranslatef(325,325,325);
 	glRotatef(theta1,1,0,0);
-	glTranslatef(-325,-325,0);
+	glTranslatef(-325,-325,-325);
 
-	glTranslatef(325,325,0);
+	glTranslatef(325,325,325);
 	glRotatef(theta2,0,1,0);
-	glTranslatef(-325,-325,0);
+	glTranslatef(-325,-325,-325);
 
-	glTranslatef(325,325,0);
+	glTranslatef(325,325,325);
 	glRotatef(theta3,0,0,1);
-	glTranslatef(-325,-325,0);
-	// Dessiner ici
-	// ...
+	glTranslatef(-325,-325,-325);
+	
+	Vector ux;
+	Vector uy;
+	test=V_unit(test);
+	V_uxUyFromUz(test,&ux,&uy);
+	
+	glColor3d(1,0,0);
+	glBegin(GL_LINES);
+	glVertex3d(325,325,325);
+	glVertex3d(325+ux.x,325-ux.y,325+ux.z);
+	glEnd();
 
-	// Repere du monde
+	glColor3d(0,1,0);
+	glBegin(GL_LINES);
+	glVertex3d(325,325,325);
+	glVertex3d(325+uy.x,325-uy.y,325+uy.z);
+	glEnd();
+
+	glColor3d(0,0,1);
+	glBegin(GL_LINES);
+	glVertex3d(325,325,325);
+	glVertex3d(325+test.x,325-test.y,325+test.z);
+	glEnd();
+
 	drawRepere();
 	P_draw(&poly);
 	M_draw(&mesh,mode);
@@ -123,15 +149,14 @@ void keyboard(unsigned char keycode, int x, int y)
 
 	if (keycode==27) // ECHAP
 		exit(0);
-	if (keycode=='c') {
+	else if (keycode=='c') {
 		P_close(&poly);
 		stop=1;
-		P_print(&poly,"");
 	}
-	if (keycode=='r') {
+	else if (keycode=='r') {
 		M_revolution(&mesh,&poly,nb_slice);
 	}
-	if (keycode=='a') {
+	else if (keycode=='a') {
 		if (dim==DIM3) {
 			dim=DIM2;
 		}
@@ -139,7 +164,7 @@ void keyboard(unsigned char keycode, int x, int y)
 			dim=DIM3;
 		}
 	}
-	if (keycode=='m') {
+	else if (keycode=='m') {
 		if (mode==1) {
 			mode=0;
 			glDisable(GL_LIGHTING);
@@ -151,29 +176,26 @@ void keyboard(unsigned char keycode, int x, int y)
 			initShade();
 		}
 	}
-	if (keycode=='+')
+	else if (keycode=='+')
 		zoom+=4;
-	if (keycode=='-')
+	else if (keycode=='-')
 		zoom-=4;
-
-	if (keycode=='s'){
+	else if (keycode=='s'){
 		nb_slice++;
 		M_init(&mesh);
 		M_revolution(&mesh,&poly,nb_slice);
-		printf("%d\n",nb_slice);
 	}
-	if (keycode=='S'){
+	else if (keycode=='S'){
 		nb_slice--;
 		M_init(&mesh);
 		M_revolution(&mesh,&poly,nb_slice);
-		printf("%d\n",nb_slice);
 	}
-
-
-	if (keycode=='e')
-		M_perlinExtrude(&mesh,&poly,nb_slice);
-
-	if (keycode=='x')
+	else if (keycode=='e'){
+		if (poly._is_closed) {
+			M_perlinExtrude(&mesh,&poly,nb_slice);
+		}
+	}
+	else if (keycode=='x')
 		theta1+=10;
 	else if (keycode=='X')
 		theta1-=10;
@@ -235,14 +257,12 @@ void mouse(int button, int state, int x, int y)
 
 		case GLUT_MIDDLE_BUTTON :
 			if(state==GLUT_DOWN){
-				fprintf(stderr,"Clic milieu\n");
 				stop=1;
 			}
 			break;
 
 		case GLUT_RIGHT_BUTTON :
 			if(state==GLUT_DOWN){
-				fprintf(stderr,"Clic droit.\n");
 				P_close(&poly);
 			}
 			break;
@@ -273,6 +293,8 @@ int main(int argc, char *argv[])
 	glViewport(0, 0, width, height);
 	glClearColor(0,0,0,0);
 	P_init(&poly);
+	
+	test=V_new(0,30,30);
 
 	glutDisplayFunc(display);
 	//	glutReshapeFunc(reshape);
@@ -285,7 +307,7 @@ int main(int argc, char *argv[])
 	p_light[1]=20.0;
 	p_light[2]=0.0;
 	p_light[3]=1.0;
-	p_aim = V_new(0,0,-2.75);
+	p_aim = V_new(325,325,325);
 
 	glutMainLoop();
 

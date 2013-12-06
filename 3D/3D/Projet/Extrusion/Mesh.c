@@ -113,7 +113,6 @@ void M_print(Mesh *M, char *message){
 	for (i = 0; i < M->_nb_quads; i++) {
 		Q_print(M->_quads[i]);
 	}
-
 }
 // Affiche sur une console les données
 // relatives à M à des fins des debuggage.
@@ -138,7 +137,6 @@ void M_addSlice(Mesh *M, Polygon *P1, Polygon *P2){
 		verticesCurrent[2]=verticesP2[0];		
 		verticesCurrent[3]=verticesP1[0];
 		M_addQuad(M,current);
-
 }
 // P1 et P2 sont supposés être des polygones ayant le même
 // nombre N de sommets. Cette fonction ajoute à M les N quads
@@ -148,24 +146,19 @@ void M_revolution(Mesh *M, Polygon *P, int nb_tranches){
 
 	Polygon rot;
 	Polygon tmp;
-	P_copy(P,&rot);
-	int nb_vertices=rot._nb_vertices;
+	int nb_vertices=P->_nb_vertices;
 	int i,j;
-	Vector* vertices=rot._vertices;
+	Vector* vertices;
 	double angle=(double)((360.)/(double)(nb_tranches));
-	printf(" angle %f\n",angle);
-	double newX,newZ;
-	P_copy(P,&tmp);
+	//double newX,newZ;
 
+	P_copy(P,&rot);
+	P_copy(P,&tmp);
+	vertices=rot._vertices;
+	
 	for (i = 1; i < nb_tranches; i++) {
 		for (j = 0; j < nb_vertices; j++) {
-			newX= ((vertices[j].x)*cos(((float)(angle)*(float)(i)*3.14159)/180.))  +  (vertices[j].z*sin(((float)(3.14159)*(float)(angle)*(float)(i))/180.));
-			newZ=  (vertices[j].z*cos(((float)(3.14159)*(float)(angle)*(float)(i))/180.))    - ((vertices[j].x)*sin(((float)(3.14159)*(float)(angle)*(double)(i))/180.));
-			
-			printf("X %f %f\n",vertices[j].x,newX);
-			printf("Z %f %f\n",vertices[j].z,newZ);
-			vertices[j].x=newX;
-			vertices[j].z=newZ;
+			vertices[j]=V_rotateUy(vertices[j],angle*i);
 		}
 		M_addSlice(M,&tmp,&rot);
 		P_copy(&rot,&tmp);
@@ -183,22 +176,30 @@ void M_revolution(Mesh *M, Polygon *P, int nb_tranches){
 void M_perlinExtrude(Mesh *QM, Polygon *p, int nb_slices){
 	int i;
 	Polygon tmp,tmp2;
+	Vector perlin_from_polygon;
+	
 	P_copy(p,&tmp);
 	P_copy(p,&tmp2);
-	Vector perlin_from_polygon;
 
 	for (i = 0; i < nb_slices; i++) {
 		perlin_from_polygon=PRLN_vectorNoise(P_normal(&tmp));
+		
+		V_print(P_normal(&tmp),"normal tmp");
 		V_print(perlin_from_polygon,"perlin");
-		V_print(P_normal(&tmp),"normal tmp");
-		P_translate(&tmp,V_multiply(100,perlin_from_polygon));
+		
 		P_rotate(P_normal(&tmp),perlin_from_polygon,P_center(&tmp),&tmp);
+		P_translate(&tmp,V_multiply(100,perlin_from_polygon));
+		
 		V_print(P_normal(&tmp),"normal tmp");
+		
 		M_addSlice(QM,&tmp,&tmp2);
 		P_copy(&tmp,&tmp2);
-		//P_print(&tmp,"polygon tmp");
-		//M_addQuad(QM,Q_new(tmp._vertices[0],tmp._vertices[1],tmp._vertices[2],tmp._vertices[3]));
 	}
-
-
+/*
+		P_rotate(P_normal(&tmp),V_new(1,0,0),P_center(&tmp),&tmp2);
+		M_addSlice(QM,&tmp,&tmp2);
+		//P_rotate(P_normal(&tmp),V_new(0,1,0),P_center(&tmp),&tmp2);
+		//M_addSlice(QM,&tmp,&tmp2);
+		//
+	*/
 }
