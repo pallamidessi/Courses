@@ -20,8 +20,8 @@ Vector Q_normal(Quad* q){
 
 	Vector normal=V_cross(V1,V2);
 	Vector normal_unit=V_multiply((double)(1./V_length(normal)),normal);
-	return normal_unit;
 	
+	return normal_unit;
 }
 
 void Q_draw(Quad q,int mode)
@@ -70,7 +70,6 @@ void M_addQuad(Mesh *M, Quad q){
 	int pos=M->_nb_quads;
 	bool is_filled=M->_is_filled;
 
-
 	if (!is_filled) {
 		M->_quads[pos]=(Quad) q;
 		M->_nb_quads++;
@@ -86,7 +85,6 @@ void M_draw(Mesh *M,int mode){
 	for (i = 0; i < M->_nb_quads; i++) {
 		Q_draw(M->_quads[i],mode);
 	}
-
 }
 // dessine le Mesh M
 
@@ -107,7 +105,6 @@ void M_print(Mesh *M, char *message){
 	else{
 		printf("Le maillage n'est pas lisse\n");
 	}
-
 
 	for (i = 0; i < M->_nb_quads; i++) {
 		Q_print(M->_quads[i]);
@@ -149,13 +146,13 @@ void M_revolution(Mesh *M, Polygon *P, int nb_tranches){
 	int i,j;
 	Vector* vertices;
 	double angle=(double)((360.)/(double)(nb_tranches));
-	//double newX,newZ;
 
 	P_copy(P,&rot);
 	P_copy(P,&tmp);
 	vertices=rot._vertices;
 	
 	for (i = 1; i < nb_tranches; i++) {
+		#pragma omp parallel for
 		for (j = 0; j < nb_vertices; j++) {
 			vertices[j]=V_rotateUy(vertices[j],angle*i);
 		}
@@ -165,8 +162,6 @@ void M_revolution(Mesh *M, Polygon *P, int nb_tranches){
 	}
 
 	M_addSlice(M,&tmp,P);
-	//finir le mesh ?
-
 }
 // A partir d'un polygone P, cette fonction divise 2*pi en
 // nb_tranches angles et ajoute à M les quads nécessaires pour
@@ -180,25 +175,13 @@ void M_perlinExtrude(Mesh *QM, Polygon *p, int nb_slices){
 	P_copy(p,&tmp);
 	P_copy(p,&tmp2);
 
-	for (i = 0; i < 1; i++) {
+	for (i = 0; i < nb_slices; i++) {
 		perlin_from_polygon=PRLN_vectorNoise(P_normal(&tmp));
 		
-		V_print(P_normal(&tmp),"normal tmp");
-		V_print(perlin_from_polygon,"perlin");
-		
 		P_rotate(P_normal(&tmp),perlin_from_polygon,P_center(&tmp),&tmp);
-		P_translate(&tmp,V_multiply(100,perlin_from_polygon));
-		
-		V_print(P_normal(&tmp),"normal tmp");
+		P_translate(&tmp,perlin_from_polygon);
 		
 		M_addSlice(QM,&tmp,&tmp2);
 		P_copy(&tmp,&tmp2);
 	}
-/*
-		P_rotate(P_normal(&tmp),V_new(1,0,0),P_center(&tmp),&tmp2);
-		M_addSlice(QM,&tmp,&tmp2);
-		//P_rotate(P_normal(&tmp),V_new(0,1,0),P_center(&tmp),&tmp2);
-		//M_addSlice(QM,&tmp,&tmp2);
-		//
-	*/
 }

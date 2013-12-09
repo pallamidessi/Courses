@@ -97,16 +97,15 @@ int V_isOnTheRight(Vector M, Vector A, Vector B){
 }
 
 double V_length(Vector v){
-
 	double length=sqrt(v.x*v.x+v.y*v.y+v.z*v.z);
 	return length;
 }
 
 Vector V_unit(Vector v){
-
 	double  length=V_length(v);
 	return V_new(v.x/length,v.y/length,v.z/length);
 }
+
 float det_from_vectors(Vector v1,Vector v2,Vector v3){
 	return ((v1.x*v2.y*v3.z
 				+ v2.x*v1.z*v3.y
@@ -132,6 +131,7 @@ int V_segmentsIntersect(Vector p1, Vector p2, Vector q1, Vector q2){
 	p2.z=0;
 	q1.z=0;
 	q2.z=0;
+	
 	/*Cas simple*/
 	if (s1*s2<0 && s3*s4<0) {
 		return TRUE;
@@ -141,43 +141,59 @@ int V_segmentsIntersect(Vector p1, Vector p2, Vector q1, Vector q2){
 }
 
 int V_rayIntersectsSegment(Vector M, Vector u_ray, Vector p1, Vector p2){
-
-	//if(V_cross(u_ray,V_substract(p2,p1).z>0))
 	return 0;
 }
 
 double V_decompose(Vector p, Vector u){
+	/*u est toujours un vecteur unitaire*/
 	return V_dot(p,u); 
 }
 
 Vector V_recompose(double x, double y, double z, Vector u, Vector v, Vector w){
 	Vector result;
-  result.x=x*(u.x+v.x+w.x);
+	
+	/*Il faut resoudre la systeme suivant:
+	 *	x=xn*u.x+yn*v.x+zn*z.x
+	 *	y=xn*u.y+yn*v.y+zn*z.y
+	 *	x=xn*u.z+yn*v.z+zn*z.z
+	 *
+	 *	Le vecteur resultat est donc (xn,yn,zn)
+	 * */
+	
+	/*Faux
+  result.x=x/(u.x+v.x+w.x);
+  result.y=y/(u.y+v.y+w.y);
+  result.z=z/(u.z+v.z+w.z);
+  
+	ou 
+
+	result.x=x*(u.x+v.x+w.x);
   result.y=y*(u.y+v.y+w.y);
   result.z=z*(u.z+v.z+w.z);
+	*/
 
 	return result;
 }
 
 void V_uxUyFromUz(Vector u_z, Vector *u_x, Vector *u_y){
 	Vector new=V_new(u_z.x+1,u_z.y+2,u_z.z+3);
-  
-  if (u_z.x==0 && u_z.z==0) {
-    *u_x=V_new(1,0,0);
-    *u_y=V_new(0,0,1);
-  }
-  else{
-	  *u_x=V_cross(u_z,new);
-	  *u_x=V_unit(*u_x);
-
-	  *u_y=V_cross(u_z,*u_x);
-	  *u_y=V_unit(*u_y);
-  }
+	
+	//Calcul de u_y
+	*u_y=V_cross(u_z,new);
+	*u_y=V_unit(*u_y);
+	//on projette  le u_y trouve sur le plan (u_z.(0,1,0))
+	*u_y=V_substract(*u_y,V_multiply(V_dot(V_cross(u_z,V_new(0,1,0)),*u_y),V_cross(u_z,V_new(0,1,0))));
+	*u_y=V_unit(*u_y);
+	
+	//calcul de u_x
+	*u_x=V_cross(u_z,*u_y);
+	*u_x=V_unit(*u_x);
 }
 
 Vector V_rotateUx(Vector V,double angle){
-	float newY= ((V.y)*cos(((float)(angle)*3.14159)/180.))  -  (V.z*sin(((float)(3.14159)*(float)(angle))/180.));
-	float newZ= (V.z*cos(((float)(3.14159)*(float)(angle))/180.))    + ((V.y)*sin(((float)(3.14159)*(float)(angle))/180.));
+	double angleRad=(angle*3.14159)/180.;
+	float newY= (V.y)*cos(angleRad)  -  (V.z)*sin(angleRad);
+	float newZ= (V.z)*cos(angleRad)  +  (V.y)*sin(angleRad);
 	
 	V.y=newY;
 	V.z=newZ;
@@ -187,8 +203,9 @@ Vector V_rotateUx(Vector V,double angle){
 }
 
 Vector V_rotateUy(Vector V,double angle){
-	float newX= ((V.x)*cos(((float)(angle)*3.14159)/180.))  +  (V.z*sin(((float)(3.14159)*(float)(angle))/180.));
-	float newZ= (V.z*cos(((float)(3.14159)*(float)(angle))/180.))    - ((V.x)*sin(((float)(3.14159)*(float)(angle))/180.));
+	double angleRad=(angle*3.14159)/180.;
+	float newX= (V.x)*cos(angleRad)  +  (V.z)*sin(angleRad);
+	float newZ= (V.z)*cos(angleRad)  -  (V.x)*sin(angleRad);
 	
 	V.x=newX;
 	V.z=newZ;
@@ -197,8 +214,9 @@ Vector V_rotateUy(Vector V,double angle){
 }
 
 Vector V_rotateUz(Vector V,double angle){
-	float newX= ((V.x)*cos(((float)(angle)*3.14159)/180.))  -  (V.y*sin(((float)(3.14159)*(float)(angle))/180.));
-	float newY= (V.y*cos(((float)(3.14159)*(float)(angle))/180.))    + ((V.x)*sin(((float)(3.14159)*(float)(angle))/180.));
+	double angleRad=(angle*3.14159)/180.;
+	float newX= (V.x)*cos(angleRad)  -  (V.y)*sin(angleRad);
+	float newY= (V.y)*cos(angleRad)  +  (V.x)*sin(angleRad);
 	
 	V.x=newX;
 	V.y=newY;

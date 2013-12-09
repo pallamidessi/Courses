@@ -19,18 +19,8 @@
 
 #define DIM2 0
 #define DIM3 1
-#define NB_SLICE 15
+#define NB_SLICE 100
 
-Vector perlinRx;
-Vector perlinRy;
-Vector perlinRz;
-
-Vector normalRx;
-Vector normalRy;
-Vector normalRz;
-
-
-Vector test;
 /*Type d'affichage*/
 int dim=DIM2;
 
@@ -98,56 +88,34 @@ void display()
 	glLoadIdentity();
 
 	if(dim==DIM2)	
-		glOrtho(0,650,650,0,1,-650);
+		glOrtho(0,650,650,0,1,-2000);
 	else{
-		gluPerspective( 60, (float)width/height,1, 3000);
+		gluPerspective( 60, (float)width/height,1, 30000);
 		gluLookAt(325,325,zoom,p_aim.x,p_aim.y,p_aim.z,0,-50,0);
 	}
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-
+	//Rotation autour de l'axe X du repere
 	glTranslatef(325,325,325);
 	glRotatef(theta1,1,0,0);
 	glTranslatef(-325,-325,-325);
 
+	//Rotation autour de l'axe Y du repere
 	glTranslatef(325,325,325);
 	glRotatef(theta2,0,1,0);
 	glTranslatef(-325,-325,-325);
 
+	//Rotation autour de l'axe Z du repere
 	glTranslatef(325,325,325);
 	glRotatef(theta3,0,0,1);
 	glTranslatef(-325,-325,-325);
 	
-	Vector ux;
-	Vector uy;
-	test=V_unit(test);
-	V_uxUyFromUz(test,&ux,&uy);
-	
-	glColor3d(1,0,0);
-	glBegin(GL_LINES);
-	glVertex3d(325,325,325);
-	glVertex3d(325+ux.x,325-ux.y,325+ux.z);
-	glEnd();
-
-	glColor3d(0,1,0);
-	glBegin(GL_LINES);
-	glVertex3d(325,325,325);
-	glVertex3d(325+uy.x,325-uy.y,325+uy.z);
-	glEnd();
-
-	glColor3d(0,0,1);
-	glBegin(GL_LINES);
-	glVertex3d(325,325,325);
-	glVertex3d(325+test.x,325-test.y,325+test.z);
-	glEnd();
-
+	//Dessin du repere et des objets	
 	drawRepere();
 	P_draw(&poly);
 	M_draw(&mesh,mode);
-  drawRepereTest(perlinRx,perlinRy,perlinRz,P_center(&poly));
-  drawRepereTest(normalRx,normalRy,normalRz,P_center(&poly));
 
 	glutSwapBuffers();
 }
@@ -160,13 +128,16 @@ void keyboard(unsigned char keycode, int x, int y)
 
 	if (keycode==27) // ECHAP
 		exit(0);
+	/*Ferme le polygone si possible*/
 	else if (keycode=='c') {
-		P_close(&poly);
-		stop=1;
+		if(P_close(&poly))
+			stop=1;
 	}
-	else if (keycode=='r') {
+	/*revolution du polygone */
+	else if (keycode=='r') { 
 		M_revolution(&mesh,&poly,nb_slice);
 	}
+	/*Change le mode de projection*/
 	else if (keycode=='a') {
 		if (dim==DIM3) {
 			dim=DIM2;
@@ -175,6 +146,7 @@ void keyboard(unsigned char keycode, int x, int y)
 			dim=DIM3;
 		}
 	}
+	/*Change le mode de dessin*/
 	else if (keycode=='m') {
 		if (mode==1) {
 			mode=0;
@@ -187,10 +159,12 @@ void keyboard(unsigned char keycode, int x, int y)
 			initShade();
 		}
 	}
+	/*Zoom de la camera*/
 	else if (keycode=='+')
 		zoom+=4;
 	else if (keycode=='-')
 		zoom-=4;
+	/*Ajoute/enleve des tranches a la revolution*/
 	else if (keycode=='s'){
 		nb_slice++;
 		M_init(&mesh);
@@ -201,19 +175,25 @@ void keyboard(unsigned char keycode, int x, int y)
 		M_init(&mesh);
 		M_revolution(&mesh,&poly,nb_slice);
 	}
+	/*Extrusion selon des vecteur de perlin
+	 * NON FONCTIONNELLE*/
 	else if (keycode=='e'){
 		if (poly._is_closed) {
 			M_perlinExtrude(&mesh,&poly,nb_slice);
 		}
 	}
+	/*Change les angle de rotation autour du repere*/
+	/*pour ux*/
 	else if (keycode=='x')
 		theta1+=10;
 	else if (keycode=='X')
 		theta1-=10;
+	/*pour uy*/
 	else if (keycode=='y')
 		theta2+=10;
 	else if (keycode=='Y')
 		theta2-=10;
+	/*pour uz*/
 	else if (keycode=='z')
 		theta3+=10;
 	else if (keycode=='Z')
@@ -226,15 +206,20 @@ void keyboard(unsigned char keycode, int x, int y)
 
 void special(int keycode, int x, int y)
 {
+	/*Controle de la camera et de l'eclairage
+	 * CTRL + fleche : modification de la position de la camera
+	 * MAJ  + fleche : modification de la position de l'eclairage
+	*/
+
 	int mod = glutGetModifiers();
 	switch(keycode)
 	{
-		case GLUT_KEY_UP        : if(mod==GLUT_ACTIVE_CTRL) p_light[1]+=1; else if(mod==GLUT_ACTIVE_SHIFT) p_aim.y+=.1; else theta-= 10; break;
-		case GLUT_KEY_DOWN      : if(mod==GLUT_ACTIVE_CTRL) p_light[1]-=1; else if(mod==GLUT_ACTIVE_SHIFT) p_aim.y-=.1; else theta+= 10; break;
-		case GLUT_KEY_LEFT      : if(mod==GLUT_ACTIVE_CTRL) p_light[0]-=1; else if(mod==GLUT_ACTIVE_SHIFT) p_aim.x-=.1; else phi-= 10; break;
-		case GLUT_KEY_RIGHT     : if(mod==GLUT_ACTIVE_CTRL) p_light[0]+=1; else if(mod==GLUT_ACTIVE_SHIFT) p_aim.x+=.1; else phi+= 10; break;
-		case GLUT_KEY_PAGE_UP   : if(mod==GLUT_ACTIVE_CTRL) p_light[2]-=1; else p_aim.z-=1; break;
-		case GLUT_KEY_PAGE_DOWN : if(mod==GLUT_ACTIVE_CTRL) p_light[2]+=1; else p_aim.z+=1; break;
+		case GLUT_KEY_UP        : if(mod==GLUT_ACTIVE_CTRL) p_light[1]+=4; else if(mod==GLUT_ACTIVE_SHIFT) p_aim.y+=1; else theta-= 10; break;
+		case GLUT_KEY_DOWN      : if(mod==GLUT_ACTIVE_CTRL) p_light[1]-=4; else if(mod==GLUT_ACTIVE_SHIFT) p_aim.y-=1; else theta+= 10; break;
+		case GLUT_KEY_LEFT      : if(mod==GLUT_ACTIVE_CTRL) p_light[0]-=4; else if(mod==GLUT_ACTIVE_SHIFT) p_aim.x-=1; else phi-= 10; break;
+		case GLUT_KEY_RIGHT     : if(mod==GLUT_ACTIVE_CTRL) p_light[0]+=4; else if(mod==GLUT_ACTIVE_SHIFT) p_aim.x+=1; else phi+= 10; break;
+		case GLUT_KEY_PAGE_UP   : if(mod==GLUT_ACTIVE_CTRL) p_light[2]-=4; else p_aim.z-=4; break;
+		case GLUT_KEY_PAGE_DOWN : if(mod==GLUT_ACTIVE_CTRL) p_light[2]+=4; else p_aim.z+=4; break;
 		default : fprintf(stderr,"function special : unknown keycode %d\n",keycode); break;
 	}
 	if(mod==GLUT_ACTIVE_CTRL)
@@ -246,17 +231,22 @@ void special(int keycode, int x, int y)
 void mouse(int button, int state, int x, int y)
 {
 	switch(button)
-	{
+	{	/*Clic gauche
+		 *Ajout d'un vertex au polygone
+		*/
 		case GLUT_LEFT_BUTTON :
 			if(state==GLUT_DOWN){
 				fprintf(stderr,"Clic gauche\n");
-
-				if(!poly._is_closed && stop==0)
+				
+				/*Si le polygone n'est ferme et qu'on est toujours en mode "dessin" */
+				if(!poly._is_closed && stop==0) 
 					P_addVertex(&poly,V_new(x,y,0));
-
+				
+				/*Si le polygone obtenu apres ajout n'est pas simple,on annule l'ajout*/
 				if(!P_simple(&poly))
 					P_removeLastVertex(&poly);
-
+				
+				/*Test de la concavite/convexite apres le potentiel ajout*/
 				if (P_isConvex(&poly)) {
 					poly._is_convex=TRUE;
 				}
@@ -265,13 +255,20 @@ void mouse(int button, int state, int x, int y)
 				}
 			}
 			break;
-
+		/*Clic milieu
+		 * active/desactive le mode "dessin" de polygone
+		*/
 		case GLUT_MIDDLE_BUTTON :
 			if(state==GLUT_DOWN){
-				stop=1;
+				if(stop)
+					stop=0;
+				else
+					stop=1;	
 			}
 			break;
-
+		/*Clic doit 
+		 *	Essaye de fermer le polygone
+		*/
 		case GLUT_RIGHT_BUTTON :
 			if(state==GLUT_DOWN){
 				P_close(&poly);
@@ -305,17 +302,7 @@ int main(int argc, char *argv[])
 	glClearColor(0,0,0,0);
 	P_init(&poly);
 	
-	test=V_new(0,30,30);
- perlinRx=V_new(0,0,0);
- perlinRx=V_new(0,0,0);
- perlinRx=V_new(0,0,0);
- perlinRx=V_new(0,0,0);
- perlinRx=V_new(0,0,0);
- perlinRx=V_new(0,0,0);
- perlinRx=V_new(0,0,0);
-
 	glutDisplayFunc(display);
-	//	glutReshapeFunc(reshape);
 	glutKeyboardFunc(keyboard);
 	glutSpecialFunc(special);
 	glutMouseFunc(mouse);

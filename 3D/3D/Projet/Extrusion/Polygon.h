@@ -44,7 +44,7 @@ void P_removeLastVertex(Polygon *P);
 void P_print(Polygon *P, char *message); 
 void P_draw(Polygon *P);
 
-void drawRepereTest(Vector x,Vector y, Vector z,Vector center);
+void drawRepereTest(Vector x,Vector y, Vector z,Vector center,int mod);
 int P_close(Polygon *P);
 // Ferme un polygone pas encore fini
 int P_isConvex(Polygon *P);
