@@ -49,7 +49,6 @@ void P_addVertex(Polygon *P, Vector pos){
 
 void P_removeLastVertex(Polygon *P){
 	P->_nb_vertices--;
-
 	if (P->_nb_vertices<0) {
 		P->_nb_vertices=0;
 	}
@@ -245,7 +244,6 @@ int P_simple(Polygon *P){
 	/*On verifie que le dernier segment du polygone coupe un des segment precedent*/
 	for (i = 0; i < nb_vertices-2; i++) {
 		if (V_segmentsIntersect(last_vertex,before_last_vertex,vertices[i],vertices[i+1])) {
-			printf("faux !!\n");
 			return FALSE;
 		}
 	}
@@ -292,7 +290,6 @@ void P_rotate(Vector a,Vector b,Vector center,Polygon* P){
    
 	b=V_unit(b);
   Vector P1;
-  Vector P2;
   //repere perlin
 	Vector bx,by;
 	V_uxUyFromUz(b,&bx,&by);

@@ -69,8 +69,9 @@ void M_init(Mesh *M){
 void M_addQuad(Mesh *M, Quad q){
 	int pos=M->_nb_quads;
 	bool is_filled=M->_is_filled;
-
-	if (!is_filled) {
+	if(pos==5000)
+		M->_is_filled=TRUE;
+	else if (!is_filled) {
 		M->_quads[pos]=(Quad) q;
 		M->_nb_quads++;
 	}

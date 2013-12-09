@@ -39,7 +39,7 @@ float phi = -20;
 float theta = 20;
 
 GLfloat p_light[4];
-float zoom=400;
+float zoom=1200;
 
 /*Polygon courant */
 Polygon poly;
@@ -49,7 +49,7 @@ Mesh mesh;
 int nb_slice=30;
 
 /*Mode de dessin du mesh*/
-int mode=1;
+int mode=0;
 
 /*Saisie*/
 unsigned int stop=0;
@@ -135,6 +135,7 @@ void keyboard(unsigned char keycode, int x, int y)
 	}
 	/*revolution du polygone */
 	else if (keycode=='r') { 
+		M_init(&mesh);
 		M_revolution(&mesh,&poly,nb_slice);
 	}
 	/*Change le mode de projection*/
@@ -171,16 +172,23 @@ void keyboard(unsigned char keycode, int x, int y)
 		M_revolution(&mesh,&poly,nb_slice);
 	}
 	else if (keycode=='S'){
-		nb_slice--;
+		if (nb_slice>3) {
+			nb_slice--;
+		}
 		M_init(&mesh);
 		M_revolution(&mesh,&poly,nb_slice);
 	}
 	/*Extrusion selon des vecteur de perlin
-	 * NON FONCTIONNELLE*/
-	else if (keycode=='e'){
-		if (poly._is_closed) {
-			M_perlinExtrude(&mesh,&poly,nb_slice);
-		}
+	 * NON FONCTIONNELLE
+	 *else if (keycode=='e'){
+	 *	if (poly._is_closed) {
+	 *		M_perlinExtrude(&mesh,&poly,nb_slice);
+	 *	}
+	 *}
+	 */
+	else if (keycode=='n'){
+		P_init(&poly);
+		M_init(&mesh);
 	}
 	/*Change les angle de rotation autour du repere*/
 	/*pour ux*/
@@ -236,7 +244,6 @@ void mouse(int button, int state, int x, int y)
 		*/
 		case GLUT_LEFT_BUTTON :
 			if(state==GLUT_DOWN){
-				fprintf(stderr,"Clic gauche\n");
 				
 				/*Si le polygone n'est ferme et qu'on est toujours en mode "dessin" */
 				if(!poly._is_closed && stop==0) 
@@ -270,9 +277,16 @@ void mouse(int button, int state, int x, int y)
 		 *	Essaye de fermer le polygone
 		*/
 		case GLUT_RIGHT_BUTTON :
-			if(state==GLUT_DOWN){
-				P_close(&poly);
-			}
+			if(state==GLUT_DOWN && stop==0){
+				P_removeLastVertex(&poly);
+				
+				if (P_isConvex(&poly)) {
+					poly._is_convex=TRUE;
+				}
+				else{
+					poly._is_convex=FALSE;
+				}
+			}	
 			break;
 	}
 	glutPostRedisplay();

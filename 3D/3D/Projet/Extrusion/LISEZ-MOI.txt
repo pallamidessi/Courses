@@ -1,0 +1,55 @@
+Pallamidessi Joseph
+L3S6 Info
+													Géométrie pour la 3D
+
+Ce qui fonctionne:
+	Toute les fonctions relative au tracé et au test de polygone tel aue le changement de
+	couleur selon la concavité/convexité, le fait que l'on ne peut pas tracer de polygone
+	non simple et l'ajout/retrait de vertex au cours du dessin.
+
+	La révolution fonctionne parfaitement ainsi que toute les fonctions relatives au tracés
+	des maillages.
+
+Ce qui ne fonctionne pas:
+	Je n'ai pas réussi à faire l'extrusion selon perlin, mais je pense que ma démarche
+	est bonne.Les fonctions relative à l'extrusion sont codées ainsi que la fonction
+	d'extrusion elle-même.
+
+Le programme se compile grâce à un simple make et se lance dans un shell par ./Extrusion. 
+Ajout d'utilisation de la bibliothèaue openMP pour paralleliser certaines parties du programme.
+
+Contrôle du programme:
+	Souris:
+		Clic gauche : Ajout de vertex
+		Clic droit  : Retrait de vertex
+		Clic milieu : Stop/Reprend le "mode dessin"
+
+	Clavier:
+		c   : Fermeture (si possible) du polygone en cours de dessin
+		r   : Révolution selon le bord gauche de la fenêtre
+		a   : Projection orthogonal/perspective   
+		m   : Mode du dessin filaire/ombré
+		n   : Reset, possibilité de redessiner un polygone après un clic milieu 
+		y/Y : Rotation +/- selon l'axe y du repère 
+		x/X : Rotation +/- selon l'axe x du repère
+		z/Z : Rotation +/- selon l'axe z du repère
+		CTRL + Flèche : Déplacement de la caméra
+		MAJ + Flèche  : Déplacement de la source lumineuse
+		-/+   : Zoom
+
+
+Démarche pour obtenir la capture d'ecran 4:
+
+Dessinez un polygone comme sur la capture 1 (on peut dessiner le côté droit du haut vers
+le bas et faire un appui sur "c" une fois en bas )
+
+Appuyez environ 9 fois sur "y" pour obtenir la figure 2 et sur "m" pour changer le mode de
+dessin (ombré). Laisser appuyé sur CTRL flèche gauche jusqu'à obtenir la capture 3.
+
+Appuyez sur "a" pour changer la projection. 
+
+Appuyer 3 fois sur "X", puis une fois sur "y" et là appuyez encore une fois sur CTRL +
+flèche gauche.
+
+
+
