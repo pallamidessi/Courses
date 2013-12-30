@@ -16,13 +16,35 @@
  * General Public License for more details at
  * http://www.gnu.org/copyleft/gpl.html
 **/  
-
+#ifndef __ENTROPY_H
+#define __ENTROPY_H
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include "bmpfile.h"
 
-double log2(double x);
-double entropy(double* probability,int nb_of_prob,bmp_p image);
+struct _bmpfile2 {
+  int  length;
+  int  height;
+  int color_depth;
+  double* histogram;
+  int* greyscale;
+  int nb_color;
+};
 
-double* create_prob_tab(bmp_p image);
+typedef struct individu{
+  float L;
+  int D;
+}individu_t;
+
+typedef struct _bmpfile2 bmpgrey_t;
+
+bmpgrey_t* simple_import(char* filename);
+void simple_export(bmpgrey_t* image, char* bmpname);
+void create_histo_tab(bmpgrey_t* image);
+double entropy(bmpgrey_t* image,double* histo,int width);
+individu_t* color_reduction_4bit(bmpgrey_t* image);
+
+double log2(double x);
+
+#endif

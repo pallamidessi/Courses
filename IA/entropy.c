@@ -1,22 +1,8 @@
 #include "entropy.h"
 
-struct _bmpfile {
-  int  length;
-  int  height;
-  int color_depth;
-  double* histogram;
-  int* greyscale;
-  int nb_color;
-};
 
-typedef struct individu{
-  float L;
-  int D;
-}individu_t;
 
-typedef struct _bmpfile bmpfile_t;
-
-bmpfile_t simple_import(cahr* filename){
+bmpgrey_t* simple_import(char* filename){
   FILE* file = fopen(filename, "r");
   int length,height,depth;
   int i;
@@ -26,15 +12,15 @@ bmpfile_t simple_import(cahr* filename){
   /*Recuperation de la longueur et de la largeur*/
   fseek(file,14,SEEK_SET);
   fscanf(file,"%d",&length);
-  fscanf(file,"%d",&heigth);
+  fscanf(file,"%d",&height);
 
   /*Recuperation de la profondeur des couleurs*/
   fseek(file,2,SEEK_CUR);
   fscanf(file,"%d",&depth);
 
   /*Allocation de la structure contenant l'image */
-  bmpfile_t* image=malloc(sizeof(struct _bmpfile));
-  image->greyscale=calloc(length*heigth,depth);
+  bmpgrey_t* image=malloc(sizeof(struct _bmpfile2));
+  image->greyscale=calloc(length*height,depth);
 
   /*Recuperation de l'offset contenant le debut du PixelArray*/
   fseek(file,10,SEEK_SET);
@@ -44,7 +30,7 @@ bmpfile_t simple_import(cahr* filename){
   fseek(file,offset,SEEK_SET);
   for (i = 0; i < height*length; i++) {
     fread(&current_grey,depth,1,file);
-    image->greyscale[i]=pixel_grey;
+    image->greyscale[i]=current_grey;
     fseek(file,2*depth,SEEK_CUR);
     current_grey=0;
   }
@@ -52,6 +38,8 @@ bmpfile_t simple_import(cahr* filename){
   image->color_depth=depth;
   image->length=length;
   image->height=height;
+
+  return image;
 }
 
 /*Logarithme en base 2*/
@@ -59,12 +47,35 @@ double log2(double x){
   return log(x)/log(10);
 }
 
-/*Creation et calcul de l'histogramme  */
-bmp_p create_histo_tab(bmpfile_t* image){
-  int nb_colour=(int) pow(2,image->depth);
-  double* histo=malloc(sizeof(double)*nb_colour);
-  int heigth=image->height;
+void simple_export(bmpgrey_t* image, char* bmpname){
+	int i,j;
+	int coul;
   int length=image->length;
+  int height=image->height;
+
+  bmpfile_t* bmp = bmp_create(length,height, 8);
+
+  for (i = 0; i < height; i++)
+	{
+		for (j = 0; j < length; j++)
+		{
+			coul = image->greyscale[i*length+j];
+			rgb_pixel_t pixel = {coul, coul, coul, 255};
+			bmp_set_pixel(bmp, j, i, pixel);
+		}
+	}
+	bmp_save(bmp, bmpname);
+	bmp_destroy(bmp);
+}
+
+
+/*Creation et calcul de l'histogramme  */
+void create_histo_tab(bmpgrey_t* image){
+  int nb_color=(int) pow(2,image->color_depth);
+  double* histo=malloc(sizeof(double)*nb_color);
+  int height=image->height;
+  int length=image->length;
+  int i;
 
   /*On compte chaque occurence de couleur dans l'image*/
   for (i = 0; i < length*height; i++) {
@@ -72,26 +83,28 @@ bmp_p create_histo_tab(bmpfile_t* image){
   }
 
   /*on fait la moyenne des apparition de chaque couleurs*/
-  for (i = 0; i <nb_colour; i++) {
-    histo[i]/=heigth*length;
+  for (i = 0; i <nb_color; i++) {
+    histo[i]/=height*length;
   }
 
-  bmp_p->histogram=histo;
+  image->histogram=histo;
+  image->nb_color=nb_color;
 }
 
 /*Calcul de l'entropie au sens de Shannon d'une image*/
-double entropy(bmpfile_t* image,double* histo,int width){
+double entropy(bmpgrey_t* image,double* histo,int width){
   int i,j;
   int current_grey;
   int length=image->length;
   int height=image->height;
-  int nb_colour=image->nb_color;
+  int nb_color=image->nb_color;
   int part=nb_color/width;
+  double entropy=0.0;
 
   for (i = 0; i < height*length; i++) {
     current_grey=image->greyscale[i];
     
-    entropy+=histo[current_grey/part]*log2(histo[current_grey/part]);
+    entropy+=(histo[current_grey/part]*log2(histo[current_grey/part]));
   }
 
   entropy*=-1;
@@ -100,14 +113,19 @@ double entropy(bmpfile_t* image,double* histo,int width){
 }
 
 /*Reduction de couleur en moyennant */
-individu_t* color_reduction_4bit(bmpfile_t image){
+individu_t* color_reduction_4bit(bmpgrey_t* image){
   double tmp_histo[16];
-  individu_t* best_ind=malloc(sizeof(struct individu));
-  double best_entropy;
+  double best_entropy,tmp_entropy;
   int first=1;
   int count;
+  int L,D;
+  int i,j;
+  
+  individu_t* best_ind=malloc(sizeof(struct individu));
+
+  /*init histo temporaire*/
   for (i = 0; i < 16; i++) {
-    tmp_histo=0;
+    tmp_histo[i]=0;
   }
 
   for (L = 16; L > 0; L--) {
@@ -126,9 +144,17 @@ individu_t* color_reduction_4bit(bmpfile_t image){
 
       if(first){
         best_entropy=entropy(image,tmp_histo,L);
+        best_ind->D=D;
+        best_ind->L=L;
         first=0;
       }
-
+      else if(best_entropy<(tmp_entropy=entropy(image,tmp_histo,L))){
+        best_entropy=tmp_entropy;
+        best_ind->D=D;
+        best_ind->L=L;
+      }
     }
   }
+
+  return best_ind;
 }

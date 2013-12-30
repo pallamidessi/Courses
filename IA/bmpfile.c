@@ -338,7 +338,7 @@ bmp_create(uint32_t width, uint32_t height, uint32_t depth)
   
   return result;
 }
-
+/*
 bmpfile_t *bmp_create_from_file(const char *filename){
 	FILE* file = fopen(filename, "r");
   int length,height,depth;
@@ -372,6 +372,7 @@ bmpfile_t *bmp_create_from_file(const char *filename){
     }
   }
 }
+*/
 void
 bmp_destroy(bmpfile_t *bmp)
 {
