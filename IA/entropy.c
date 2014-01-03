@@ -3,38 +3,41 @@
 
 
 bmpgrey_t* simple_import(char* filename){
-  FILE* file = fopen(filename, "r");
-  int length,height,depth;
+  FILE* file =NULL; 
+  int length=1,height=1,depth=1;
   int i;
-  int offset=0;
+  unsigned int offset=0;
   int current_grey=0;
 
+  file=fopen(filename, "rb");
   /*Recuperation de la longueur et de la largeur*/
-  fseek(file,14,SEEK_SET);
-  fscanf(file,"%d",&length);
-  fscanf(file,"%d",&height);
+  fseek(file,18,SEEK_SET);
+  fread(&length,sizeof(int),1,file);
+  fread(&height,sizeof(int),1,file);
 
   /*Recuperation de la profondeur des couleurs*/
   fseek(file,2,SEEK_CUR);
-  fscanf(file,"%d",&depth);
+  fread(&depth,sizeof(char),2,file);
 
   /*Allocation de la structure contenant l'image */
   bmpgrey_t* image=malloc(sizeof(struct _bmpfile2));
-  image->greyscale=calloc(length*height,depth);
+  image->greyscale=calloc(length*height,sizeof(int));
 
   /*Recuperation de l'offset contenant le debut du PixelArray*/
   fseek(file,10,SEEK_SET);
-  fscanf(file,"%d",&offset);
+  fread(&offset,sizeof(int),1,file);
 
   /*Recuparation des pixel (niveau de gris)*/
   fseek(file,offset,SEEK_SET);
   for (i = 0; i < height*length; i++) {
-    fread(&current_grey,depth,1,file);
+    fread(&current_grey,1,1,file);
+    //printf("%d %d\n",current_grey,i);
     image->greyscale[i]=current_grey;
-    fseek(file,2*depth,SEEK_CUR);
+    //fseek(file,1,SEEK_CUR);
     current_grey=0;
   }
-
+  
+  fclose(file);
   image->color_depth=depth;
   image->length=length;
   image->height=height;
@@ -49,7 +52,7 @@ double log2(double x){
 
 void simple_export(bmpgrey_t* image, char* bmpname){
 	int i,j;
-	int coul;
+	unsigned char coul=0;
   int length=image->length;
   int height=image->height;
 
@@ -59,9 +62,11 @@ void simple_export(bmpgrey_t* image, char* bmpname){
 	{
 		for (j = 0; j < length; j++)
 		{
-			coul = image->greyscale[i*length+j];
-			rgb_pixel_t pixel = {coul, coul, coul, 255};
+			coul =(char)image->greyscale[i*length+j];
+      printf("%d \n",coul);
+			rgb_pixel_t pixel = {coul, coul, coul, 0};
 			bmp_set_pixel(bmp, j, i, pixel);
+      coul=0;
 		}
 	}
 	bmp_save(bmp, bmpname);
@@ -83,9 +88,9 @@ void create_histo_tab(bmpgrey_t* image){
   }
 
   /*on fait la moyenne des apparition de chaque couleurs*/
-  for (i = 0; i <nb_color; i++) {
-    histo[i]/=height*length;
-  }
+  //for (i = 0; i <nb_color; i++) {
+  //  histo[i]/=height*length;
+  //}
 
   image->histogram=histo;
   image->nb_color=nb_color;
@@ -93,7 +98,7 @@ void create_histo_tab(bmpgrey_t* image){
 
 /*Calcul de l'entropie au sens de Shannon d'une image*/
 double entropy(bmpgrey_t* image,double* histo,int width){
-  int i,j;
+  int i;
   int current_grey;
   int length=image->length;
   int height=image->height;

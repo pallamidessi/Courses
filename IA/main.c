@@ -7,6 +7,9 @@
 
 int main(int argc, char* argv[]){
   bmpgrey_t* image=simple_import(argv[1]);
+  
+  create_histo_tab(image);
+  
   simple_export(image,"test.bmp");
   
   printf("log2(47)=%f\n",log2(47));
