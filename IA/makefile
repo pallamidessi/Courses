@@ -9,8 +9,8 @@ VPATH = src:include:objets:bin
 
 ALL: main
 
-main : entropy.o bmpfile.o main.o
-	gcc $(CFLAGS) -o $@ $(OBJ_PATH)/entropy.o $(OBJ_PATH)/main.o $(OBJ_PATH)/bmpfile.o $(LDFLAGS) 
+main : entropy.o bmpfile.o main.o quicksort.o genetic.o
+	gcc $(CFLAGS) -o $@ $(OBJ_PATH)/entropy.o $(OBJ_PATH)/main.o $(OBJ_PATH)/bmpfile.o $(OBJ_PATH)/quicksort.o $(OBJ_PATH)/genetic.o $(LDFLAGS) 
 	@mv $@ bin/.
 
 %.o : %.c

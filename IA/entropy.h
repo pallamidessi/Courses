@@ -33,16 +33,23 @@ struct _bmpfile2 {
 };
 
 typedef struct individu{
-  float L;
+  int L;
   int D;
+  double entropy;
 }individu_t;
+
+typedef struct _population_t {
+  individu_t* ind;
+  int nb_ind;
+  int size;
+} population_t;
 
 typedef struct _bmpfile2 bmpgrey_t;
 
 bmpgrey_t* simple_import(char* filename);
 void simple_export(bmpgrey_t* image, char* bmpname);
 void create_histo_tab(bmpgrey_t* image);
-double entropy(bmpgrey_t* image,double* histo,int width);
+double entropy(bmpgrey_t* image,int width_window,int decal_window);
 individu_t* color_reduction_4bit(bmpgrey_t* image);
 
 double log2(double x);
