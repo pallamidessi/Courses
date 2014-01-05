@@ -2,29 +2,30 @@
 
 
 //quicksort les element de old+new dans selected 
-void quicksort_population(population_t* old,population_t* new,population_t* selected){
+void Quicksort::quicksort_population(Population* old,Population* new_,Population* selected){
   int i;
 
-  for (i = 0; i < POPULATION_SIZE; i++) {
-    population_add(&old->ind[i],selected);
-  }
-  for (i = 0; i < POPULATION_SIZE; i++) {
-    population_add(&new->ind[i],selected);
+  for (i = 0; i < 100; i++) {
+    selected->population_add(&old->ind[i]);
   }
 
-  quicksort(selected,0,POPULATION_SIZE*2-1);
+  for (i = 0; i < 100; i++) {
+    selected->population_add(&new_->ind[i]);
+  }
+
+  Quicksort::quicksort(selected,0,(100*2)-1);
 
 }
 
-void echanger(population_t* tab,int i,int j){
-  individu_t tmp=tab->ind[j];
+void Quicksort::echanger(Population* tab,int i,int j){
+  Individu tmp=tab->ind[j];
   
   tab->ind[j]=tab->ind[i];
   tab->ind[i]=tmp;
 }
 
 
-void quicksort(population_t* tab,int debut,int fin){
+void Quicksort::quicksort(Population* tab,int debut,int fin){
   int i;
 
   if(debut<fin){
@@ -37,9 +38,9 @@ void quicksort(population_t* tab,int debut,int fin){
         elementAechanger++;
       }
     }
-    echanger(tab,elementAechanger,fin);
-    quicksort(tab,debut,elementAechanger-1);
-    quicksort(tab,elementAechanger+1,fin);
+    Quicksort::echanger(tab,elementAechanger,fin);
+    Quicksort::quicksort(tab,debut,elementAechanger-1);
+    Quicksort::quicksort(tab,elementAechanger+1,fin);
   }
 }
 

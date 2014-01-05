@@ -1,13 +1,13 @@
 #include "entropy.h"
 
-
-
-bmpgrey_t* simple_import(char* filename){
+Bmpgrey::Bmpgrey(char* filename){
   FILE* file =NULL; 
   int length=1,height=1,depth=1;
   int i;
+  int px_total=0;
   unsigned int offset=0;
   int current_grey=0;
+  int nb_color;
 
   file=fopen(filename, "rb");
   /*Recuperation de la longueur et de la largeur*/
@@ -20,8 +20,7 @@ bmpgrey_t* simple_import(char* filename){
   fread(&depth,sizeof(char),2,file);
 
   /*Allocation de la structure contenant l'image */
-  bmpgrey_t* image=malloc(sizeof(struct _bmpfile2));
-  image->greyscale=calloc(length*height,sizeof(int));
+  greyscale=new int[length*height];
 
   /*Recuperation de l'offset contenant le debut du PixelArray*/
   fseek(file,10,SEEK_SET);
@@ -29,27 +28,29 @@ bmpgrey_t* simple_import(char* filename){
 
   /*Recuparation des pixel (niveau de gris)*/
   fseek(file,offset,SEEK_SET);
-  for (i = 0; i < height*length; i++) {
+  px_total=height*length;
+
+  for (i = 0; i < px_total; i++) {
     fread(&current_grey,1,1,file);
-    //printf("%d %d\n",current_grey,i);
-    image->greyscale[i]=current_grey;
-    //fseek(file,1,SEEK_CUR);
+    greyscale[i]=current_grey;
     current_grey=0;
   }
-  
   fclose(file);
-  image->color_depth=depth;
-  image->length=length;
-  image->height=height;
-
-  return image;
+  
+  nb_color=(int) pow(2,depth);
+  
+  this->color_depth=depth;
+  this->length=length;
+  this->height=height;
+  this->nb_color=nb_color;
+  this->histogram=new double[nb_color];
 }
 
 /*Logarithme en base 2*/
-double log2(double x){
+ double Bmpgrey::log2(double x){
   return log(x)/log(2);
 }
-
+/*
 void simple_export(bmpgrey_t* image, char* bmpname){
 	int i,j;
 	unsigned char coul=0;
@@ -71,38 +72,31 @@ void simple_export(bmpgrey_t* image, char* bmpname){
 	bmp_save(bmp, bmpname);
 	bmp_destroy(bmp);
 }
-
+*/
 
 /*Creation et calcul de l'histogramme  */
-void create_histo_tab(bmpgrey_t* image){
-  int nb_color=(int) pow(2,image->color_depth);
-  double* histo=malloc(sizeof(double)*nb_color);
-  int height=image->height;
-  int length=image->length;
+void Bmpgrey::create_histo_tab(){
   int i;
+  int px_total=height*length;
   
   for (i = 0; i < nb_color; i++) {
-    histo[i]=0;
+    histogram[i]=0;
   }
 
   /*On compte chaque occurence de couleur dans l'image*/
-  for (i = 0; i < length*height; i++) {
-    histo[image->greyscale[i]]+=1;
+  for (i = 0; i < px_total; i++) {
+    histogram[greyscale[i]]+=1;
   }
 
-  image->histogram=histo;
-  image->nb_color=nb_color;
 }
 
 /*Calcul de l'entropie au sens de Shannon d'une image*/
-double entropy(bmpgrey_t* image,int width_window,int decal_window){
+double Bmpgrey::entropy(int width_window,int decal_window){
   int i;
   int current_grey;
-  int length=image->length;
-  int height=image->height;
-  //int nb_color=image->nb_color;
   double entropy=0.00000;
-  double* histo=image->histogram;
+  double* histo=this->histogram;
+  int px_total=height*length;
   double val=1;
   int count=0;
   
@@ -114,13 +108,9 @@ double entropy(bmpgrey_t* image,int width_window,int decal_window){
     return 0.0;
   }
 
-  for (i = 0; i < height*length; i++) {
-    current_grey=image->greyscale[i];
+  for (i = 0; i < px_total; i++) {
+    current_grey=this->greyscale[i];
     
-    if (current_grey==210 || current_grey>215) {
-      printf("valeur impossible\n");
-    }
-
     if (current_grey>=decal_window && current_grey<(width_window+decal_window)) {
       val=histo[current_grey]/count;
       entropy+=val*log2(val);
@@ -133,27 +123,29 @@ double entropy(bmpgrey_t* image,int width_window,int decal_window){
 }
 
 /*Reduction de couleur en moyennant */
-individu_t* color_reduction_4bit(bmpgrey_t* image){
+Individu* Bmpgrey:: color_reduction_4bit(){
   double best_entropy,tmp_entropy;
   int first=1;
   int L,D;
   
-  individu_t* best_ind=malloc(sizeof(struct individu));
+  Individu* best_ind=new Individu();
 
 
   for (L = 16; L > 0; L--) {
 
     for (D = 0; D < 256-256/L; D++) {
       if(first){
-        best_entropy=entropy(image,L,D);
+        best_entropy=this->entropy(L,D);
         best_ind->D=D;
         best_ind->L=L;
+        best_ind->entropy=best_entropy;
         first=0;
       }
-      else if(best_entropy<(tmp_entropy=entropy(image,L,D))){
+      else if(best_entropy<(tmp_entropy=this->entropy(L,D))){
         best_entropy=tmp_entropy;
         best_ind->D=D;
         best_ind->L=L;
+        best_ind->entropy=best_entropy;
       }
     }
   }

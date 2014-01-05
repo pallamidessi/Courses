@@ -18,40 +18,53 @@
 **/  
 #ifndef __ENTROPY_H
 #define __ENTROPY_H
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include "bmpfile.h"
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
+//#include "bmpfile.h"
 
-struct _bmpfile2 {
+class Individu;
+
+class Bmpgrey {
+  public:
   int  length;
   int  height;
   int color_depth;
   double* histogram;
   int* greyscale;
   int nb_color;
+  
+  Bmpgrey(char* filename);
+  //void simple_export( char* bmpname);
+  void create_histo_tab();
+  double entropy(int width_window,int decal_window);
+  static double log2(double x);
+  Individu* color_reduction_4bit();
 };
 
-typedef struct individu{
+class Individu{
+  public:
   int L;
   int D;
   double entropy;
-}individu_t;
 
-typedef struct _population_t {
-  individu_t* ind;
+  Individu();
+  void mutate();
+  void evaluate(Bmpgrey* image);
+};
+
+class Population {
+  public:
+  Individu* ind;
   int nb_ind;
   int size;
-} population_t;
 
-typedef struct _bmpfile2 bmpgrey_t;
-
-bmpgrey_t* simple_import(char* filename);
-void simple_export(bmpgrey_t* image, char* bmpname);
-void create_histo_tab(bmpgrey_t* image);
-double entropy(bmpgrey_t* image,int width_window,int decal_window);
-individu_t* color_reduction_4bit(bmpgrey_t* image);
-
-double log2(double x);
+  void init();
+  Population(int size);
+  void flush_population();
+  bool population_add(Individu* ind);
+  void mutate_population();
+  void evaluate_population(Bmpgrey* image);
+};
 
 #endif

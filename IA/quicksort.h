@@ -3,8 +3,14 @@
 
 #include "entropy.h"
 #include "genetic.h"
+class Quicksort{
+  
+  public:
+  static void quicksort_population(Population* old,Population* new_,Population* selected);
+  Quicksort();
 
-void quicksort_population(population_t* old,population_t* new,population_t* selected);
-void echanger(population_t* tab,int i,int j);
-void quicksort(population_t* tab,int debut,int fin);
+  private:
+  static void echanger(Population* tab,int i,int j);
+  static void quicksort(Population* tab,int debut,int fin);
+};
 #endif

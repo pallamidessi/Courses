@@ -1,22 +1,29 @@
 #include "genetic.h"
 
+Genetic::Genetic(Population* old,Population* new_,Bmpgrey* image){
+  this->old=old;
+  this->new_=new_;
+  this->image=image;
+}
 
-void evaluate_population(population_t* pop,bmpgrey_t* image){
-  int nb_ind=pop->nb_ind;
+void Population::evaluate_population(Bmpgrey* image){
   int i;
 
   for (i = 0; i < nb_ind; i++) {
-    pop->ind[i].entropy=entropy(image,pop->ind[i].L,pop->ind[i].D);
+    ind[i].evaluate(image);;
   }
+}
 
+void Individu::evaluate(Bmpgrey* image){
+  entropy=image->entropy(L,D);
 }
 
 //Enjambement
-individu_t* crossing_over(individu_t* A,individu_t* B){
-  static individu_t* C=NULL;
+Individu* Genetic:: crossing_over(Individu* A,Individu* B){
+  static Individu* C=NULL;
 
   if(C==NULL)
-    C=create_individu();
+    C=new Individu();
 
   C->L=A->L;
   C->D=B->D;
@@ -26,46 +33,44 @@ individu_t* crossing_over(individu_t* A,individu_t* B){
 }
 //choisi aleatoirement les individu de old (les bon de la generation precedante) et les
 //cross entre eux et les place dans new, old est trie par la selection 
-void crossing_from_population(population_t* old,population_t* new){
+void Genetic::crossing_from_population(){
   int index_random1;
   int index_random2;
   int i;
 
-  flush_population(new);
+  new_->flush_population();
   for (i = 0; i < POPULATION_SIZE; i++) {
-    population_add(crossing_over(&old->ind[i],&old->ind[(POPULATION_SIZE-1)-i]),new);
+    new_->population_add(crossing_over(&old->ind[i],&old->ind[(POPULATION_SIZE-1)-i]));
   }
 
-  while(new->nb_ind<new->size){
+  while(new_->nb_ind<new_->size){
     index_random1=rand()%POPULATION_SIZE;
     index_random2=rand()%POPULATION_SIZE;
 
-    population_add(crossing_over(&old->ind[index_random1],&old->ind[index_random2]),new);
+    new_->population_add(crossing_over(&old->ind[index_random1],&old->ind[index_random2]));
 
   }
 }
 
 
-void selection(population_t* old,population_t* new){
-  static population_t* selected=NULL;
+void Genetic::selection(){
+  static Population* selected=NULL;
   int i;
 
   if(selected==NULL)
-    selected=create_population(POPULATION_SIZE*2);
+    selected=new Population(100*2);
 
-  flush_population(selected);
-  quicksort_population(old,new,selected);
+  selected->flush_population();
+  Quicksort::quicksort_population(old,new_,selected);
 
   //old contient maintenant tout les bon individu
-  for(i=0;i<POPULATION_SIZE;i++)
-    old->ind[i]=selected->ind[(POPULATION_SIZE*2-1)-i];
-
-  //free tout les individu "mauvais", la moitie restante de selected
+  for(i=0;i<100;i++)
+    old->ind[i]=selected->ind[(100*2-1)-i];
 
 }
 
 //mutation aleatoire de l'ordre de 1%
-void mutate(individu_t* ind){
+void Individu::mutate(){
   int mut_chance;
   int threshold1=4;
   int threshold2=2;
@@ -78,85 +83,80 @@ void mutate(individu_t* ind){
 
   if (mut_chance<threshold2) {
     signe=rand()%2;
-    if (signe==0 && ind->L>0) {
-      ind->L=ind->L-1;
+    if (signe==0 && L>0) {
+      L--;
     }
-    else if(ind->L<15){
-      ind->L=ind->L+1;
+    else if(L<15){
+      L++;
     }
   }
   else if(mut_chance<threshold1){
     signe=rand()%2;
-    if (signe==0 && ind->D>5) {
-      ind->D=ind->D-5;
+    if (signe==0 && D>5) {
+      D-=5;
     }
-    else if(ind->D<250)
-      ind->D=ind->D+5;
+    else if(D<250)
+      D+=5;
   }
 
 }
 
-void mutate_population(population_t* p){
+void Population::mutate_population(){
   int i;
-  int nb_ind=p->nb_ind;
+ 
 
   for (i = 0; i < nb_ind; i++) {
-    mutate(&p->ind[i]);
+    ind[i].mutate();
   }
 }
 
-void genetic(bmpgrey_t* image,population_t* old,population_t* new ){
+void Genetic::genetic(){
 
   //evalue les population
-  evaluate_population(old,image);
-  evaluate_population(new,image);
+  old->evaluate_population(image);
+  new_->evaluate_population(image);
 
   //met tous les bon dans old 
-  selection(old,new);
+  selection();
   //le resultat des crossing des adn de old vont dans new
-  crossing_from_population(old,new);
+  crossing_from_population();
 
-  mutate_population(new);  
+  new_->mutate_population();  
 
 }
 
-void flush_population(population_t* pop){
-  pop->nb_ind=0;
+void Population::flush_population(){
+  nb_ind=0;
 }
 
-bool population_add(individu_t* ind,population_t* pop){
-  int nb_ind=pop->nb_ind;
-  int size=pop->size;
+bool Population::population_add(Individu* ind){
 
   if(nb_ind<size){
-    pop->ind[nb_ind]=*ind;
-    pop->nb_ind++;
-    return TRUE;
+    this->ind[nb_ind].L=ind->L;
+    this->ind[nb_ind].D=ind->D;
+    this->ind[nb_ind].entropy=ind->entropy;
+    nb_ind++;
+    return true;
   }
-  return FALSE;
+  return false;
 }
 
-void init(population_t* pop){
-  pop->nb_ind=POPULATION_SIZE;
+void Population::init(){
   int i;
-  individu_t* ind=pop->ind;
 
-  for (i = 0; i < POPULATION_SIZE; i++) {
+  for (i = 0; i < 100; i++) {
     ind[i].L=(rand()%16)+1;
     ind[i].D=rand()%(256-ind[i].L);
   }
+
+  nb_ind=100;
 }
 
-population_t* create_population(int size){
-
-  population_t* new=malloc(sizeof(struct _population_t));
-  new->ind=malloc(POPULATION_SIZE*sizeof(struct individu));
-
-  new->size=POPULATION_SIZE;
-  return new;
+Population::Population(int size){
+  ind=new Individu[size];
+  nb_ind=0;
+  this->size=size;
 }
 
-individu_t* create_individu(){
-  individu_t* new=malloc(sizeof(struct individu));
-  return new;
+Individu::Individu():L(0),D(0),entropy(0){
 }

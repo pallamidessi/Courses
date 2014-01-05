@@ -1,36 +1,41 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include "entropy.h"
-#include "bmpfile.h"
 #include "genetic.h"
-#include <time.h>
+#include <ctime>
 
 
 int main(int argc, char* argv[]){
-  bmpgrey_t* image=simple_import(argv[1]);
+  Bmpgrey* image=new Bmpgrey(argv[1]);
+
   int i;
   srand(time(NULL));
-  create_histo_tab(image);
+  image->create_histo_tab();
   
   for (i = 0; i < 256; i++) {
     printf("%f \n",image->histogram[i]);
   }
-  printf("log2(0.416672)=%f\n",log2(0.416672));
-  
-  double ent=entropy(image,256,0);
-  printf("%f\n",ent);
-  color_reduction_4bit(image);
-  simple_export(image,"test.bmp");
-  
-  population_t* old=create_population(POPULATION_SIZE);
-  population_t* new=create_population(POPULATION_SIZE);
 
-  init(old);
-  init(new);
+  printf("log2(0.416672)=%f\n",Bmpgrey::log2(0.416672));
   
+  double ent=image->entropy(256,0);
+
+  printf("%f\n",ent);
+
+  //Individu* best=image->color_reduction_4bit();
+  //printf("%d %d %f\n",best->L,best->D,best->entropy);
+  
+  Population* old=new Population(100);
+  Population* new_=new Population(100);
+
+  old->init();
+  new_->init();
+  
+  Genetic* gen=new Genetic(old,new_,image);
+
   printf("Debut genetic\n");
   for (i = 0; i < 300; i++) {
-    genetic(image,old,new);
+    gen->genetic();
     printf("Generation %d\n",i);
   }
 
