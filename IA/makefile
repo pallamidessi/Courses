@@ -13,7 +13,7 @@ main : entropy.o  main.o quicksort.o genetic.o
 	$(CC) $(CFLAGS) -o $@ $(OBJ_PATH)/entropy.o $(OBJ_PATH)/main.o  $(OBJ_PATH)/quicksort.o $(OBJ_PATH)/genetic.o $(LDFLAGS) 
 	@mv $@ bin/.
 
-%.o : %.c
+%.o : %.cpp
 	$(CC) $(CFLAGS) -o $@ -c $< -I $(INC_PATH)
 	@mv $@ objets/.
 
