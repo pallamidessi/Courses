@@ -1,5 +1,9 @@
 #include "entropy.h"
 
+/*Bmpgrey methods---------------------------------------------------*/
+
+
+/*Constructor of Bmpgrey*/
 Bmpgrey::Bmpgrey(char* filename){
   FILE* file =NULL; 
   int length=1,height=1,depth=1;
@@ -46,33 +50,14 @@ Bmpgrey::Bmpgrey(char* filename){
   this->histogram=new double[nb_color];
 }
 
+
+
 /*Logarithme en base 2*/
  double Bmpgrey::log2(double x){
   return log(x)/log(2);
 }
-/*
-void simple_export(bmpgrey_t* image, char* bmpname){
-	int i,j;
-	unsigned char coul=0;
-  int length=image->length;
-  int height=image->height;
 
-  bmpfile_t* bmp = bmp_create(length,height, 8);
 
-  for (i = 0; i < height; i++)
-	{
-		for (j = 0; j < length; j++)
-		{
-			coul =(char)image->greyscale[i*length+j];
-			rgb_pixel_t pixel = {coul, coul, coul, 0};
-			bmp_set_pixel(bmp, j, i, pixel);
-      coul=0;
-		}
-	}
-	bmp_save(bmp, bmpname);
-	bmp_destroy(bmp);
-}
-*/
 
 /*Creation et calcul de l'histogramme  */
 void Bmpgrey::create_histo_tab(){
@@ -90,7 +75,10 @@ void Bmpgrey::create_histo_tab(){
 
 }
 
-/*Calcul de l'entropie au sens de Shannon d'une image*/
+
+
+/*Calcul de l'entropie au sens de Shannon d'une image suivant une taille et un decalage de
+ * fenetre précisé*/
 double Bmpgrey::entropy(int width_window,int decal_window){
   int i;
   int current_grey;
@@ -100,14 +88,17 @@ double Bmpgrey::entropy(int width_window,int decal_window){
   double val=1;
   int count=0;
   
+  /*Compte le nombre effectif d'element pris en compte par le couple L et D*/
   for (i = decal_window; i < width_window+decal_window; i++) {
     count+=histo[i];
   }
   
+  /*Pas d'effectif == entropie nulle*/
   if (count==0) {
     return 0.0;
   }
 
+  /*Calcul de l'entropie a proprement dit*/
   for (i = 0; i < px_total; i++) {
     current_grey=this->greyscale[i];
     
@@ -118,11 +109,14 @@ double Bmpgrey::entropy(int width_window,int decal_window){
   }
 
   entropy*=-1;
+  /*On normalise par l'effectif : metric entropy*/
   entropy/=count;
+
   return entropy;
 }
 
-/*Reduction de couleur en moyennant */
+
+/*Recherche exhaustive du meilleur couple L/D */
 Individu* Bmpgrey:: color_reduction_4bit(){
   double best_entropy,tmp_entropy;
   int first=1;
@@ -132,7 +126,6 @@ Individu* Bmpgrey:: color_reduction_4bit(){
 
 
   for (L = 16; L > 0; L--) {
-
     for (D = 0; D < 256-256/L; D++) {
       if(first){
         best_entropy=this->entropy(L,D);
@@ -149,8 +142,7 @@ Individu* Bmpgrey:: color_reduction_4bit(){
       }
     }
   }
-  printf("best entropy %f\n",best_entropy);
-  printf("L %d D %d\n",best_ind->L,best_ind->D);
+
   return best_ind;
 }
 
