@@ -26,3 +26,7 @@
 *.exe
 *.out
 *.app
+
+# vim's swap and tmp files
+*~
+*.sw*
