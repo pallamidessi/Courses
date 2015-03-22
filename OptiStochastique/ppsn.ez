@@ -1,0 +1,268 @@
+User specific :
+
+#define MAX_PAPERS 8
+#define PAP_KEYH 5
+#define PAP_AUTH 5
+#define PAP_INST 5
+
+#define HAX_REVIEWER 12
+#define REV_KEYW 5
+#define REV_WILL 5
+#define REV_UNWILL 5
+
+#define REV_PER_PAPER 3
+int PAPERS, REVIEWER;
+
+struct PaperInfo {
+  char title [50];
+  int keyword [PAP_KEW] ;
+  char author [PAP_AUTH] [50] ;
+  char institution [PAP_INST] [50] ;
+} PAPER[MAX_PAPER];
+
+struct ReviewerInfo {
+  char name [50];
+  int keyword [REV_KEYW] ;
+  char institution[50];
+  int hilling[REV_WILL];
+  int unwilling[REV_UNWILL] ;
+} REVIEW[MAX_REVIEWERS];
+
+FILE *fpPapers, *fpReviewers;
+
+int mystricmp(char *string1, char *string2){
+
+  for (int i = 0 ; string1[i] && string2 [i] ; i++) {
+    if (tolower(string1[i]) < tolower(string2[i] )) return — (i+1);
+    if (tolower(string1[i]) > tolower(string2[i] )) return i+1;
+  }
+
+  if (stringQ [1]) return - (i+1);
+  if (stringl [1]) return i+1;
+
+  return 0 ;
+}
+
+
+Initialisation function:
+int i, j;
+
+fpPapers = fopen("Papers.txt", "r");
+fpReviewers = fopen("Review.txt", "r");
+
+for (i = 0; i < MAX_PAPERS ; i++) {
+  strcpy (PAPER[i].title, "");
+
+  for (j = 0 ;  j <PAP_KEYH ; j++) 
+    PAPER[i].keyword [j] = 999;
+
+  for (j = 0 ;  j <PAP_AUTH ; j++)
+    strcpy (PAPER[i].author[j], "");
+
+  for (j = 0 ;  j <PAP_INST ; j++)
+    strcpy (PAPER[i].institution [j] , "");
+}
+
+for (i = 0; i < MAX_REVIEWER; i++) {
+  strcpy (REVIEWED.[i].name, "") ;
+
+  for (j = 0 ; j < REV_KEYH ; j++) 
+    REVIEWER[i].keyword[j] = 999;
+
+  strcpy (REVIEWED.[i].institution, "");
+
+  for (j = 0; j<REV_HILL; j++)
+    REVIEWER[i].hilling[j] = 999;
+
+  for (j = 0; j<REV_UNHILL ; j++)
+    REVIEWER[i].unwilling [j] = 999;
+}
+
+for (i = 0; i < MAX_PAPERS; i++) {
+  if (fscanf(fpPapers, "%[^\n]", PAPER[i].title) == EOF) 
+    break; 
+
+  getc(fpPapers) ;
+
+  for (j = 0; j < PAP_KEYH; j++) {
+    fscanf(fpPapers, "%d", PAPER[i].keyword[j]);
+
+    if (getc(fpPapers) == '\n’)
+      break;
+  }
+
+  for (j = 0; j < PAP_AUTH; j++) {
+    fscanf (fpPapers , "%[^,\n]", PAPER[i].author[j]);
+    if (getc(fpPapers) =='\n’) break;
+  }
+
+  for (j = 0; j < PAP_INST; j++) {
+    fscanf (prapers , "%[^,\n]", PAPER[i].institution[j]);
+    if (getc(prapers) == '\n') break;
+  }
+}
+
+PAPERS=i;
+
+for (i = 0; i < MAX_REVIEWERS; i++) {
+  if (fscanf (previewers , "%[^\n]", REVIEWER[i].name) == EOF)
+    break; 
+
+  getc (fpReviewers);
+
+  for (j = o; j < REV_KEYW; j++) {
+    fscanf(fpReviewers, "%d", &(REVIEWER[i].keyword[j]));
+
+    if (getc(previewers) == '\n') 
+      break;
+
+  }
+
+  fscanf(fpReviewers , "%[^\n]", REVIEWER[i].institution);
+  getc(fpReviewers);
+
+  for (j = 0; j < REV_WILL; j++) {
+
+    fscanf (previewers, "%d", &(REVIEWER[i].willing[j])) ;
+    if (getc(fpRevievers) == '\n')
+      break;
+  }
+
+  for (j = 0 ;  <REV_UNWILL ;  ++) {
+    fscanf (previewers , "%d" , &(REVIEWER [i].unwilling[j])) ;
+    if (getc (previewers) == '\n') 
+      break;
+  }
+}
+
+REVIEWER=i ;
+
+fclose (fpPapers);
+fclose(previewers);
+
+Classes :
+
+Match {
+  int reviewer[3];
+}
+
+Genome {
+  Hatch paper [8] ;
+}
+
+Standard functions :
+
+Genome::initialiser : // "initializer" is also accepted
+int i, j, k, again = 0;
+
+for (i = 0; i < PAPERS; i++)
+for (j = 0; j < REV_PER_PAPER; j++)
+
+do {
+  again = 0;
+  Genome.paper[i].reviewer[j] = (int) random (0,REVIEWER);
+
+  for (k = 0 ; k < j ; k++) 
+    if (Genome.paper[i].reviewer[k] == Genome.paper[i].reviewer[j])
+      again++;
+
+} while (again) ;
+
+
+
+Genome::crossover : // Must return the number of concerned children
+int i, j, GeneratedChildren = 0;
+int pos = (int) random(0, PAPER - 1); // Picks a random site named pos
+
+if (&child1){
+  child1 <= parent1;
+  for(i = pos; i < PAPERS; i++)
+    for(j = 0; j < REV_PER_PAPER; j++)
+      child1.paper[i].reviewer[j] = parent2.paper[i].reviewer[j];
+  
+  GeneratedChildren++;
+}
+
+if (&child2){
+  child2 <= parent2;
+  for(i = pos; i < PAPERS; i++)
+    for( j = 0; j < REV_PER_PAPER; j++)
+      child2.paper[i].reviewer[j] = parent1.paper[i].reviewer[j];
+  
+  GeneratedChildren++;
+}
+
+return GeneratedChildren;
+
+Genome::mutator : // Must return the number of mutations as an int
+int i, j, k, again, nbMut = 0;
+
+for (i = 0; i < PAPERS;i++)
+  if (tossCoin(PMut)){
+    for(j = 0; j < REV_PER_PAPER; j++)
+      do {
+        again = 0;
+        Genome.paper[i].reviewer[j] = (int) random(0,REVIEWER);
+        for (k = 0; k < j; k++) 
+          if (Genome.paper[i].reviewer[k] == Genome.paper[i].reviewer[j]) 
+            again++;
+      } while (again) ;
+
+    nbMut++;
+  }
+
+if (nbMut == 0) 
+  identicalGenome=true; // saves evaluation time
+
+return nbMut;
+
+Genome::evaluator : // Must return the score as a positive double
+int i, j, k, l, eval = 100000;
+int papPerRev[MAX_REVIEWER];
+
+for (i = 0; i < REVIEWER; papPerRev[i++] = 0);
+for (i = 0; i< PAPERS; i++)
+for (j = 0; j< REV_PER_PAPER; j++){
+  // if the keywords of the paper match the keywords of the reviewer
+  for (k = 0 ; k < REV_KEYW; k++)
+    for (l = 0; l < PAP_KEYH; l++)
+      if ( (REVIEWER[Genome.paper[i].reviewer[j]].keyword[k] == PAPER[i].keyword[l])
+          &&(REVIEWER[Genome.paper[i].reviewer[j]].keyword[k]! = 999)
+          &&(PAPER[i].Keyword[l] != 999)
+         ) eval++;
+
+  // if paper and reviewer come from the same institution
+  for (k = 0; k < PAP_INST; k++)
+    if (!stricmp(REVIEWER[Genome.paper[i].reviewer[j]].institution, PAPER[i].institution[k])) 
+      eval —= 1000;
+
+  // if the reviewer has been willing to review the paper
+
+  for(k = 0; k < REV_WILL; k++)
+    if (REVIEWER[Genome.paper[i].reviewer[j]].hilling[k] == i)
+      eval++;
+
+  // if the reviewer has been unwilling to review the paper
+  for (k = 0 ; k < REV_UNWILL; k++)
+    if (REVIEWER [Genome.paper[i].reviewer[j]].unwilling[k] == i) 
+      eval——;
+
+  // Reviewers should review have an average of REV_PER_PAPERXPAPERS/REVIEWER papers to review
+  papPerRev[Genome.paper[i].reviewer[j]]++;
+
+}
+
+for (i = 0; i < REVIEWERS; i++) 
+  eva1 —= abs(papPerRev[i] - REV_PER_PAPER*PAPERS/REVIEWER);
+
+return (double) (eval < 0 ? 0 : eval);
+
+Run parameters :
+Population size : 100 // PSize
+Number of generations : 100 // NbGen
+Mutation probability : 0.3 // PHut
+Crossover probability : 1 // PCross
+Genetic engine : SteadyState
+
+End of genome file.
+
