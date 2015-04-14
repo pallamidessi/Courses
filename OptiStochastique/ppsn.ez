@@ -90,8 +90,8 @@
 
   fpPapers=fopen("papers.txt","r");
   fpReviewers=fopen("review.txt","r");
-  fpwilling=fopen("wil.txt","r");
-  fpunwilling=fopen("unw.txt","r");
+  fpwilling=fopen("willing.txt","r");
+  fpunwilling=fopen("unwilling.txt","r");
 
   for (i=0;i<MAX_PAPERS;i++) {
     strcpy(PAPER[i].title," ");
@@ -166,7 +166,9 @@
   while (1){
     if (fscanf(fpwilling,"| %d | ",&id)==EOF)break;
     for(i=0;REVIEW[i].id!=id;i++);
-    fscanf(fpwilling,"%d | yes    |",&j);
+    std::cout << "reviewer ID" << id <<std::endl;
+    fscanf(fpwilling,"%d | yes |",&j);
+    std::cout << "papier ID" << j <<std::endl;
     for (k=0;(REVIEW[i].willing[k]!=999)||(REVIEW[i].willing[k]==j);k++);
     REVIEW[i].willing[k]=j;
     id=j;
