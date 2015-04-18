@@ -1,0 +1,402 @@
+
+\User declarations :
+  #define MAX_PAPERS 8
+  #define PAP_KEYW 5
+  #define PAP_AUTH 5
+  #define PAP_INST 5
+  #define WILL_AUTH 100
+  #define UNWILL_AUTH 100
+
+  #define MAX_REVIEWERS 12
+  #define REV_KEYW 5
+  #define REV_WILL 5
+  #define REV_UNWILL 5
+
+  #define REV_PER_PAPER 4
+  
+  int PAPERS, REVIEWERS;
+
+  struct PaperInfo {
+    char title [50];
+    char keyword [PAP_KEYW][35] ;
+    char author [PAP_AUTH] [50] ;
+    char institution [PAP_INST] [50] ;
+    int id;
+    int willingAuthor[WILL_AUTH];
+    int unwillingAuthor[UNWILL_AUTH];
+  } PAPER[MAX_PAPERS];
+
+  struct ReviewerInfo {
+    char name [50];
+    char keyword [REV_KEYW][35] ;
+    char institution[50];
+    int willing[REV_WILL];
+    int unwilling[REV_UNWILL] ;
+    int id;
+  } REVIEW[MAX_REVIEWERS];
+
+
+  float pMutPerGene = 0.3;
+  FILE* fpPapers; 
+  FILE* fpReviewers;
+
+  FILE *fpwilling, *fpunwilling;
+\end
+
+\User functions:
+  int mystricmp(char *string1, char *string2){
+    int i = 0;
+
+    for (i = 0 ; string1[i] && string2 [i] ; i++) {
+      if (tolower(string1[i]) < tolower(string2[i] )) return - (i + 1);
+      if (tolower(string1[i]) > tolower(string2[i] )) return i + 1;
+    }
+
+    if (string2[1]) return - (i + 1);
+    if (string1[1]) return i + 1;
+
+    return 0 ;
+  }
+\end
+
+\User classes :
+
+  Match {
+  int reviewer[4];
+  int Nb;
+  int Id;
+  int ReviewerId[4];
+  int KwMatch[4];
+  int Will_Unwill_Contribution;
+  int KeywContribution;
+  }
+
+  GenomeClass {
+    int TotalKeywContribution;
+    int Will_Unwill_Contribution;
+    int NbPapersPerReviewerContribution;
+    int Distribution[10];
+    int NbPapersPerReviewer[178];
+    Match paper[8] ;
+  }
+
+\end
+
+
+\Before everything else function:
+  
+  int i,j,k,id,lastPaper,currentPaper;
+  char *p,szTemp[1000];
+
+  fpPapers=fopen("papers.txt","r");
+  fpReviewers=fopen("review.txt","r");
+  fpwilling=fopen("willing.txt","r");
+  fpunwilling=fopen("unwilling.txt","r");
+
+  for (i=0;i<MAX_PAPERS;i++) {
+    strcpy(PAPER[i].title," ");
+    for (j=0;j<PAP_KEYW;j++) strcpy(PAPER[i].keyword[j]," ");
+    for (j=0;j<PAP_AUTH;j++) strcpy(PAPER[i].author[j]," ");
+    for (j=0;j<PAP_INST;j++) strcpy(PAPER[i].institution[j]," ");
+    for (j=0;j<WILL_AUTH;j++) PAPER[i].willingAuthor[j]=999;
+    for (j=0;j<UNWILL_AUTH;j++) PAPER[i].unwillingAuthor[j]=999;
+  }
+  for (i=0;i<MAX_REVIEWERS;i++) {
+    REVIEW[i].id=97834;
+    strcpy(REVIEW[i].name," ");
+    for (j=0;j<REV_KEYW;j++) strcpy(REVIEW[i].keyword[j]," ");
+    strcpy(REVIEW[i].institution," ");
+    for (j=0;j<REV_WILL;j++) REVIEW[i].willing[j]=999;
+    for (j=0;j<REV_UNWILL;j++) REVIEW[i].unwilling[j]=999;
+  }
+  lastPaper=i=-1;
+
+  while (i+1<MAX_PAPERS){
+    if (fscanf(fpPapers,"| %d | ",&currentPaper)==EOF)break;
+    if (currentPaper!=lastPaper) { // We have a new paper
+      i++;
+      lastPaper=PAPER[i].id=currentPaper;
+      if (fscanf(fpPapers,"%[^|] | ",PAPER[i].title)==0) fscanf(fpPapers," | ");
+      if (fscanf(fpPapers,"%[^|] | ",PAPER[i].author[0])==0) fscanf(fpPapers," | ");
+      if (fscanf(fpPapers,"%[^|] | ",szTemp)==0) fscanf(fpPapers," | ");
+      for (p=&(szTemp[strlen(szTemp)-1]);(*p==' ')&&(p!=&szTemp[0]);p--); *(p+1)=0;
+      if (p!=&szTemp[0]) {
+        for (;(*p!='.')&&(p!=&szTemp[0]);p--); for (p--;(*p!='.')&&(*p!='@')&&(p!=&szTemp[0]);p--);
+        strcpy(PAPER[i].institution[0],p+1);
+      }
+      for (j=0;j<PAP_KEYW;j++) {
+        fscanf(fpPapers," %[^,|]",&(PAPER[i].keyword[j])); 
+        for (k=strlen(PAPER[i].keyword[j])-1;(PAPER[i].keyword[j][k]==' ')&&(k>0);k--);PAPER[i].keyword[j][k+1]=0;// remove trailing spaces
+        if(getc(fpPapers)=='|') break;
+      }
+    }
+    else {// another line for the same paper
+      if (fscanf(fpPapers,"%[^|] | ",szTemp)==0) fscanf(fpPapers," | ");
+      for (k=0;(k<PAP_AUTH);k++)     // looking for an empty space
+        if ((PAPER[i].author[k])[0]==' ') break; 
+      if (fscanf(fpPapers,"%[^|] | ",PAPER[i].author[k])==0) fscanf(fpPapers," | ");
+      if (fscanf(fpPapers,"%[^|] | ",szTemp)==0) fscanf(fpPapers," | ");
+      for (p=&(szTemp[strlen(szTemp)-1]);(*p==' ')&&(p!=&szTemp[0]);p--); *(p+1)=0;
+      if (p!=&szTemp[0]) {
+        for (;(*p!='.')&&(p!=&szTemp[0]);p--); for (p--;(*p!='.')&&(*p!='@')&&(p!=&szTemp[0]);p--);
+        strcpy(PAPER[i].institution[k],p+1);
+      }
+      fscanf(fpPapers,"%[^\n]",szTemp);
+    }
+    getc(fpPapers);
+  }
+  PAPERS=i+1;
+
+  for (i=0;i<MAX_REVIEWERS;i++) {
+    if (fscanf(fpReviewers,"| %d | ",&(REVIEW[i].id))==EOF)break;
+    if (fscanf(fpReviewers,"%[^|] | ",REVIEW[i].name)==0) fscanf(fpReviewers," | ");
+    if (fscanf(fpReviewers,"%[^|] | ",szTemp)==0) fscanf(fpReviewers," | ");
+    for (p=&(szTemp[strlen(szTemp)-1]);(*p==' ')&&(p!=&szTemp[0]);p--); *(p+1)=0;
+    if (p!=&szTemp[0]) {for (;(*p!='.')&&(p!=&szTemp[0]);p--); for (p--;(*p!='.')&&(*p!='@')&&(p!=&szTemp[0]);p--);strcpy(REVIEW[i].institution,p+1);}
+    for (j=0;j<REV_KEYW;j++) {
+      fscanf(fpReviewers," %[^,|]",&(REVIEW[i].keyword[j])); 
+      for (k=strlen(REVIEW[i].keyword[j])-1;(REVIEW[i].keyword[j][k]==' ')&&(k>0);k--);REVIEW[i].keyword[j][k+1]=0;// remove trailing spaces
+      if(getc(fpReviewers)=='|') break;
+    }
+    getc(fpReviewers);
+  }
+  
+  REVIEWERS=i;
+
+  while (1){
+    if (fscanf(fpwilling,"| %d | ",&id)==EOF)break;
+    for(i=0;REVIEW[i].id!=id;i++);
+    std::cout << "reviewer ID" << id <<std::endl;
+    fscanf(fpwilling,"%d | yes |",&j);
+    std::cout << "papier ID" << j <<std::endl;
+    for (k=0;(REVIEW[i].willing[k]!=999)||(REVIEW[i].willing[k]==j);k++);
+    REVIEW[i].willing[k]=j;
+    id=j;
+    for (j=0;(PAPER[j].id!=id)&&(j<PAPERS);j++);
+    if (PAPER[j].id==id){
+      for (k=0;(PAPER[j].willingAuthor[k]!=999)&&(PAPER[j].willingAuthor[k]!=i);k++);
+      PAPER[j].willingAuthor[k]=i;
+    }
+    getc(fpwilling);
+  }
+
+  while (1){
+    if (fscanf(fpunwilling,"| %d | ",&id)==EOF)break;
+    for(i=0;REVIEW[i].id!=id;i++);
+    fscanf(fpunwilling,"%d | no     |",&j);
+    for (k=0;REVIEW[i].unwilling[k]!=999;k++);
+    REVIEW[i].unwilling[k]=j;
+    id=j;
+    for (j=0;(PAPER[j].id!=id)&&(j<PAPERS);j++);
+    if (PAPER[j].id==id){
+      for (k=0;(PAPER[j].unwillingAuthor[k]!=999)&&(PAPER[j].unwillingAuthor[k]!=i);k++);
+      PAPER[j].unwillingAuthor[k]=i;
+    }
+    getc(fpunwilling);
+  }
+
+
+  fclose(fpPapers); fclose(fpReviewers);
+
+\end 
+
+
+\GenomeClass::initialiser : // "initializer" is also accepted
+ // "initializer" is also accepted
+  int i,j,k,nbwillingAuthors,again;
+  for (i=0;i<PAPERS;i++){
+    Genome.paper[i].KeywContribution=0;
+    Genome.paper[i].Id=PAPER[i].id;
+// Choosing reviewers
+    for (nbwillingAuthors=0;PAPER[i].willingAuthor[nbwillingAuthors]!=999;nbwillingAuthors++);
+    if (nbwillingAuthors<=REV_PER_PAPER){
+      for(j=0;j<nbwillingAuthors;j++){
+        Genome.paper[i].reviewer[j]=PAPER[i].willingAuthor[j];
+        Genome.paper[i].ReviewerId[j]=REVIEW[Genome.paper[i].reviewer[j]].id;
+      }
+      for (;j<REV_PER_PAPER;j++){
+        do {
+          again=0;
+          Genome.paper[i].reviewer[j]=random(0,REVIEWERS-1);
+// refuse the reviewer if he is unwilling to review the paper
+          for(k=0;(PAPER[i].unwillingAuthor[k]!=999)&&(k<UNWILL_AUTH);k++)
+            if(PAPER[i].unwillingAuthor[k]==Genome.paper[i].reviewer[j]) {again=1;break;}
+          for (k=0;(k<j)&&(again==0);k++) if (Genome.paper[i].reviewer[k]==Genome.paper[i].reviewer[j]) {again=1;break;}
+        } while (again) ;
+        Genome.paper[i].ReviewerId[j]=REVIEW[Genome.paper[i].reviewer[j]].id;
+      }
+    }
+    else {
+      for (j=0;j<REV_PER_PAPER;j++){
+        do {
+          again=0;
+          Genome.paper[i].reviewer[j]=PAPER[i].willingAuthor[random(0,nbwillingAuthors-1)];
+// refuse the reviewer if he is unwilling to review the paper
+          for(k=0;(PAPER[i].unwillingAuthor[k]!=999)&&(k<UNWILL_AUTH);k++)
+            if(PAPER[i].unwillingAuthor[k]==Genome.paper[i].reviewer[j]) {again=1;break;}
+          for (k=0;k<j;k++) if (Genome.paper[i].reviewer[k]==Genome.paper[i].reviewer[j]) again++;
+        } while (again) ;
+        Genome.paper[i].ReviewerId[j]=REVIEW[Genome.paper[i].reviewer[j]].id;
+      }
+    }
+  }
+ \end
+
+
+\GenomeClass::crossover :
+int i, j;
+int pos = (int) random(0, PAPERS - 1); // Picks a random site named pos
+
+  for(i = pos; i < PAPERS; i++)
+    for(j = 0; j < REV_PER_PAPER; j++)
+      child.paper[i].reviewer[j] = parent2.paper[i].reviewer[j];
+  
+\end
+
+\GenomeClass::mutator : // Must return the number of mutations
+  int i, j, k, again, nbMut = 0;
+
+  for (i = 0; i < PAPERS; i++){
+    if (tossCoin(pMutPerGene)){
+      for(j = 0; j < REV_PER_PAPER; j++)
+        do {
+          again = 0;
+          Genome.paper[i].reviewer[j] = (int) random(0, REVIEWERS);
+          for (k = 0; k < j; k++) 
+            if (Genome.paper[i].reviewer[k] == Genome.paper[i].reviewer[j]) 
+              again++;
+        } while (again) ;
+
+      nbMut++;
+    }
+  }
+
+  return nbMut;
+\end
+
+\GenomeClass::evaluator : // Returns the score
+   // Must return (float) the score as a positive double
+  int contrib,i,j,k,l,matches,NbPapKwds,eval,nTemp;
+  char *cpTemp;
+  float f;
+
+  for (i=0;i<REVIEWERS;Genome.NbPapersPerReviewer[i++]=0);
+  for (i=0;i<10;Genome.Distribution[i++]=0);
+  Genome.Will_Unwill_Contribution=0;
+  Genome.TotalKeywContribution=0;
+
+  for (i=0;i<PAPERS;i++) {
+    contrib=0;
+    Genome.paper[i].Will_Unwill_Contribution=0;
+    Genome.paper[i].Id=PAPER[i].id;
+    Genome.paper[i].Nb=i;
+    for(j=0;j<REV_PER_PAPER;j++){
+      Genome.paper[i].ReviewerId[j]=REVIEW[Genome.paper[i].reviewer[j]].id;
+
+//--------------------------------------------------------------------------
+// if the keywords of the paper match the keywords of the reviewer
+      matches=0;
+      for (NbPapKwds=0;(NbPapKwds<PAP_KEYW)&&((PAPER[i].keyword[NbPapKwds])[0]!=' ');NbPapKwds++); // Determines the nb of keywords for the current paper.
+      if ((REVIEW[Genome.paper[i].reviewer[j]].keyword[0])[0]==' '){
+        contrib+=5; // If the reviewer has no keyword list, we suppose this is equivalent to an average match (5/10)
+        Genome.paper[i].KwMatch[j]=-1; // We signal the fact that the reviewer has no keywords by indicating "-1"
+      }
+      else {
+        for(k=0;k<REV_KEYW;k++){
+          cpTemp=&((REVIEW[Genome.paper[i].reviewer[j]].keyword[k])[0]);
+//          if ((REVIEWER[Genome.paper[i].reviewer[j]].keyword[k])[0]==' ') break;
+          if (cpTemp[0]==' ') break;
+          for(l=0;l<PAP_KEYW;l++){
+            if ((PAPER[i].keyword[l])[0]==' ') break;
+//            if (!strcmp(REVIEWER[Genome.paper[i].reviewer[j]].keyword[k],PAPER[i].keyword[l]) ) matches++;
+            if (!strcmp(cpTemp,PAPER[i].keyword[l]) ) matches++;
+          }
+        }
+        if (matches==0) contrib-=10; // we discourage ill matching
+        else contrib+=(matches*10)/NbPapKwds; // With this calculation,  a reviewer matching all the paper keywords gets 10/10
+        Genome.paper[i].KwMatch[j]=matches;
+      }  // and a reviewer matching half of the keywords gets only 5/10
+
+// if paper and reviewer come from the same institution
+      cpTemp=&((REVIEW[Genome.paper[i].reviewer[j]].institution)[0]);
+      for(k=0;k<PAP_INST;k++){
+        if (PAPER[i].institution[k][0]==' ') break;
+//        if (!mystricmp(REVIEWER[Genome.paper[i].reviewer[j]].institution,PAPER[i].institution[k])) contrib-=1000;
+        if (!mystricmp(cpTemp,PAPER[i].institution[k])) contrib-=1000;
+      }
+
+// if the reviewer has been willing to review the paper
+      nTemp=Genome.paper[i].Id;
+      for(k=0;k<REV_WILL;k++){
+        if (REVIEW[Genome.paper[i].reviewer[j]].willing[k]==999) break;
+        if (REVIEW[Genome.paper[i].reviewer[j]].willing[k]==nTemp) Genome.paper[i].Will_Unwill_Contribution+=10;
+      }
+
+      Genome.NbPapersPerReviewer[Genome.paper[i].reviewer[j]]++;
+
+//--------------------------------------------------------------------------
+    }
+  Genome.paper[i].KeywContribution=contrib;
+  Genome.TotalKeywContribution +=contrib;
+  Genome.Will_Unwill_Contribution+=Genome.paper[i].Will_Unwill_Contribution;
+  }
+
+  contrib=0;
+// Reviewers should have an average of REV_PER_PAPERxPAPERS/REVIEWERS papers to review
+  for (i=0;i<REVIEWERS;i++){ 
+    if (Genome.NbPapersPerReviewer[i]>=9) Genome.Distribution[9]++;
+    else Genome.Distribution[Genome.NbPapersPerReviewer[i]]++;
+    if (REV_PER_PAPER*PAPERS/REVIEWERS<1) {
+      if (Genome.NbPapersPerReviewer[i]>1) contrib -= 10*(Genome.NbPapersPerReviewer[i] -1);
+    }
+    else{
+      f=Genome.NbPapersPerReviewer[i]-REV_PER_PAPER*((float)PAPERS/(float)REVIEWERS);
+      if (f>5) f=5;
+      if (f>0.6) contrib -= (int)pow(5,f);   // Marc's suggestion
+      if (f<0.6) contrib +=(int)(10*f);    
+    }
+  }
+  Genome.NbPapersPerReviewerContribution=contrib;
+
+  eval = 100000+Genome.TotalKeywContribution+Genome.Will_Unwill_Contribution+Genome.NbPapersPerReviewerContribution;
+  return (double) (eval < 0 ? 0 : eval);
+\end
+
+\User Makefile options: 
+  CXXFLAGS += -Wno-unused-result
+\end
+
+\Default run parameters :        // Please let the parameters appear in this order
+  Population size : 100 // PSize
+  Number of generations : 100 // NbGen
+  
+  Mutation probability : 0.3 // PHut
+  Crossover probability : 1 // PCross
+  
+  Evaluator goal : minimise      // Maximise
+  Selection operator: Tournament 2.0
+  
+  Surviving parents: 100%//percentage or absolute  
+  Surviving offspring: 100%
+  
+  Reduce parents operator: Tournament 2
+  Reduce offspring operator: Tournament 2
+  Final reduce operator: Tournament 2
+
+  Elitism: Strong			//Weak or Strong
+  Elite: 1
+  Print stats: true				//Default: 1
+  Generate csv stats file: false			
+  Generate gnuplot script: false
+  Generate R script: false
+  Plot stats: true				//Default: 0
+
+  Remote island model: false
+  IP file: ip.txt 			//File containing all the remote island's IP
+  Server port : 2929
+  Migration probability: 0.33
+
+  Save population: false
+  Start from file: false
+
+\end
