@@ -1,12 +1,117 @@
+/* vim:syntax=cpp:filetype=cpp
+*/
+
 /*_____________________________________________________________
 
 Template for an EASEA evolutionary algorithm for easea v1.0.3
 _______________________________________________________________*/
 
 \User declarations : // This section is copied on top of the output file
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#define  kTR1(parameters)        (parameters[0])
+#define  KA1(parameters)         (parameters[1])
+#define  nA1(parameters)         (parameters[2])
+#define  dmRNA1(parameters)      (parameters[3])
+#define  kTL1(parameters)        (parameters[4])
+#define  dLaclI(parameters)     (parameters[5])
+#define  KTL1_prime(parameters)  (parameters[6])
+#define  dCI(parameters)         (parameters[7])
+#define  kTR2(parameters)        (parameters[8])
+#define  KR2(parameters)         (parameters[9])
+#define  nR2(parameters)         (parameters[10])
+#define  dmRNA2(parameters)      (parameters[11])
+#define  kTL2(parameters)        (parameters[12])
+#define  dLacl(parameters)       (parameters[13])
+#define  kTR3(parameters)        (parameters[14])
+#define  KR3(parameters)         (parameters[15])
+#define  nR3(parameters)         (parameters[16])
+#define  KR3_prime(parameters)   (parameters[17])
+#define  nR3_prime(parameters)   (parameters[18])
+#define  dmRNA3(parameters)      (parameters[19])
+#define  kTL3(parameters)        (parameters[20])
+#define  dGFP(parameters)        (parameters[21])
+  
+  typedef struct bounds_str {
+    double min;
+    double max;
+
+  } bounds_t;
+ 
+ bounds_t magnitude[22];
+
 \end
 
 \User functions:
+  
+  /* Generic gaussian function 
+   * http://en.wikipedia.org/wiki/Gaussian_function
+   * */
+  double gaussian(double a, double b, double c, double x){
+    return (a * exp2(-(pow(x - b, 2)/(2 * (pow(c, 2))))));
+  }
+  
+  double formula(double ahl,double parameters[22]){
+
+    double part1 = pow((((kTL1(parameters)/dLaclI(parameters))
+                   * kTR1(parameters)/((1 + pow((KA1(parameters)/ahl), nA1(parameters))) 
+                   * dmRNA1(parameters)))/KR3(parameters)), nR3(parameters));
+                   
+    double part2 = pow((((kTL2(parameters)/dLaclI(parameters)) 
+                  * kTR2(parameters)/((1 + pow((((kTL1(parameters)/dCI(parameters))  
+                  * kTR1(parameters)/((1 + pow((KA1(parameters)/ahl), nA1(parameters)))
+                  * dmRNA1(parameters)))/KR2(parameters)), nR2(parameters))) 
+                  * dmRNA2(parameters)))/KR3_prime(parameters)), nR3_prime(parameters));
+
+
+    return (kTL3(parameters)/dGFP(parameters)) * kTR3(parameters)/((1 + part1 + part2) * dmRNA3(parameters));
+  }
+
+  /* Use a function pointer instead of having the whole formula her */
+  double* samplingFormula(double start, double end, int rate, double parameters[22]){
+    double* result = malloc( sizeof(double) * rate);
+    double step = (double) (((end - start)) / ((double) (rate)));
+    int i;
+
+    for (i = 0; i < rate; i++) {
+      result[i] = formula(start + (step * i), parameters);
+    }
+    
+    return result;
+  }
+  
+  double* samplingGaussian(double start, double end, int rate){
+    double* result = malloc( sizeof(double) * rate);
+    double step = (double) (((end - start)) / ((double) (rate)));
+    int i;
+
+    for (i = 0; i < rate; i++) {
+      result[i] = gaussian(start + (step * i), parameters);
+    }
+    
+    return result;
+  }
+  
+
+  double correlationCoefficient(double start, double end, int rate, double parameters[22]){
+    double* formula;
+    double* gaussian; 
+    double coefficient = 0.0;
+    int i;
+
+    formula = samplingFormula(start, end, rate, parameters);
+    gaussian = samplingGaussian(start, end, rate);
+    
+    for (i = 0; i < rate; i++) {
+      coefficient += abs(abs(formula[i]) - abs(gaussian[i]));
+    }
+    
+    free(formula);
+    free(gaussian);
+    return coefficient;
+  }
+
 \end
 
 \User CUDA:
@@ -14,14 +119,37 @@ _______________________________________________________________*/
 \end
 
 \User classes :
+
 GenomeClass { 
-  // need to declare the genome here
-  int i;
+  double parameters[22];
 }
+
 \end
 
 \Before everything else function:
 //cout<<"Before everything else function called "<<endl;
+  magnitude[0] = {0.0001,       0.001};
+  magnitude[1] = {0.0000001,    0.000001};
+  magnitude[2] = {3,            5};
+  magnitude[3] = {0.01,         0.1};
+  magnitude[4] = {0.00001,      0.0001};
+  magnitude[5] = {0.001,        0.01};
+  magnitude[6] = {0.00001,      0.0001};
+  magnitude[7] = {0.001,        0.01};
+  magnitude[8] = {0.0001,       0.001};
+  magnitude[9] = {0.0000001,    0.00001};
+  magnitude[10] = {3,           5};
+  magnitude[11] = {0.01,        0.1};
+  magnitude[12] = {0.00001,     0.0001};
+  magnitude[13] = {0.001,       0.001};
+  magnitude[14] = {0.0001,      0.001};
+  magnitude[15] = {0.000001,    0.00001};
+  magnitude[16] = {3,           5};
+  magnitude[17] = {0.00000001,  0.000001};
+  magnitude[18] = {3,           5};
+  magnitude[19] = {0.01,        0.1};
+  magnitude[20] = {0.00001,     0.0001};
+  magnitude[21] = {0.001,       0.01};
 \end
 
 \After everything else function:
@@ -45,20 +173,48 @@ GenomeClass {
 
 \GenomeClass::initialiser : // "initializer" is also accepted
   // the genome to initialise is known as "Genome"
+  int i;
+
+  /* The random values are bounded by the order of magnitude +- 1 */
+  for (i = 0; i < 22; i++) {
+    Genome.parameters[i] = random(magnitude[i].min, magnitude[i].max);
+  }
+
 \end
 
 \GenomeClass::crossover : 
   // must create "child" out of "parent1" and "parent2"
+  int i;
+  
+  /* The simplest possible crossover */
+  for (i = 0; i < 22; i++) {
+    if(tossCoin()){
+      child.parameters[i] = parent1.parameters[i];
+    }
+    else{
+      child.parameters[i] = parent2.parameters[i];
+    }
+  }
+
 \end
 
 \GenomeClass::mutator : // Must return the number of mutations
   // must mutate "Genome"
+  int i;
+
+  for (i = 0; i < 22; i++) {
+    if (tossCoin(MUT_PROB)) {
+      Genome.parameters[i] += random( magnitude[i].min, magnitude[i].max);
+    }
+  }
+  
   return 0;
 \end
 
 \GenomeClass::evaluator : // Returns the score as a real value
   // uses Genome to evaluate the quality of the individual
-  return 0.0;
+  return correlationCoefficient(0, 1, 1000, Genome.parameters);
+
 \end
 
 \User Makefile options: 
