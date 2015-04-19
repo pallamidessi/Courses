@@ -70,7 +70,7 @@ _______________________________________________________________*/
 
   /* Use a function pointer instead of having the whole formula her */
   double* samplingFormula(double start, double end, int rate, double parameters[22]){
-    double* result = malloc( sizeof(double) * rate);
+    double* result = (double*) malloc( sizeof(double) * rate);
     double step = (double) (((end - start)) / ((double) (rate)));
     int i;
 
@@ -82,12 +82,12 @@ _______________________________________________________________*/
   }
   
   double* samplingGaussian(double start, double end, int rate){
-    double* result = malloc( sizeof(double) * rate);
+    double* result = (double*) malloc( sizeof(double) * rate);
     double step = (double) (((end - start)) / ((double) (rate)));
     int i;
 
     for (i = 0; i < rate; i++) {
-      result[i] = gaussian(start + (step * i), parameters);
+      result[i] = gaussian(1, 1, 1, start + (step * i));
     }
     
     return result;
@@ -115,7 +115,6 @@ _______________________________________________________________*/
 \end
 
 \User CUDA:
-//Transfert some variables to GPU here (cudaMalloc, MemCpy)
 \end
 
 \User classes :
@@ -127,52 +126,69 @@ GenomeClass {
 \end
 
 \Before everything else function:
-//cout<<"Before everything else function called "<<endl;
-  magnitude[0] = {0.0001,       0.001};
-  magnitude[1] = {0.0000001,    0.000001};
-  magnitude[2] = {3,            5};
-  magnitude[3] = {0.01,         0.1};
-  magnitude[4] = {0.00001,      0.0001};
-  magnitude[5] = {0.001,        0.01};
-  magnitude[6] = {0.00001,      0.0001};
-  magnitude[7] = {0.001,        0.01};
-  magnitude[8] = {0.0001,       0.001};
-  magnitude[9] = {0.0000001,    0.00001};
-  magnitude[10] = {3,           5};
-  magnitude[11] = {0.01,        0.1};
-  magnitude[12] = {0.00001,     0.0001};
-  magnitude[13] = {0.001,       0.001};
-  magnitude[14] = {0.0001,      0.001};
-  magnitude[15] = {0.000001,    0.00001};
-  magnitude[16] = {3,           5};
-  magnitude[17] = {0.00000001,  0.000001};
-  magnitude[18] = {3,           5};
-  magnitude[19] = {0.01,        0.1};
-  magnitude[20] = {0.00001,     0.0001};
-  magnitude[21] = {0.001,       0.01};
+// Use C++11 coumpound initializer instead
+  magnitude[0].min = 0.0001;
+  magnitude[0].max = 0.001;
+  magnitude[1].min = 0.0000001,   
+  magnitude[1].max = 0.000001;
+  magnitude[2].min = 3;        
+  magnitude[2].max = 5;
+  magnitude[3].min = 0.01;        
+  magnitude[3].max = 0.1;
+  magnitude[4].min = 0.00001;      
+  magnitude[4].max = 0.0001;
+  magnitude[5].min = 0.001;        
+  magnitude[5].max = 0.01;
+  magnitude[6].min = 0.00001;      
+  magnitude[6].max = 0.0001;
+  magnitude[7].min = 0.001;        
+  magnitude[7].max = 0.01;
+  magnitude[8].min = 0.0001;     
+  magnitude[8].max = 0.001;
+  magnitude[9].min = 0.0000001;  
+  magnitude[9].max =  0.00001;
+  magnitude[10].min = 3;    
+  magnitude[10].max = 5;
+  magnitude[11].min = 0.01;        
+  magnitude[11].max = 0.1;
+  magnitude[12].min = 0.00001;     
+  magnitude[12].max = 0.0001;
+  magnitude[13].min = 0.001;      
+  magnitude[13].max = 0.001;
+  magnitude[14].min = 0.0001;    
+  magnitude[14].max = 0.001;
+  magnitude[15].min = 0.000001;  
+  magnitude[15].max = 0.00001;
+  magnitude[16].min = 3;         
+  magnitude[16].max = 5;
+  magnitude[17].min = 0.00000001;
+  magnitude[17].max = 0.000001;
+  magnitude[18].min = 3;          
+  magnitude[18].max = 5;
+  magnitude[19].min = 0.01;       
+  magnitude[19].max = 0.1;
+  magnitude[20].min = 0.00001;     
+  magnitude[20].max = 0.0001;
+  magnitude[21].min = 0.001;       
+  magnitude[21].max = 0.01;
 \end
 
 \After everything else function:
-//cout << "After everything else function called" << endl;
 \end
 
 \At the beginning of each generation function:
-//cout << "At the beginning of each generation function called" << endl;
 \end
 
 \At the end of each generation function:
-//cout << "At the end of each generation function called" << endl;
 \end
 
 \At each generation before reduce function:
-//cout << "At each generation before replacement function called" << endl;
 \end
 
 \GenomeClass::display:
 \end
 
-\GenomeClass::initialiser : // "initializer" is also accepted
-  // the genome to initialise is known as "Genome"
+\GenomeClass::initialiser : 
   int i;
 
   /* The random values are bounded by the order of magnitude +- 1 */
@@ -183,7 +199,6 @@ GenomeClass {
 \end
 
 \GenomeClass::crossover : 
-  // must create "child" out of "parent1" and "parent2"
   int i;
   
   /* The simplest possible crossover */
@@ -198,23 +213,27 @@ GenomeClass {
 
 \end
 
-\GenomeClass::mutator : // Must return the number of mutations
-  // must mutate "Genome"
+\GenomeClass::mutator : 
   int i;
 
   for (i = 0; i < 22; i++) {
     if (tossCoin(MUT_PROB)) {
-      Genome.parameters[i] += random( magnitude[i].min, magnitude[i].max);
+      
+      if(tossCoin()){
+        Genome.parameters[i] += random( magnitude[i].min, magnitude[i].max);
+      }
+      else { 
+        Genome.parameters[i] -= random( magnitude[i].min, magnitude[i].max);
+      }
+
     }
   }
   
   return 0;
 \end
 
-\GenomeClass::evaluator : // Returns the score as a real value
-  // uses Genome to evaluate the quality of the individual
-  return correlationCoefficient(0, 1, 1000, Genome.parameters);
-
+\GenomeClass::evaluator : 
+  return correlationCoefficient(0.1, 1, 1000, Genome.parameters);
 \end
 
 \User Makefile options: 
@@ -224,10 +243,10 @@ GenomeClass {
   Number of generations : 100    // NB_GEN
   Time limit: 0 			           // In seconds, 0 to deactivate
   Population size : 1024			   //POP_SIZE
-  Offspring size : 1024 // or a xx%
-  Mutation probability : 1       // MUT_PROB
+  Offspring size : 1024          // or a xx%
+  Mutation probability : 0.1    // MUT_PROB
   Crossover probability : 1      // XOVER_PROB
-  Evaluator goal : maximize      // maximise
+  Evaluator goal : minimise      // maximise
   Selection operator: Tournament 2.0
   Surviving parents: 100%        // Percentage or absolute  
   Surviving offspring: 100%      // Percentage or absolute  
@@ -236,7 +255,7 @@ GenomeClass {
   Final reduce operator: Tournament 2
 
   Elitism: Strong			           // Weak or Strong
-  Elite: 1
+  Elite: 5
   Print stats: true				       // Default: 1
   Generate csv stats file:false			
   Generate gnuplot script:false
