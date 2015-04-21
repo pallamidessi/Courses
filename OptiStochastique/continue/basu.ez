@@ -52,7 +52,7 @@ _______________________________________________________________*/
    * http://en.wikipedia.org/wiki/Gaussian_function
    * */
   double gaussian(double a, double b, double c, double x){
-    return (a * exp2(-(pow(x - b, 2)/(2 * (pow(c, 2))))));
+    return 10.0 * (a * exp2(-(pow(x - b, 2)/(2.0 * (pow(c, 2))))));
   }
   
   double formula(double ahl,double parameters[22]){
@@ -62,8 +62,8 @@ _______________________________________________________________*/
                    * dmRNA1(parameters)))/KR3(parameters)), nR3(parameters));
                    
     double part2 = pow((((kTL2(parameters)/dLaclI(parameters)) 
-                  * kTR2(parameters)/((1 + pow((((kTL1(parameters)/dCI(parameters))  
-                  * kTR1(parameters)/((1 + pow((KA1(parameters)/ahl), nA1(parameters)))
+                  * kTR2(parameters)/((1.0 + pow((((kTL1(parameters)/dCI(parameters))  
+                  * kTR1(parameters)/((1.0 + pow((KA1(parameters)/ahl), nA1(parameters)))
                   * dmRNA1(parameters)))/KR2(parameters)), nR2(parameters))) 
                   * dmRNA2(parameters)))/KR3_prime(parameters)), nR3_prime(parameters));
 
@@ -97,7 +97,7 @@ _______________________________________________________________*/
   }
   
 
-  double correlationCoefficient(double start, double end, int rate, double parameters[22]){
+  double rmse(double start, double end, int rate, double parameters[22]){
     double* formula;
     double* gaussian; 
     double coefficient = 0.0;
@@ -107,9 +107,12 @@ _______________________________________________________________*/
     gaussian = samplingGaussian(start, end, rate);
     
     for (i = 0; i < rate; i++) {
-      coefficient += abs(abs(formula[i]) - abs(gaussian[i]));
+      coefficient += pow((formula[i] - gaussian[i]), 2);
     }
     
+    coefficient /= (double) (rate);
+    coefficient = sqrt(coefficient);
+
     free(formula);
     free(gaussian);
     return coefficient;
@@ -235,7 +238,7 @@ GenomeClass {
 \end
 
 \GenomeClass::evaluator : 
-  return correlationCoefficient(0.1, 1, 1000, Genome.parameters);
+  return rmse(0.0001, 10, 1000, Genome.parameters);
 \end
 
 \User Makefile options: 
