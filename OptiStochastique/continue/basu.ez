@@ -15,7 +15,7 @@ _______________________________________________________________*/
 #define  nA1(parameters)         (parameters[2])
 #define  dmRNA1(parameters)      (parameters[3])
 #define  kTL1(parameters)        (parameters[4])
-#define  dLaclI(parameters)     (parameters[5])
+#define  dLaclI(parameters)      (parameters[5])
 #define  KTL1_prime(parameters)  (parameters[6])
 #define  dCI(parameters)         (parameters[7])
 #define  kTR2(parameters)        (parameters[8])
@@ -200,15 +200,12 @@ GenomeClass {
 
 \GenomeClass::crossover : 
   int i;
+  float alpha;
   
   /* The simplest possible crossover */
   for (i = 0; i < 22; i++) {
-    if(tossCoin()){
-      child.parameters[i] = parent1.parameters[i];
-    }
-    else{
-      child.parameters[i] = parent2.parameters[i];
-    }
+    alpha = (float)random(0.,1.); // barycentric crossover
+    child.parameters[i] = alpha*parent1.parameters[i] + (1.-alpha)*parent2.parameters[i];
   }
 
 \end
