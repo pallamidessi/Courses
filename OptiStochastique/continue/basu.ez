@@ -32,6 +32,9 @@ _______________________________________________________________*/
 #define  dmRNA3(parameters)      (parameters[19])
 #define  kTL3(parameters)        (parameters[20])
 #define  dGFP(parameters)        (parameters[21])
+
+#define MAX(x,y) ((x)>(y)?(x):(y))
+#define MIN(x,y) ((x)<(y)?(x):(y))
   
   typedef struct bounds_str {
     double min;
@@ -127,49 +130,49 @@ GenomeClass {
 
 \Before everything else function:
 // Use C++11 coumpound initializer instead
-  magnitude[0].min = 0.0001;
-  magnitude[0].max = 0.001;
-  magnitude[1].min = 0.0000001,   
-  magnitude[1].max = 0.000001;
-  magnitude[2].min = 3;        
-  magnitude[2].max = 5;
-  magnitude[3].min = 0.01;        
+  magnitude[0].min = 0.001;
+  magnitude[0].max = 1000000;
+  magnitude[1].min = 0.0001,   
+  magnitude[1].max = 1000;
+  magnitude[2].min = 1;        
+  magnitude[2].max = 4;
+  magnitude[3].min = 0.001;        
   magnitude[3].max = 0.1;
-  magnitude[4].min = 0.00001;      
-  magnitude[4].max = 0.0001;
-  magnitude[5].min = 0.001;        
+  magnitude[4].min = 0.0000001;      
+  magnitude[4].max = 0.00001;
+  magnitude[5].min = 0.0001;        
   magnitude[5].max = 0.01;
-  magnitude[6].min = 0.00001;      
-  magnitude[6].max = 0.0001;
-  magnitude[7].min = 0.001;        
+  magnitude[6].min = 0.0000001;      
+  magnitude[6].max = 0.00001;
+  magnitude[7].min = 0.0001;        
   magnitude[7].max = 0.01;
-  magnitude[8].min = 0.0001;     
-  magnitude[8].max = 0.001;
-  magnitude[9].min = 0.0000001;  
-  magnitude[9].max =  0.00001;
-  magnitude[10].min = 3;    
-  magnitude[10].max = 5;
-  magnitude[11].min = 0.01;        
+  magnitude[8].min = 0.001;     
+  magnitude[8].max = 1000000;
+  magnitude[9].min = 0.0001;  
+  magnitude[9].max = 1000;
+  magnitude[10].min = 1;    
+  magnitude[10].max = 4;
+  magnitude[11].min = 0.001;        
   magnitude[11].max = 0.1;
-  magnitude[12].min = 0.00001;     
-  magnitude[12].max = 0.0001;
-  magnitude[13].min = 0.001;      
-  magnitude[13].max = 0.001;
-  magnitude[14].min = 0.0001;    
-  magnitude[14].max = 0.001;
-  magnitude[15].min = 0.000001;  
-  magnitude[15].max = 0.00001;
-  magnitude[16].min = 3;         
-  magnitude[16].max = 5;
-  magnitude[17].min = 0.00000001;
-  magnitude[17].max = 0.000001;
-  magnitude[18].min = 3;          
-  magnitude[18].max = 5;
-  magnitude[19].min = 0.01;       
-  magnitude[19].max = 0.1;
-  magnitude[20].min = 0.00001;     
-  magnitude[20].max = 0.0001;
-  magnitude[21].min = 0.001;       
+  magnitude[12].min = 0.0000001;     
+  magnitude[12].max = 0.00001;
+  magnitude[13].min = 0.0001;      
+  magnitude[13].max = 0.01;
+  magnitude[14].min = 0.001;    
+  magnitude[14].max = 1000000;
+  magnitude[15].min = 0.0001;  
+  magnitude[15].max = 1000;
+  magnitude[16].min = 1;         
+  magnitude[16].max = 4;
+  magnitude[17].min = 0.0001;
+  magnitude[17].max = 1000;
+  magnitude[18].min = 1;          
+  magnitude[18].max = 4;
+  magnitude[19].min = 0.001;       
+  magnitude[19].max = 0.01;
+  magnitude[20].min = 0.0000001;     
+  magnitude[20].max = 0.00001;
+  magnitude[21].min = 0.0001;       
   magnitude[21].max = 0.01;
 \end
 
@@ -218,9 +221,11 @@ GenomeClass {
       
       if(tossCoin()){
         Genome.parameters[i] += random( magnitude[i].min, magnitude[i].max);
+        Genome.parameters[i] = MIN(magnitude[i].max, Genome.parameters[i]);
       }
       else { 
         Genome.parameters[i] -= random( magnitude[i].min, magnitude[i].max);
+        Genome.parameters[i] = MAX(magnitude[i].min, Genome.parameters[i]);
       }
 
     }
