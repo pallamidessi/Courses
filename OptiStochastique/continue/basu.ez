@@ -35,7 +35,7 @@ _______________________________________________________________*/
 
 #define MAX(x,y) ((x)>(y)?(x):(y))
 #define MIN(x,y) ((x)<(y)?(x):(y))
-#define SAMPLING_RATE 5000
+#define SAMPLING_RATE 100
 #define AHL_MIN 0.0001
 #define AHL_MAX 10
 
@@ -55,7 +55,8 @@ _______________________________________________________________*/
   /* Generic gaussian function 
    * http://en.wikipedia.org/wiki/Gaussian_function
    * */
-  double gaussian(double a, double b, double c, double x){
+  double gaussian(double b, double c, double x){
+    double a = ((double) (1)) / (c * sqrt(2 * M_PI));
     return 10.0 * (a * exp2(-(pow(x - b, 2)/(2.0 * (pow(c, 2))))));
   }
   
@@ -94,7 +95,7 @@ _______________________________________________________________*/
     int i;
 
     for (i = 0; i < rate; i++) {
-      result[i] = gaussian(1, 1, 1, start + (step * i));
+      result[i] = gaussian(-1.5, 0.2, start + (step * i));
     }
     
     return result;
