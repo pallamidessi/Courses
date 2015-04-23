@@ -35,7 +35,10 @@ _______________________________________________________________*/
 
 #define MAX(x,y) ((x)>(y)?(x):(y))
 #define MIN(x,y) ((x)<(y)?(x):(y))
-  
+#define SAMPLING_RATE 5000
+#define AHL_MIN 0.0001
+#define AHL_MAX 10
+
   typedef struct bounds_str {
     double min;
     double max;
@@ -43,7 +46,8 @@ _______________________________________________________________*/
   } bounds_t;
  
  bounds_t magnitude[22];
-
+ double* gaussianValue; 
+ float pMutPerGene = 0.05;;
 \end
 
 \User functions:
@@ -99,22 +103,19 @@ _______________________________________________________________*/
 
   double rmse(double start, double end, int rate, double parameters[22]){
     double* formula;
-    double* gaussian; 
     double coefficient = 0.0;
     int i;
 
     formula = samplingFormula(start, end, rate, parameters);
-    gaussian = samplingGaussian(start, end, rate);
     
     for (i = 0; i < rate; i++) {
-      coefficient += pow((formula[i] - gaussian[i]), 2);
+      coefficient += pow((formula[i] - gaussianValue[i]), 2);
     }
     
     coefficient /= (double) (rate);
     coefficient = sqrt(coefficient);
 
     free(formula);
-    free(gaussian);
     return coefficient;
   }
 
@@ -132,7 +133,7 @@ GenomeClass {
 \end
 
 \Before everything else function:
-// Use C++11 coumpound initializer instead
+  // Use C++11 coumpound initializer instead
   magnitude[0].min = 0.001;
   magnitude[0].max = 1000000;
   magnitude[1].min = 0.0001,   
@@ -177,6 +178,8 @@ GenomeClass {
   magnitude[20].max = 0.00001;
   magnitude[21].min = 0.0001;       
   magnitude[21].max = 0.01;
+
+  gaussianValue = samplingGaussian(AHL_MIN, AHL_MAX, SAMPLING_RATE);
 \end
 
 \After everything else function:
@@ -220,17 +223,10 @@ GenomeClass {
   int i;
 
   for (i = 0; i < 22; i++) {
-    if (tossCoin(MUT_PROB)) {
-      
-      if(tossCoin()){
-        Genome.parameters[i] += random( magnitude[i].min, magnitude[i].max);
-        Genome.parameters[i] = MIN(magnitude[i].max, Genome.parameters[i]);
-      }
-      else { 
-        Genome.parameters[i] -= random( magnitude[i].min, magnitude[i].max);
-        Genome.parameters[i] = MAX(magnitude[i].min, Genome.parameters[i]);
-      }
-
+    if (tossCoin(pMutPerGene)) {
+      Genome.parameters[i] += Genome.parameters[i]*random(-0.5,0.5);
+      Genome.parameters[i] = MAX(magnitude[i].min, Genome.parameters[i]);
+      Genome.parameters[i] = MIN(magnitude[i].max, Genome.parameters[i]);
     }
   }
   
@@ -238,7 +234,7 @@ GenomeClass {
 \end
 
 \GenomeClass::evaluator : 
-  return rmse(0.0001, 10, 1000, Genome.parameters);
+  return rmse(AHL_MIN, AHL_MAX, SAMPLING_RATE, Genome.parameters);
 \end
 
 \User Makefile options: 
@@ -247,9 +243,9 @@ GenomeClass {
 \Default run parameters :        // Please let the parameters appear in this order
   Number of generations : 100    // NB_GEN
   Time limit: 0 			           // In seconds, 0 to deactivate
-  Population size : 1024			   //POP_SIZE
-  Offspring size : 1024          // or a xx%
-  Mutation probability : 0.1    // MUT_PROB
+  Population size : 10000			   //POP_SIZE
+  Offspring size : 10000          // or a xx%
+  Mutation probability : 1    // MUT_PROB
   Crossover probability : 1      // XOVER_PROB
   Evaluator goal : minimise      // maximise
   Selection operator: Tournament 2.0
