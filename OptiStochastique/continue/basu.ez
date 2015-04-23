@@ -37,7 +37,7 @@ _______________________________________________________________*/
 #define MIN(x,y) ((x)<(y)?(x):(y))
 #define SAMPLING_RATE 100
 #define AHL_MIN 0.0001
-#define AHL_MAX 10
+#define AHL_MAX 1.5
 
   typedef struct bounds_str {
     double min;
@@ -47,7 +47,7 @@ _______________________________________________________________*/
  
  bounds_t magnitude[22];
  double* gaussianValue; 
- float pMutPerGene = 0.05;;
+ float pMutPerGene = 0.01;;
 \end
 
 \User functions:
@@ -190,6 +190,55 @@ GenomeClass {
 \end
 
 \At the end of each generation function:
+
+  CPopulation *population= evolutionaryAlgorithm->population;
+  IndividualImpl* indiv= ((IndividualImpl *)population->parents[0]);
+  double* parameters = indiv->parameters;
+  ofstream plot;
+  
+  plot.open("plot.gnu");
+
+  if (plot.is_open()) {
+    plot << "#!/usr/bin/gnuplot" << std::endl; 
+
+    plot << "set terminal pngcairo nocrop enhanced size 800,600 font \"arial,8\"" << std::endl;
+    plot << "set output 'basu.png'" << std::endl;
+    plot << "set title \"Basu Plots\"" << std::endl;
+    plot << "set title  font \",20\" norotate" << std::endl;
+    plot << "set samples 100" << std::endl;
+   
+    plot << "kTR1 = "  << kTR1(parameters) << std::endl;
+    plot << "KA1 = " << KA1(parameters) << std::endl;
+    plot << "nA1 = " << nA1(parameters) << std::endl;
+    plot << "dmRNA1 = " << dmRNA1(parameters) << std::endl;
+    plot << "kTL1 = " << kTL1(parameters) << std::endl;
+    plot << "dLaclI = " << dLaclI(parameters) << std::endl;
+    plot << "KTL1_prime = " << KTL1_prime(parameters) << std::endl;
+    plot << "dCI = " << dCI(parameters) << std::endl;
+    plot << "kTR2 = " << kTR2(parameters) << std::endl;
+    plot << "KR2 = " << KR2(parameters) << std::endl;
+    plot << "nR2 = " << nR2(parameters) << std::endl;
+    plot << "dmRNA2 =" << dmRNA2(parameters) << std::endl;
+    plot << "kTL2 =" << kTL2(parameters) << std::endl;
+    plot << "dLacl =" << dLacl(parameters) << std::endl;
+    plot << "kTR3 = " << kTR3(parameters) << std::endl;
+    plot << "KR3 = " << KR3(parameters) << std::endl;
+    plot << "nR3 = " << nR3(parameters) << std::endl;
+    plot << "KR3_prime = " << KR3_prime(parameters) << std::endl;
+    plot << "nR3_prime = " << nR3_prime(parameters) << std::endl;
+    plot << "dmRNA3 = " << dmRNA3(parameters) << std::endl;
+    plot << "kTL3 = " << kTL3(parameters) << std::endl;
+    plot << "dGFP = " << dGFP(parameters) << std::endl;
+
+    plot << "plot [0.0001:1.5] 100 * ((kTL3/dGFP) * kTR3/((1 +  (((((kTL1/dLaclI) * \
+    kTR1/((1 + ((KA1/x)** nA1)) * dmRNA1))/KR3))** nR3 ) + (((((kTL2/dLaclI) * kTR2/((1.0 \
+    + ((((kTL1/dCI) * kTR1/((1.0 + ((KA1/x))**nA1) * dmRNA1))/KR2))**nR2) * dmRNA2))/ \
+    KR3_prime))**nR3_prime)) * dmRNA3)) lt rgb \"blue\" , \\" << std::endl;
+    plot << "10.0 * (((1) / (0.2 * sqrt(2 * pi))) * ((exp(-(x - (-1.5))**2))/(2.0 * ((0.2)**2)))) lt rgb \"red\"" << std::endl;
+    
+    plot.close();
+  }
+
 \end
 
 \At each generation before reduce function:
@@ -244,8 +293,8 @@ GenomeClass {
 \Default run parameters :        // Please let the parameters appear in this order
   Number of generations : 100    // NB_GEN
   Time limit: 0 			           // In seconds, 0 to deactivate
-  Population size : 10000			   //POP_SIZE
-  Offspring size : 10000          // or a xx%
+  Population size : 1000			   //POP_SIZE
+  Offspring size : 1000          // or a xx%
   Mutation probability : 1    // MUT_PROB
   Crossover probability : 1      // XOVER_PROB
   Evaluator goal : minimise      // maximise
@@ -256,8 +305,6 @@ GenomeClass {
   Reduce offspring operator: Tournament 2
   Final reduce operator: Tournament 2
 
-  Elitism: Strong			           // Weak or Strong
-  Elite: 5
   Print stats: true				       // Default: 1
   Generate csv stats file:false			
   Generate gnuplot script:false
@@ -269,7 +316,7 @@ GenomeClass {
   Migration probability: 0.33    // Probability of sending an individual per generation
   Server port : 2929
 
-  Save population: false
+  Save population:true 
   Start from file:false
 \end
 
