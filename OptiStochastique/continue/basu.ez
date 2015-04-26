@@ -36,8 +36,8 @@ _______________________________________________________________*/
 #define MAX(x,y) ((x)>(y)?(x):(y))
 #define MIN(x,y) ((x)<(y)?(x):(y))
 #define SAMPLING_RATE 100
-#define AHL_MIN 0.0001
-#define AHL_MAX 1.5
+#define AHL_MIN 1
+#define AHL_MAX 1.8
 
   typedef struct bounds_str {
     double min;
@@ -47,7 +47,7 @@ _______________________________________________________________*/
  
  bounds_t magnitude[22];
  double* gaussianValue; 
- float pMutPerGene = 0.01;;
+ float pMutPerGene = 0.01;
 \end
 
 \User functions:
@@ -56,15 +56,15 @@ _______________________________________________________________*/
    * http://en.wikipedia.org/wiki/Gaussian_function
    * */
   double gaussian(double b, double c, double x){
-    double a = ((double) (1)) / (c * sqrt(2 * M_PI));
-    return 10.0 * (a * exp2(-(pow(x - b, 2)/(2.0 * (pow(c, 2))))));
+    double a = ((double) (1.0)) / (c * sqrt(2.0 * (double) (M_PI)));
+    return 10.0 * (a * exp(-(pow((x - b), 2.0)/(2.0 * (pow(c, 2.0))))));
   }
   
   double formula(double ahl,double parameters[22]){
 
     double part1 = pow((((kTL1(parameters)/dLaclI(parameters))
-                   * kTR1(parameters)/((1 + pow((KA1(parameters)/ahl), nA1(parameters))) 
-                   * dmRNA1(parameters)))/KR3(parameters)), nR3(parameters));
+                   * (kTR1(parameters)/((1.0 + pow((KA1(parameters)/ahl), nA1(parameters))) 
+                   * dmRNA1(parameters)))/KR3(parameters))), nR3(parameters));
                    
     double part2 = pow((((kTL2(parameters)/dLaclI(parameters)) 
                   * kTR2(parameters)/((1.0 + pow((((kTL1(parameters)/dCI(parameters))  
@@ -93,9 +93,9 @@ _______________________________________________________________*/
     double* result = (double*) malloc( sizeof(double) * rate);
     double step = (double) (((end - start)) / ((double) (rate)));
     int i;
-
+    
     for (i = 0; i < rate; i++) {
-      result[i] = gaussian(-1.5, 0.2, start + (step * i));
+      result[i] = gaussian(1.5, 0.2, start + (step * i));
     }
     
     return result;
@@ -110,7 +110,8 @@ _______________________________________________________________*/
     formula = samplingFormula(start, end, rate, parameters);
     
     for (i = 0; i < rate; i++) {
-      coefficient += pow((formula[i] - gaussianValue[i]), 2);
+      //coefficient += abs((formula[i] - gaussianValue[i]));
+      coefficient += pow((gaussianValue[i] - formula[i]), 2.0);
     }
     
     coefficient /= (double) (rate);
@@ -183,19 +184,19 @@ GenomeClass {
   gaussianValue = samplingGaussian(AHL_MIN, AHL_MAX, SAMPLING_RATE);
 \end
 
-\After everything else function:
-\end
 
 \At the beginning of each generation function:
 \end
 
 \At the end of each generation function:
+\end
 
-  CPopulation *population= evolutionaryAlgorithm->population;
+\After everything else function:
+
   IndividualImpl* indiv= ((IndividualImpl *)population->parents[0]);
   double* parameters = indiv->parameters;
   ofstream plot;
-  
+
   plot.open("plot.gnu");
 
   if (plot.is_open()) {
@@ -230,11 +231,11 @@ GenomeClass {
     plot << "kTL3 = " << kTL3(parameters) << std::endl;
     plot << "dGFP = " << dGFP(parameters) << std::endl;
 
-    plot << "plot [0.0001:1.5] 100 * ((kTL3/dGFP) * kTR3/((1 +  (((((kTL1/dLaclI) * \
+    plot << "plot [0.0001:10] ((kTL3/dGFP) * kTR3/((1 +  (((((kTL1/dLaclI) * \
     kTR1/((1 + ((KA1/x)** nA1)) * dmRNA1))/KR3))** nR3 ) + (((((kTL2/dLaclI) * kTR2/((1.0 \
     + ((((kTL1/dCI) * kTR1/((1.0 + ((KA1/x))**nA1) * dmRNA1))/KR2))**nR2) * dmRNA2))/ \
     KR3_prime))**nR3_prime)) * dmRNA3)) lt rgb \"blue\" , \\" << std::endl;
-    plot << "10.0 * (((1) / (0.2 * sqrt(2 * pi))) * ((exp(-(x - (-1.5))**2))/(2.0 * ((0.2)**2)))) lt rgb \"red\"" << std::endl;
+    plot << "10.0 * (((1) / (0.2 * sqrt(2 * pi))) * (exp((-(x - (1.5))**2)/(2.0 * ((0.2)**2))))) lt rgb \"red\"" << std::endl;
     
     plot.close();
   }
@@ -291,19 +292,22 @@ GenomeClass {
 \end
 
 \Default run parameters :        // Please let the parameters appear in this order
-  Number of generations : 100    // NB_GEN
+  Number of generations : 10000   // NB_GEN
   Time limit: 0 			           // In seconds, 0 to deactivate
-  Population size : 1000			   //POP_SIZE
-  Offspring size : 1000          // or a xx%
+  Population size : 5000			   //POP_SIZE
+  Offspring size : 5000          // or a xx%
   Mutation probability : 1    // MUT_PROB
   Crossover probability : 1      // XOVER_PROB
   Evaluator goal : minimise      // maximise
   Selection operator: Tournament 2.0
   Surviving parents: 100%        // Percentage or absolute  
   Surviving offspring: 100%      // Percentage or absolute  
-  Reduce parents operator: Tournament 2
-  Reduce offspring operator: Tournament 2
-  Final reduce operator: Tournament 2
+  Reduce parents operator: Tournament 2.0
+  Reduce offspring operator: Tournament 2.0
+  Final reduce operator: Tournament 2.0
+  
+  Elitism: Strong			//Weak or Strong
+  Elite: 1
 
   Print stats: true				       // Default: 1
   Generate csv stats file:false			
