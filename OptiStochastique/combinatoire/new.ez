@@ -1,0 +1,415 @@
+/* vim:syntax=cpp:filetype=cpp
+*/
+
+/**
+ * @file ppsn.ez
+ * @author Pallamidessi Joseph, Ersfeld Thomas
+ * @version 1.0
+ *
+ * @section LICENSE
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details at
+ * http://www.gnu.org/copyleft/gpl.html
+**/  
+
+
+/*_____________________________________________________________
+
+Optimisation using genetic algorithm of the paper/reviewer 
+combinationary problem for the future CS-DC'15 conference
+
+This program will be integrated to a Django appplication to easily 
+add reviewers and papers, as well as display the optimization result.
+
+We are using a BRKGA[1]-like technique.
+
+[1] Gonçalves, José Fernando, and Mauricio GC Resende. 
+    "Biased random-key genetic algorithms for combinatorial optimization." 
+    Journal of Heuristics 17.5 (2011): 487-525.
+_______________________________________________________________*/
+
+\User declarations : 
+#include <vector>
+#include <string>
+#include <algorithm>
+#define MAX_PAPER_PER_REVIEWER 3
+#define MAX_REVIEWER 5
+
+  class Paper {
+    public:
+      int idPaper;
+      std::string title;
+      std::string authorName;
+      std::string institution;
+      std::vector<std::string> keywords;
+      
+      bool operator==(int id) const {
+        return (id == this->idPaper);
+      }
+
+      Paper(int id,
+            std::string title,
+            std::string authorName,
+            std::string institution,
+            std::vector<std::string> keywords){
+        this->idPaper = id;
+        this->title = title;
+        this->authorName = authorName;
+        this->institution = institution;
+        this->keywords = keywords;
+      }
+
+  };
+
+  class ReviewerInfo {
+    public:
+      int idReviewer;
+      std::string name;
+      std::string institution;
+      std::vector<std::string> keywords;
+      std::vector<int> wantedPapers;
+      std::vector<int> unwantedPapers;
+      
+      bool operator==(int id) const{
+        return (id == this->idReviewer); 
+      }
+
+      ReviewerInfo( int id, 
+                std::string name,
+                std::string institution,
+                std::vector<std::string> keywords,
+                std::vector<int> wantedPapers,
+                std::vector<int> unwantedPapers){
+        this->idReviewer = id;
+        this->institution = institution;
+        this->keywords = keywords;
+        this->wantedPapers = wantedPapers;
+        this->unwantedPapers = unwantedPapers;
+      }
+
+  };
+  
+  /* Find a reviewer by its id in a vector */
+  ReviewerInfo* getById(std::vector<ReviewerInfo*> review, int id){
+    unsigned int i;
+
+    for (i = 0; i < review.size(); i++) {
+      if (*(review[i]) == id){
+        return (review[i]);
+      }
+    }
+
+    return NULL;
+  }
+  
+  /* Find a paper by its id in a vector */
+  Paper* getById(std::vector<Paper*> paper, int id){
+    unsigned int i;
+    
+    for (i = 0; i < paper.size(); i++) {
+      if (*(paper[i]) == id){
+        return (paper[i]);
+      }
+    }
+
+    return NULL;
+  }
+  
+  /* Return the number of match between two vector of string (keywords) */
+  int compareKeyword(Paper paper, ReviewerInfo reviewer){
+    unsigned int i, j;
+    int count = 0;
+
+    for (i = 0; i < paper.keywords.size(); i++) {
+      for (j = 0; j < reviewer.keywords.size(); j++) {
+        if (paper.keywords[i] == reviewer.keywords[j]) {
+          count++;
+        }
+      }
+    }
+    
+    return count;
+  }
+  
+  /* The global list that contains the data of the papers and reviewers
+   * The genome only contains id to element inside 
+   * to save space and computation time */
+  std::vector<Paper*> vectorPaper;
+  std::vector<ReviewerInfo*> vectorReviewer;
+
+\end
+
+\User functions:
+  
+  /* Shuffle a vector of int using the Fisher-Yate algorithm */
+  void fisherYateShuffle(std::vector<int>& src){
+    int index;
+    unsigned int i;
+
+    for (i = 0; i < (src.size() - 1) ; i++) {
+      index = random(i, (int) (src.size() - 1));
+
+      std::swap(src[i], src[index]);
+    }
+  }
+  
+  void swap(){
+  }
+
+\end
+
+\User CUDA:
+/* TODO: Copy the vector to CUDA memory*/
+\end
+
+
+\User classes :
+  
+  Reviewer {
+    int nbPaper;
+    int idReviewer;
+    int paperID[MAX_PAPER_PER_REVIEWER];
+  } 
+
+  GenomeClass {
+    int nbReviewer;
+    Reviewer reviewer[MAX_REVIEWER];
+  }
+
+\end
+
+
+\Before everything else function:
+  /**********************************************
+   * Test data: they should by read from a file *
+   * Using those constructor and logic          *
+   * ********************************************/
+  
+  /* Test Keywords list*/
+  std::vector<std::string> keySetPaper1;
+  std::vector<std::string> keySetPaper2;
+  std::vector<std::string> keySetPaper3;
+  
+  /* Empty vector for reviewer preference (wanted/unwanted)*/
+  std::vector<int> empty;
+  
+  /* Fill the keyword vector */
+  keySetPaper1.push_back("a");
+  keySetPaper1.push_back("b");
+  keySetPaper1.push_back("c");
+  
+  keySetPaper2.push_back("d");
+  keySetPaper2.push_back("e");
+  keySetPaper2.push_back("f");
+  
+  keySetPaper3.push_back("a");
+  keySetPaper3.push_back("e");
+  keySetPaper3.push_back("c");
+
+  /* Test paper */
+  vectorPaper.push_back(new Paper(0, "test1", "toto1", "inst1", keySetPaper1));
+  vectorPaper.push_back(new Paper(1, "test2", "toto2", "inst1", keySetPaper2));
+  vectorPaper.push_back(new Paper(2, "test3", "toto3", "inst1", keySetPaper3));
+  vectorPaper.push_back(new Paper(3, "test4", "toto1", "inst2", keySetPaper1));
+  vectorPaper.push_back(new Paper(4, "test5", "toto2", "inst2", keySetPaper2));
+  vectorPaper.push_back(new Paper(5, "test6", "toto6", "inst2", keySetPaper3));
+  vectorPaper.push_back(new Paper(6, "test7", "toto1", "inst3", keySetPaper1));
+  vectorPaper.push_back(new Paper(7, "test8", "toto2", "inst3", keySetPaper2));
+  vectorPaper.push_back(new Paper(8, "test9", "toto9", "inst3", keySetPaper3));
+  vectorPaper.push_back(new Paper(9, "test10", "toto10", "inst4", keySetPaper1));
+  vectorPaper.push_back(new Paper(10, "test11", "toto11", "inst4", keySetPaper2));
+  
+  /* Test reviewer */
+  vectorReviewer.push_back(new ReviewerInfo(0, "name1", "inst8", keySetPaper1, empty, empty));
+  vectorReviewer.push_back(new ReviewerInfo(1, "name1", "inst9", keySetPaper2, empty, empty));
+  vectorReviewer.push_back(new ReviewerInfo(2, "name1", "inst8", keySetPaper1, empty, empty));
+  vectorReviewer.push_back(new ReviewerInfo(3, "name1", "inst5", keySetPaper2, empty, empty));
+  vectorReviewer.push_back(new ReviewerInfo(4, "name1", "inst9", keySetPaper1, empty, empty));
+\end
+
+
+\After everything else function:
+\end
+
+
+\At the beginning of each generation function:
+\end
+
+
+\At the end of each generation function:
+\end
+
+
+\At each generation before reduce function:
+\end
+
+
+\GenomeClass::display:
+\end
+
+
+\GenomeClass::initialiser : 
+  unsigned int i, j;
+  unsigned int assignedPaper = 0;
+  unsigned int totalNbPaper = vectorPaper.size();
+  std::vector<int> rndPaperID;
+  
+  /* Set every id to -1 (undefined)*/
+  Genome.nbReviewer = 0;
+  
+  for (i = 0; i < MAX_REVIEWER; i++) {
+    Genome.reviewer[i].nbPaper = 0;
+    Genome.reviewer[i].idReviewer = -1;
+
+    for (j = 0; j < MAX_PAPER_PER_REVIEWER; j++) {
+      Genome.reviewer[i].paperID[j] = -1;
+    }
+  }
+  
+  /* Simple heuristics that tell the user if a correct optimization is possible 
+   * ie: that every paper COULD be associated to a reviewer 
+   */
+  /* Genome could not contains all the reviewer wanted, must increse MAX_REVIEWER */
+  if (vectorReviewer.size() > MAX_REVIEWER) {
+    std::cout << "Not enough space for all loaded reviewer in genome : please increase MAX_REVIEWER" << std::endl;
+  }
+  
+  /* Genome could not contains all the papers wanted, must increase the
+   * MAX_REVIEWER/ MAX_PAPER_PER_REVIEWER macro */
+  if (vectorPaper.size() > (MAX_REVIEWER * MAX_PAPER_PER_REVIEWER)) {
+    std::cout << "Not enough space for all loaded papers in genome" << std::endl;
+  }
+  
+  /*Create a vector with all paper id in it*/
+  for (i = 0; i < vectorPaper.size() ; i++) {
+    rndPaperID.push_back(vectorPaper[i]->idPaper);  
+  }
+  
+  /* Shuffle it !*/
+  fisherYateShuffle(rndPaperID);
+  
+  /* Fill the reviewer with the paper id follow, if there not enough paper or
+   * reviewer to fill, all the last ones will have the "canary" -1 as id 
+   */
+  for (i = 0; i < vectorReviewer.size(); i++) {
+    Genome.reviewer[i].idReviewer = vectorReviewer[i]->idReviewer;
+    Genome.nbReviewer++;
+
+    for (j = 0; j < MAX_PAPER_PER_REVIEWER && (assignedPaper < totalNbPaper); j++) {
+      Genome.reviewer[i].paperID[j] = rndPaperID[assignedPaper];
+      Genome.reviewer[i].nbPaper++;
+      assignedPaper++;
+    }
+  }
+\end
+
+
+\GenomeClass::crossover : 
+  int i, j;
+  unsigned int positionReviewer = (unsigned int) random(0, MAX_REVIEWER - 1);           // Picks a random reviewer position
+  unsigned int positionPaper = (unsigned int) random(0, MAX_PAPER_PER_REVIEWER - 1);    // Picks a random paper position
+  j = positionPaper;                                                                    // Only for the first loop
+  
+
+  /* EASEA internal: the child is clone on parent1
+   * Copy the element from the second parent after the randomly 
+   * selected positions to the child 
+   */
+  for (i = positionReviewer; i < MAX_REVIEWER; i++) {
+    child.reviewer[i].idReviewer = parent2.reviewer[i].idReviewer;
+    
+    for (j; j < MAX_PAPER_PER_REVIEWER; j++) {
+      child.reviewer[i].paperID[j] = parent2.reviewer[i].paperID[j];
+    }
+
+    j = 0;
+  }
+\end
+
+
+\GenomeClass::mutator : 
+  /* TODO */
+  return 0;
+\end
+
+
+\GenomeClass::evaluator : 
+  int i, j;
+  double score = 0.0;
+  
+  /* for each reviewer that compose the genome compute his "affinity" to the
+   * papers he's assigned with
+   */
+  for (i = 0; i < MAX_REVIEWER; i++) {
+    if (Genome.reviewer[i].idReviewer != -1) {
+      ReviewerInfo currentReviewer = *(getById(vectorReviewer, Genome.reviewer[i].idReviewer));
+      for (j = 0; j < MAX_PAPER_PER_REVIEWER; j++) {
+        if (Genome.reviewer[i].paperID[j] != -1) {
+          Paper currentPaper = *(getById(vectorPaper, Genome.reviewer[i].paperID[j]));
+          
+          /* Gain one point per keyword matched*/
+          score += compareKeyword(currentPaper, currentReviewer);
+
+          /* If the reviewer come from the same institution of the reviewed paper
+           * set a very big penalty 
+           */
+          if (currentPaper.institution == currentReviewer.institution) {
+            score -= 1000;
+          }
+          
+          /* TODO: 1) Integrate preferences 
+           *       2) Normalize average of paper 
+           */
+        }
+      }
+    }
+  }
+
+  return score;
+\end
+
+
+\User Makefile options: 
+\end
+
+
+\Default run parameters :               // Please let the parameters appear in this order
+  Number of generations : 100           // NB_GEN
+  Time limit: 0 			                  // In seconds, 0 to deactivate
+  Population size : 1024			          // POP_SIZE
+  Offspring size : 1024                 // or a xx%
+  Mutation probability : 1              // MUT_PROB
+  Crossover probability : 1             // XOVER_PROB
+  Evaluator goal : maximize             // maximise
+  Selection operator: Tournament 2.0
+  Surviving parents: 100%               // Percentage or absolute  
+  Surviving offspring: 100%             // Percentage or absolute  
+  Reduce parents operator: Tournament 2
+  Reduce offspring operator: Tournament 2
+  Final reduce operator: Tournament 2
+
+  Elitism: Strong			                  // Weak or Strong
+  Elite: 1
+  Print stats: true				              // Default: 1
+  Generate csv stats file:false			
+  Generate gnuplot script:false
+  Generate R script:false
+  Plot stats:true				                // Default: 0
+
+  Remote island model: false
+  IP file: ip.txt 			                // List of IP:PORT of islands to send individuals to
+  Migration probability: 0.33           // Probability of sending an individual per generation
+  Server port : 2929
+
+  Save population: false
+  Start from file:false
+\end
+
