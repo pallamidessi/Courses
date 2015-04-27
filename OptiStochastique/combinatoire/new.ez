@@ -38,9 +38,11 @@ _______________________________________________________________*/
 
 \User declarations : 
 #include <vector>
+#include <map>
 #include <string>
 #include <algorithm>
 #define MAX_PAPER_PER_REVIEWER 3
+#define REVIEWER_CAPACITY 3
 #define MAX_REVIEWER 10
   
   float pMutPerGene = 0.02;
@@ -237,13 +239,13 @@ _______________________________________________________________*/
   vectorReviewer.push_back(new ReviewerInfo(3, "name4", "inst5", keySetPaper2, empty, empty));
   vectorReviewer.push_back(new ReviewerInfo(4, "name5", "inst9", keySetPaper1, empty, empty));
   vectorReviewer.push_back(new ReviewerInfo(5, "name6", "inst1", keySetPaper1, empty, empty));
-  vectorReviewer.push_back(new ReviewerInfo(4, "name7", "inst3", keySetPaper3, empty, empty));
-  vectorReviewer.push_back(new ReviewerInfo(4, "name8", "inst2", keySetPaper1, empty, empty));
-  vectorReviewer.push_back(new ReviewerInfo(4, "name9", "inst2", keySetPaper2, empty, empty));
-  vectorReviewer.push_back(new ReviewerInfo(4, "name10", "inst2", keySetPaper2, empty, empty));
-  vectorReviewer.push_back(new ReviewerInfo(4, "name11", "inst3", keySetPaper3, empty, empty));
-  vectorReviewer.push_back(new ReviewerInfo(4, "name12", "inst4", keySetPaper2, empty, empty));
-  vectorReviewer.push_back(new ReviewerInfo(4, "name13", "inst5", keySetPaper1, empty, empty));
+  vectorReviewer.push_back(new ReviewerInfo(6, "name7", "inst3", keySetPaper3, empty, empty));
+  vectorReviewer.push_back(new ReviewerInfo(7, "name8", "inst2", keySetPaper1, empty, empty));
+  vectorReviewer.push_back(new ReviewerInfo(8, "name9", "inst2", keySetPaper2, empty, empty));
+  vectorReviewer.push_back(new ReviewerInfo(9, "name10", "inst2", keySetPaper2, empty, empty));
+  vectorReviewer.push_back(new ReviewerInfo(10, "name11", "inst3", keySetPaper3, empty, empty));
+  vectorReviewer.push_back(new ReviewerInfo(11, "name12", "inst4", keySetPaper2, empty, empty));
+  vectorReviewer.push_back(new ReviewerInfo(12, "name13", "inst5", keySetPaper1, empty, empty));
 \end
 
 
@@ -289,8 +291,6 @@ _______________________________________________________________*/
 
 \GenomeClass::initialiser : 
   unsigned int i, j;
-  unsigned int assignedPaper = 0;
-  unsigned int totalNbPaper = vectorReviewer.size();
   std::vector<int> rndPaperID;
   
   /* Set every id to -1 (undefined)*/
@@ -382,10 +382,10 @@ _______________________________________________________________*/
   int keywordScore;
   int isWanted = 0;
   int isUnwanted = 0;
-  int countPaper = 0;
-  int standardDeviation = 0;
+  int overload; 
   double score = 0.0;
-  
+  std::map<int,int> countParticipation;
+
   /* for each reviewer that compose the genome compute his "affinity" to the
    * papers he's assigned with
    */
@@ -394,9 +394,9 @@ _______________________________________________________________*/
       Paper currentPaper = *(getById(vectorPaper, Genome.reviewer[i].idReviewer));
       for (j = 0; j < MAX_PAPER_PER_REVIEWER; j++) {
         if (Genome.reviewer[i].paperID[j] != -1) {
-          
+
           /* Count the number of real paper per reviewer */
-          countPaper++;
+          countParticipation[Genome.reviewer[i].paperID[j]] ++;
           
           ReviewerInfo currentReviewer = *(getById(vectorReviewer, Genome.reviewer[i].paperID[j]));
           
@@ -408,7 +408,7 @@ _______________________________________________________________*/
             score -= 10;
           }
           else {
-            score += keywordScore / (currentReviewer.keywords.size());
+            score += keywordScore / (currentPaper.keywords.size());
           }
           
           /* If the reviewer come from the same institution of the reviewed paper
@@ -447,15 +447,14 @@ _______________________________________________________________*/
 
         }
       }
-      /* 
-      standardDeviation = abs(countPaper - ((float) vectorPaper.size() / (float) vectorReviewer.size()));
-      if (standardDeviation > 5) {
-        standardDeviation = 5;
-      }
-      score -= standardDeviation;
-      */
-      countPaper = 0;
     }
+  }
+
+  for(std::map<int, int>::iterator iter = countParticipation.begin(); iter != countParticipation.end(); ++iter){
+    overload = iter->second - REVIEWER_CAPACITY;
+
+    if(overload > 0)
+      score -= (1000 * (iter->second - REVIEWER_CAPACITY));
   }
 
   return score;
