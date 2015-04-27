@@ -42,6 +42,8 @@ _______________________________________________________________*/
 #include <algorithm>
 #define MAX_PAPER_PER_REVIEWER 3
 #define MAX_REVIEWER 5
+  
+  float pMutPerGene = 0.2;
 
   class Paper {
     public:
@@ -237,6 +239,22 @@ _______________________________________________________________*/
 
 
 \After everything else function:
+  int i, j;
+  /* Get the best individual of the last generation */
+  IndividualImpl* indiv= ((IndividualImpl *)population->parents[0]);
+ 
+
+  /*Pretty print its result */
+  for (i = 0; i < MAX_REVIEWER; i++) {
+    ReviewerInfo currentReviewer = *(getById(vectorReviewer, indiv->reviewer[i].idReviewer));
+    std::cout << "Reviewer: " << currentReviewer.name << ", " << currentReviewer.institution << std::endl;
+    for (j = 0; j < MAX_PAPER_PER_REVIEWER; j++) {
+      Paper currentPaper = *(getById(vectorPaper, indiv->reviewer[i].paperID[j]));
+      std::cout << "\t" << currentPaper.title << ", " << currentPaper.authorName << ", " << currentReviewer.institution << std::endl;
+    }
+    std::cout << std::endl;
+  }
+
 \end
 
 
@@ -326,7 +344,7 @@ _______________________________________________________________*/
   for (i = positionReviewer; i < MAX_REVIEWER; i++) {
     child.reviewer[i].idReviewer = parent2.reviewer[i].idReviewer;
     
-    for (j; j < MAX_PAPER_PER_REVIEWER; j++) {
+    for (; j < MAX_PAPER_PER_REVIEWER; j++) {
       child.reviewer[i].paperID[j] = parent2.reviewer[i].paperID[j];
     }
 
@@ -336,13 +354,33 @@ _______________________________________________________________*/
 
 
 \GenomeClass::mutator : 
-  /* TODO */
+  int reviewerIndex1;
+  int reviewerIndex2;;
+  int paperIndex1; 
+  int paperIndex2; 
+  int i;
+
+  for (i = 0; i < (MAX_REVIEWER * MAX_PAPER_PER_REVIEWER); i++) {
+    if(tossCoin(pMutPerGene)) {
+      reviewerIndex1 = random(0, MAX_REVIEWER);
+      reviewerIndex2 = random(0, MAX_REVIEWER);
+      paperIndex1 = random(0, MAX_PAPER_PER_REVIEWER);
+      paperIndex2 = random(0, MAX_PAPER_PER_REVIEWER);
+
+      Genome.reviewer[reviewerIndex1].paperID[paperIndex1] = Genome.reviewer[reviewerIndex2].paperID[paperIndex2];
+    }
+  }
   return 0;
 \end
 
 
 \GenomeClass::evaluator : 
   int i, j;
+  int keywordScore;
+  int isWanted = 0;
+  int isUnwanted = 0;
+  int countPaper = 0;
+  int standardDeviation = 0;
   double score = 0.0;
   
   /* for each reviewer that compose the genome compute his "affinity" to the
@@ -353,11 +391,23 @@ _______________________________________________________________*/
       ReviewerInfo currentReviewer = *(getById(vectorReviewer, Genome.reviewer[i].idReviewer));
       for (j = 0; j < MAX_PAPER_PER_REVIEWER; j++) {
         if (Genome.reviewer[i].paperID[j] != -1) {
+          
+          /* Count the number of real paper per reviewer */
+          countPaper++;
+          
           Paper currentPaper = *(getById(vectorPaper, Genome.reviewer[i].paperID[j]));
           
           /* Gain one point per keyword matched*/
-          score += compareKeyword(currentPaper, currentReviewer);
-
+          keywordScore = compareKeyword(currentPaper, currentReviewer);
+          
+          /* No ill matching */
+          if (keywordScore == 0) {
+            score -= 10;
+          }
+          else {
+            score += keywordScore / (currentReviewer.keywords.size());
+          }
+          
           /* If the reviewer come from the same institution of the reviewed paper
            * set a very big penalty 
            */
@@ -365,11 +415,30 @@ _______________________________________________________________*/
             score -= 1000;
           }
           
-          /* TODO: 1) Integrate preferences 
-           *       2) Normalize average of paper 
-           */
+
+          /* Check if reviewer already wanted to review this paper */
+          isWanted= std::count( currentReviewer.wantedPapers.begin(),
+                                currentReviewer.wantedPapers.end(), 
+                                currentPaper.idPaper);
+
+          if (isWanted) {
+            score += 10;
+          }
+          
+          /* Check if reviewer already refuse to review this paper */
+          isUnwanted= std::count( currentReviewer.unwantedPapers.begin(),
+                                  currentReviewer.unwantedPapers.end(), 
+                                  currentPaper.idPaper);
+
+          if (isUnwanted) {
+            score -= 10;
+          }
         }
       }
+      
+      standardDeviation = abs(countPaper - ((float) vectorPaper.size() / (float) vectorReviewer.size()));
+      score -= standardDeviation;
+      countPaper = 0;
     }
   }
 
