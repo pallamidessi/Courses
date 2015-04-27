@@ -41,9 +41,9 @@ _______________________________________________________________*/
 #include <string>
 #include <algorithm>
 #define MAX_PAPER_PER_REVIEWER 3
-#define MAX_REVIEWER 5
+#define MAX_REVIEWER 10
   
-  float pMutPerGene = 0.2;
+  float pMutPerGene = 0.02;
 
   class Paper {
     public:
@@ -91,6 +91,7 @@ _______________________________________________________________*/
                 std::vector<int> wantedPapers,
                 std::vector<int> unwantedPapers){
         this->idReviewer = id;
+        this->name = name;
         this->institution = institution;
         this->keywords = keywords;
         this->wantedPapers = wantedPapers;
@@ -231,10 +232,18 @@ _______________________________________________________________*/
   
   /* Test reviewer */
   vectorReviewer.push_back(new ReviewerInfo(0, "name1", "inst8", keySetPaper1, empty, empty));
-  vectorReviewer.push_back(new ReviewerInfo(1, "name1", "inst9", keySetPaper2, empty, empty));
-  vectorReviewer.push_back(new ReviewerInfo(2, "name1", "inst8", keySetPaper1, empty, empty));
-  vectorReviewer.push_back(new ReviewerInfo(3, "name1", "inst5", keySetPaper2, empty, empty));
-  vectorReviewer.push_back(new ReviewerInfo(4, "name1", "inst9", keySetPaper1, empty, empty));
+  vectorReviewer.push_back(new ReviewerInfo(1, "name2", "inst9", keySetPaper2, empty, empty));
+  vectorReviewer.push_back(new ReviewerInfo(2, "name3", "inst8", keySetPaper1, empty, empty));
+  vectorReviewer.push_back(new ReviewerInfo(3, "name4", "inst5", keySetPaper2, empty, empty));
+  vectorReviewer.push_back(new ReviewerInfo(4, "name5", "inst9", keySetPaper1, empty, empty));
+  vectorReviewer.push_back(new ReviewerInfo(5, "name6", "inst1", keySetPaper1, empty, empty));
+  vectorReviewer.push_back(new ReviewerInfo(4, "name7", "inst3", keySetPaper3, empty, empty));
+  vectorReviewer.push_back(new ReviewerInfo(4, "name8", "inst2", keySetPaper1, empty, empty));
+  vectorReviewer.push_back(new ReviewerInfo(4, "name9", "inst2", keySetPaper2, empty, empty));
+  vectorReviewer.push_back(new ReviewerInfo(4, "name10", "inst2", keySetPaper2, empty, empty));
+  vectorReviewer.push_back(new ReviewerInfo(4, "name11", "inst3", keySetPaper3, empty, empty));
+  vectorReviewer.push_back(new ReviewerInfo(4, "name12", "inst4", keySetPaper2, empty, empty));
+  vectorReviewer.push_back(new ReviewerInfo(4, "name13", "inst5", keySetPaper1, empty, empty));
 \end
 
 
@@ -246,13 +255,17 @@ _______________________________________________________________*/
 
   /*Pretty print its result */
   for (i = 0; i < MAX_REVIEWER; i++) {
-    ReviewerInfo currentReviewer = *(getById(vectorReviewer, indiv->reviewer[i].idReviewer));
-    std::cout << "Reviewer: " << currentReviewer.name << ", " << currentReviewer.institution << std::endl;
-    for (j = 0; j < MAX_PAPER_PER_REVIEWER; j++) {
-      Paper currentPaper = *(getById(vectorPaper, indiv->reviewer[i].paperID[j]));
-      std::cout << "\t" << currentPaper.title << ", " << currentPaper.authorName << ", " << currentReviewer.institution << std::endl;
+    if (indiv->reviewer[i].idReviewer != -1) {
+      Paper currentPaper = *(getById(vectorPaper, indiv->reviewer[i].idReviewer));
+      std::cout << "paper" << currentPaper.title << ", " << currentPaper.authorName << ", " << currentPaper.institution << std::endl;
+      for (j = 0; j < MAX_PAPER_PER_REVIEWER; j++) {
+        if (indiv->reviewer[i].paperID[j] != -1) {
+          ReviewerInfo currentReviewer = *(getById(vectorReviewer, indiv->reviewer[i].paperID[j]));
+          std::cout << "reviewer: " << currentReviewer.name << ", " << currentReviewer.institution << std::endl;
+        }
+      }
+      std::cout << std::endl;
     }
-    std::cout << std::endl;
   }
 
 \end
@@ -277,7 +290,7 @@ _______________________________________________________________*/
 \GenomeClass::initialiser : 
   unsigned int i, j;
   unsigned int assignedPaper = 0;
-  unsigned int totalNbPaper = vectorPaper.size();
+  unsigned int totalNbPaper = vectorReviewer.size();
   std::vector<int> rndPaperID;
   
   /* Set every id to -1 (undefined)*/
@@ -307,8 +320,8 @@ _______________________________________________________________*/
   }
   
   /*Create a vector with all paper id in it*/
-  for (i = 0; i < vectorPaper.size() ; i++) {
-    rndPaperID.push_back(vectorPaper[i]->idPaper);  
+  for (i = 0; i < vectorReviewer.size() ; i++) {
+    rndPaperID.push_back(vectorReviewer[i]->idReviewer);  
   }
   
   /* Shuffle it !*/
@@ -317,14 +330,14 @@ _______________________________________________________________*/
   /* Fill the reviewer with the paper id follow, if there not enough paper or
    * reviewer to fill, all the last ones will have the "canary" -1 as id 
    */
-  for (i = 0; i < vectorReviewer.size(); i++) {
-    Genome.reviewer[i].idReviewer = vectorReviewer[i]->idReviewer;
+  for (i = 0; (i < vectorPaper.size()) && (i < MAX_REVIEWER); i++) {
+    Genome.reviewer[i].idReviewer = vectorPaper[i]->idPaper;
     Genome.nbReviewer++;
 
-    for (j = 0; j < MAX_PAPER_PER_REVIEWER && (assignedPaper < totalNbPaper); j++) {
-      Genome.reviewer[i].paperID[j] = rndPaperID[assignedPaper];
+    for (j = 0; j < MAX_PAPER_PER_REVIEWER; j++) {
+      Genome.reviewer[i].paperID[j] = rndPaperID[random(0, rndPaperID.size())];
       Genome.reviewer[i].nbPaper++;
-      assignedPaper++;
+      //assignedPaper++;
     }
   }
 \end
@@ -332,8 +345,8 @@ _______________________________________________________________*/
 
 \GenomeClass::crossover : 
   int i, j;
-  unsigned int positionReviewer = (unsigned int) random(0, MAX_REVIEWER - 1);           // Picks a random reviewer position
-  unsigned int positionPaper = (unsigned int) random(0, MAX_PAPER_PER_REVIEWER - 1);    // Picks a random paper position
+  unsigned int positionPaper = (unsigned int) random(0, MAX_REVIEWER - 1);           // Picks a random reviewer position
+  //unsigned int positionPaper = (unsigned int) random(0, MAX_PAPER_PER_REVIEWER - 1);    // Picks a random paper position
   j = positionPaper;                                                                    // Only for the first loop
   
 
@@ -341,41 +354,31 @@ _______________________________________________________________*/
    * Copy the element from the second parent after the randomly 
    * selected positions to the child 
    */
-  for (i = positionReviewer; i < MAX_REVIEWER; i++) {
-    child.reviewer[i].idReviewer = parent2.reviewer[i].idReviewer;
-    
+  for (i = positionPaper; i < MAX_REVIEWER; i++) {
     for (; j < MAX_PAPER_PER_REVIEWER; j++) {
       child.reviewer[i].paperID[j] = parent2.reviewer[i].paperID[j];
     }
-
-    j = 0;
   }
 \end
 
 
 \GenomeClass::mutator : 
-  int reviewerIndex1;
-  int reviewerIndex2;;
-  int paperIndex1; 
-  int paperIndex2; 
-  int i;
+  int i,j;
 
-  for (i = 0; i < (MAX_REVIEWER * MAX_PAPER_PER_REVIEWER); i++) {
-    if(tossCoin(pMutPerGene)) {
-      reviewerIndex1 = random(0, MAX_REVIEWER);
-      reviewerIndex2 = random(0, MAX_REVIEWER);
-      paperIndex1 = random(0, MAX_PAPER_PER_REVIEWER);
-      paperIndex2 = random(0, MAX_PAPER_PER_REVIEWER);
-
-      Genome.reviewer[reviewerIndex1].paperID[paperIndex1] = Genome.reviewer[reviewerIndex2].paperID[paperIndex2];
+  for (i = 0; i < MAX_REVIEWER; i++) {
+    for (j = 0; j < MAX_PAPER_PER_REVIEWER; j++) {
+      if(tossCoin(pMutPerGene)) {
+        Genome.reviewer[i].paperID[j] = vectorReviewer[random(0, vectorReviewer.size())]->idReviewer;
+      }
     }
   }
+  
   return 0;
 \end
 
 
 \GenomeClass::evaluator : 
-  int i, j;
+  int i, j, k;
   int keywordScore;
   int isWanted = 0;
   int isUnwanted = 0;
@@ -388,14 +391,14 @@ _______________________________________________________________*/
    */
   for (i = 0; i < MAX_REVIEWER; i++) {
     if (Genome.reviewer[i].idReviewer != -1) {
-      ReviewerInfo currentReviewer = *(getById(vectorReviewer, Genome.reviewer[i].idReviewer));
+      Paper currentPaper = *(getById(vectorPaper, Genome.reviewer[i].idReviewer));
       for (j = 0; j < MAX_PAPER_PER_REVIEWER; j++) {
         if (Genome.reviewer[i].paperID[j] != -1) {
           
           /* Count the number of real paper per reviewer */
           countPaper++;
           
-          Paper currentPaper = *(getById(vectorPaper, Genome.reviewer[i].paperID[j]));
+          ReviewerInfo currentReviewer = *(getById(vectorReviewer, Genome.reviewer[i].paperID[j]));
           
           /* Gain one point per keyword matched*/
           keywordScore = compareKeyword(currentPaper, currentReviewer);
@@ -417,7 +420,7 @@ _______________________________________________________________*/
           
 
           /* Check if reviewer already wanted to review this paper */
-          isWanted= std::count( currentReviewer.wantedPapers.begin(),
+          isWanted = std::count( currentReviewer.wantedPapers.begin(),
                                 currentReviewer.wantedPapers.end(), 
                                 currentPaper.idPaper);
 
@@ -426,18 +429,31 @@ _______________________________________________________________*/
           }
           
           /* Check if reviewer already refuse to review this paper */
-          isUnwanted= std::count( currentReviewer.unwantedPapers.begin(),
+          isUnwanted = std::count( currentReviewer.unwantedPapers.begin(),
                                   currentReviewer.unwantedPapers.end(), 
                                   currentPaper.idPaper);
 
           if (isUnwanted) {
             score -= 10;
           }
+          
+         /* Because we count ourself in the loop*/
+         score += 1500; 
+          for (k = 0; k < MAX_PAPER_PER_REVIEWER; k++) {
+            if(Genome.reviewer[i].paperID[j] == Genome.reviewer[i].paperID[k]){
+              score -= 1500; 
+            }  
+          }
+
         }
       }
-      
+      /* 
       standardDeviation = abs(countPaper - ((float) vectorPaper.size() / (float) vectorReviewer.size()));
+      if (standardDeviation > 5) {
+        standardDeviation = 5;
+      }
       score -= standardDeviation;
+      */
       countPaper = 0;
     }
   }
