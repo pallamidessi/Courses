@@ -2,8 +2,9 @@
 \usepackage[french]{babel}
 \usepackage[utf8]{inputenc}
 \begin{document}
+
   \title{Continuous optimisation: \\
-    \large The basu problem}
+    \large The basu's problem}
   \author{PALLAMIDESSI Joseph, ERSFELD Thomas}
   \maketitle
   
@@ -27,26 +28,142 @@
   \label{sec:Intr}
     \paragraph{} % (fold)
     \label{par:}
-    
+    The goal of this project is to provided a set of the 22 constants to the
+    function derived from article{\cite } to fit a gaussian function of \mu=1.5 and
+    \phi=0.2.
+
+    %Gaussian
     % paragraph  (end)
   % section Intr (end)
 
   \section{Implementation} % (fold)
   \label{sec:Implementation}
-    \paragraph{} % (fold)
-    \label{par:}
+    \subsubsection{Genome definition} % (fold)
+    \label{ssub:Genome definition}
+      
+      \paragraph{} % (fold)
+      \label{par:}
+        The genome is defined as a array of the 22 doubles, so each value is mapped to a
+        specific product value as explained by the following table:
+      % paragraph  (end)
+      
+      % The table 
+      
+      \paragraph{} % (fold)
+      \label{par:}
+        For the result of this report we will refer to the each cell (ie. parameter that
+        we tried to optimise) of the array as genes.
+      % paragraph  (end)
     
-    % paragraph  (end)
+    % subsubsection Genome definition (end)
+    \subsubsection{initialization} % (fold)
+    \label{ssub:initialization}
+      
+      \paragraph{} % (fold)
+      \label{par:}
+        For each genes, we defined theirs bounds as given by this project subject.
+        Here a quick reminder
+      % paragraph  (end)
+      
+      % table of bounds
+
+    % subsubsection initialization (end)
+
+    \subsubsection{Evaluation} % (fold)
+    \label{ssub:Evaluation}
+      
+      \paragraph{} % (fold)
+      \label{par:}
+        We decided to use a sample the target function and the function to optimized
+        with a sampling rate of 100, in the hope of having a very close approximation. 
+        The fitness function used is a Root-mean-square deviation of the two vectors
+        resulting from the sampling. 
+        %<math>\operatorname{RMSD}= \sqrt{\frac{\sum_{t=1}^n (x_{1,t} - x_{2,t})^2}{n}}.</math>
+      % paragraph  (end)
+
+    % subsubsection Evaluation (end)
+    
+    \subsubsection{Crossover} % (fold)
+    \label{ssub:Crossover}
+      
+      \paragraph{} % (fold)
+      \label{par:}
+      
+        Since we are dealing with real value parameters, the crossover function is a
+        is a simple barycentric one, which is commonly found is a lot of continous
+        optimization by genetic algorithm.
+      % paragraph  (end)
+
+      % Explanation barycentric crossover
+    
+    % subsubsection Crossover (end)
+    
+    \subsubsection{Mutator} % (fold)
+    \label{ssub:Mutator}
+    
+      \paragraph{} % (fold)
+      \label{par:}
+        Once again a simple technique was used. Giving a constant mutation parameter,
+        for each gene of the genome a chance is given to add or substract a random value
+        within by this gene limit. We then avoid gene value going outside their bound by
+        capping the value by the gene value bounds.
+      % paragraph  (end)
+    % subsubsection Mutator (end)
   % section Implementation (end)
 
-  \section{Result} % (fold)
-  \label{sec:Result}
+  \section{Preliminary results} % (fold)
+  \label{sec:Preliminaty Result}
+    
     \paragraph{} % (fold)
     \label{par:}
-    
+      To much of ours surprise, when we ran the optimization with an ahl concentration
+      from 0.0001 to 10, the resulting function was quite bad. So bad, in fact, that
+      we quickly realized that the optimized function was constant to the average of
+      the gaussian values.
     % paragraph  (end)
-  % section Result (end)
+    
+    \paragraph{} % (fold)
+    \label{par:}
+      By empirecally modifying the range of ahl, we discover that given the basu's
+      function definition, there was no way that with only one set of parameters we will
+      have a good approxiamation on the whole definition range specified in the
+      subject (i.e [0.0001,10]). 
+    % paragraph  (end)
 
+    \paragraph{} % (fold)
+    \label{par:}
+      However we did have some pretty good results on smaller definition range,
+      fortunately, for the most interresting range of [1,1.8] as demonstrated by the
+      following figure.
+    % paragraph  (end)
+
+    % figure 
+    
+  % section Result (end)
+   
+   \section{Result} % (fold)
+   \label{sec:Result}
+   \paragraph{} % (fold)
+   
+     \label{par:}
+       Here are the observed results, averaged on 30 runs:
+     % paragraph  (end)
+
+     %table result 
+
+   % section Result (end)
+
+   \section{Further analysis and development} % (fold)
+   \label{sec:section name}
+   \paragraph{} % (fold)
+   \label{par:}
+   
+   % paragraph  (end)
+     In the end we feel that multiples set of parameters, by breaking the problem
+     definition range into several continuous ones, must be used in order to have
+     a good approximate of the target function.
+
+   % section section name (end)
   
 
 \end{document}
