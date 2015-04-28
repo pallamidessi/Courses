@@ -1,6 +1,7 @@
 \documentclass{article}
 \usepackage[french]{babel}
 \usepackage[utf8]{inputenc}
+\usepackage{graphicx}
 \begin{document}
 
   \title{Continuous optimisation: \\
@@ -29,7 +30,7 @@
     \paragraph{} % (fold)
     \label{par:}
     The goal of this project is to provided a set of the 22 constants to the
-    function derived from article{\cite } to fit a gaussian function of \mu=1.5 and
+    function derived from article{\cite{} } to fit a gaussian function of \mu=1.5 and
     \phi=0.2.
 
     %Gaussian
@@ -46,7 +47,27 @@
         The genome is defined as a array of the 22 doubles, so each value is mapped to a
         specific product value as explained by the following table:
       % paragraph  (end)
-      
+      \\
+      \\
+      \scalebox{0.7}{ 
+        \begin{tabular}{ |c |c |c |c |c |c |c |c |c |c |c |c}
+          \hline                       
+          1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 \\ \hline                       
+          kTR1 & KA1 &nA1&dmRNA1&kTL1&dLaclI&KTL1'&dCI&kTR2 & KR2 &nR2    \\
+          \hline  
+        \end{tabular}
+      }
+      \\
+      \\
+      \scalebox{0.7}{ 
+        \begin{tabular}{ |c |c |c |c |c |c |c |c |c |c |c |c}
+          \hline                       
+          12 & 13 & 14 & 15 & 16 & 17 & 18 & 19 & 20 & 21 & 22  \\ \hline                       
+          dmRNA2 & kTL2 & dLacl & kTR3 & KR3 & nR3 & KR3' & nR3' & dmRNA3 & kTL3 & dGFP  \\
+          \hline  
+        \end{tabular}
+      }
+
       % The table 
       
       \paragraph{} % (fold)
@@ -56,7 +77,7 @@
       % paragraph  (end)
     
     % subsubsection Genome definition (end)
-    \subsubsection{initialization} % (fold)
+    \subsubsection{Initialization} % (fold)
     \label{ssub:initialization}
       
       \paragraph{} % (fold)
@@ -65,6 +86,35 @@
         Here a quick reminder
       % paragraph  (end)
       
+      \begin{small} 
+        \begin{tabular}{ | c |c | c |}
+          \hline                       
+            Parameter & min & max \\ \hline                       
+            kTR1 &            0,001           &    1000000   \\ \hline    
+            KA1 &             0,0001          &    1000 \\ \hline  
+            nA1 &             1               &    4 \\ \hline
+            dmRNA1 &          0,001           &    0,1 \\ \hline
+            kTL1 &            0,0000001       &    0,00001 \\ \hline
+            dLaclI &          0,0001          &    0,01 \\ \hline
+            KTL1' &           0,0000001       &    0,00001 \\ \hline
+            dCI &             0,0001          &    0,01 \\ \hline
+            kTR2 &            0,001           &    1000000 \\ \hline
+            KR2 &             0,0001          &    1000 \\ \hline
+            nR2 &             1               &    4 \\ \hline
+            dmRNA2 &          0,001           &    0,1 \\ \hline
+            kTL2 &            0,0000001       &    0,00001 \\ \hline
+            dLacl &           0,0001          &    0,01 \\ \hline
+            kTR3 &            0,001           &    1000000 \\ \hline
+            KR3 &             0,0001          &    1000 \\ \hline
+            nR3 &             1               &    4 \\ \hline
+            KR3' &            0,0001          &    1000 \\ \hline
+            nR3' &            1               &    4 \\ \hline
+            dmRNA3 &          0,001           &    0,1 \\ \hline
+            kTL3 &            0,0000001       &    0,00001 \\ \hline
+            dGFP &            0,0001          &    0,01i   \\ 
+            \hline  
+        \end{tabular}
+      \end{small}
       % table of bounds
 
     % subsubsection initialization (end)
@@ -77,8 +127,10 @@
         We decided to use a sample the target function and the function to optimized
         with a sampling rate of 100, in the hope of having a very close approximation. 
         The fitness function used is a Root-mean-square deviation of the two vectors
-        resulting from the sampling. 
-        %<math>\operatorname{RMSD}= \sqrt{\frac{\sum_{t=1}^n (x_{1,t} - x_{2,t})^2}{n}}.</math>
+        resulting from the sampling.
+        \\
+        \\
+        RMSD = $\sqrt{\frac{\sum_{t=1}^n (x_{1,t} - x_{2,t})^2}{n}}$
       % paragraph  (end)
 
     % subsubsection Evaluation (end)
@@ -141,7 +193,7 @@
     
   % section Result (end)
    
-   \section{Result} % (fold)
+   \section{Results} % (fold)
    \label{sec:Result}
    \paragraph{} % (fold)
    
@@ -149,8 +201,25 @@
        Here are the observed results, averaged on 30 runs:
      % paragraph  (end)
 
-     %table result 
+    \begin{small} 
+    \begin{tabular}{lrrr}
+      Parameter &  \\
+      \hline
+      Nb of generations & 2000 \\
+      Population size & 2048  \\
+      Crossover probability & 1 \\
+      Mutation probability & 0.02\\
+      Surviving parents & 100\%  \\
+      Surviving offspring& 100\% \\
+      Elitism & Strong \\
+      Elite & 1 \\ \hline
+      \emph{Result} & 1.17e+00 \\
+      \hline 
+      \end{tabular}
+      \caption{Parameters for basu optimisation}
 
+      \includegraphics[scale=0.3]{basu_best}
+    \end{small}
    % section Result (end)
 
    \section{Further analysis and development} % (fold)
@@ -159,7 +228,7 @@
    \label{par:}
    
    % paragraph  (end)
-     In the end we feel that multiples set of parameters, by breaking the problem
+     In the end, we felt that multiples set of parameters, by breaking the problem
      definition range into several continuous ones, must be used in order to have
      a good approximate of the target function.
 
