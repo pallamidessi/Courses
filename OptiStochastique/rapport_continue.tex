@@ -2,8 +2,16 @@
 \usepackage[french]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
-\begin{document}
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
 
+\makeatletter
+\def\BState{\State\hskip-\ALG@thistlm}
+\makeatother
+
+\begin{document}
+  
   \title{Continuous optimisation: \\
     \large The basu's problem}
   \author{PALLAMIDESSI Joseph, ERSFELD Thomas}
@@ -145,8 +153,19 @@
         is a simple barycentric one, which is commonly found is a lot of continous
         optimization by genetic algorithm.
       % paragraph  (end)
+      
+      \begin{algorithm}
+      \caption{Barycentric crossover}\label{pseudo1}
+      \begin{algorithmic}[1]
+      \Procedure{Crossover}{}
+      \ForAll{gene in Genome}
+        \State $alpha\gets random(0.,1.)$ 
+        \State $Child.gene\gets alpha * Parent1.gene + (1. - alpha) * Parent2.gene$
+      \EndFor
+      \EndProcedure
+      \end{algorithmic}
+      \end{algorithm}
 
-      % Explanation barycentric crossover
     
     % subsubsection Crossover (end)
     
@@ -160,6 +179,23 @@
         within by this gene limit. We then avoid gene value going outside their bound by
         capping the value by the gene value bounds.
       % paragraph  (end)
+
+      \begin{algorithm}
+      \caption{Mutator operator}\label{pseudo2}
+      \begin{algorithmic}[2]
+      \Procedure{Mutator}{}
+      \ForAll{gene in Genome}
+        \If {$tossCoin(mutation_per_gene)$} 
+          \State $alpha\gets random(-0.5, 0.5)$ 
+          \State $Individual.gene\gets Individual.gene + alpha * Individual.gene$
+          \State $Individual.gene\gets MAX(Individual.gene, gene.min)$
+          \State $Individual.gene\gets MIN(Individual.gene, gene.max)$
+        \EndIf
+      \EndFor
+      \EndProcedure
+      \end{algorithmic}
+      \end{algorithm}
+
     % subsubsection Mutator (end)
   % section Implementation (end)
 
@@ -189,7 +225,7 @@
       following figure.
     % paragraph  (end)
 
-    % figure 
+    \includegraphics[scale=0.3]{basu_best}
     
   % section Result (end)
    
@@ -218,7 +254,6 @@
       \end{tabular}
       \caption{Parameters for basu optimisation}
 
-      \includegraphics[scale=0.3]{basu_best}
     \end{small}
    % section Result (end)
 
