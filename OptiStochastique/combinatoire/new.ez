@@ -217,11 +217,11 @@ _______________________________________________________________*/
   for (i = 0; i < MAX_REVIEWER; i++) {
     if (indiv->reviewer[i].idReviewer != -1) {
       Paper currentPaper = *(getById(vectorPaper, indiv->reviewer[i].idReviewer));
-      std::cout << "paper" << currentPaper.title << ", " << currentPaper.authorName << ", " << currentPaper.institution << std::endl;
+      std::cout << "Paper   : " << currentPaper.title << ", " << currentPaper.authorName << ", " << currentPaper.institution << std::endl;
       for (j = 0; j < MAX_PAPER_PER_REVIEWER; j++) {
         if (indiv->reviewer[i].paperID[j] != -1) {
           ReviewerInfo currentReviewer = *(getById(vectorReviewer, indiv->reviewer[i].paperID[j]));
-          std::cout << "reviewer: " << currentReviewer.name << ", " << currentReviewer.institution << std::endl;
+          std::cout << "Reviewer: " << currentReviewer.name << ", " << currentReviewer.institution << std::endl;
         }
       }
       std::cout << std::endl;
