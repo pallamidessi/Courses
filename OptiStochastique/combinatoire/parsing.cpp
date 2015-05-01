@@ -2,12 +2,9 @@
 #include <map>
 #include <string>
 #include <sstream>
-#include <vector>
 #include "fstream"
 #include "iostream"
-#include <algorithm>
 #include <cctype>
-#include <string>
 #include <algorithm>
 
 std::map<int, std::vector<int>> willingMap;
