@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage[french]{babel}
+%\usepackage[french]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \usepackage{amsmath}
@@ -17,29 +17,13 @@
   \author{PALLAMIDESSI Joseph, ERSFELD Thomas}
   \maketitle
   
-  \section{Abstract} % (fold)
-  \label{sec:Abstract}
-    \paragraph{} % (fold)
-    \label{par:}
-    
-    % paragraph  (end)
-  % section Abstract (end)
-
-  \section{Keywords} % (fold)
-  \label{sec:Keyword}
-    \paragraph{} % (fold)
-    \label{par:}
-    
-    % paragraph  (end)
-  % section Keyword (end)
-  
   \section{Introduction} % (fold)
   \label{sec:Intr}
     \paragraph{} % (fold)
     \label{par:}
     The goal of this project is to provided a set of the 22 constants to the
-    function derived from article{\cite{} } to fit a gaussian function of \mu=1.5 and
-    \phi=0.2.
+    function derived from article\cite{} to fit a gaussian function of $\mu=1.5$ and
+    $\phi=0.2$.
 
     %Gaussian
     % paragraph  (end)
@@ -94,6 +78,7 @@
         Here a quick reminder
       % paragraph  (end)
       
+      \begin{figure}
       \begin{small} 
         \begin{tabular}{ | c |c | c |}
           \hline                       
@@ -123,6 +108,7 @@
             \hline  
         \end{tabular}
       \end{small}
+      \end{figure}
       % table of bounds
 
     % subsubsection initialization (end)
@@ -236,7 +222,8 @@
      \label{par:}
        Here are the observed results, averaged on 30 runs:
      % paragraph  (end)
-
+    
+    \begin{figure}
     \begin{small} 
     \begin{tabular}{lrrr}
       Parameter &  \\
@@ -253,8 +240,8 @@
       \hline 
       \end{tabular}
       \caption{Parameters for basu optimisation}
-
     \end{small}
+    \end{figure}
    % section Result (end)
 
    \section{Further analysis and development} % (fold)
