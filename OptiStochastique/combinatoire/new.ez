@@ -43,9 +43,9 @@ _______________________________________________________________*/
 #include <algorithm>
 #define MAX_PAPER_PER_REVIEWER 3
 #define REVIEWER_CAPACITY 3
-#define MAX_REVIEWER 10
+#define MAX_REVIEWER 200
   
-  float pMutPerGene = 0.02;
+  float pMutPerGene = 0.01;
 
   class Paper {
     public:
@@ -150,6 +150,8 @@ _______________________________________________________________*/
   std::vector<Paper*> vectorPaper;
   std::vector<ReviewerInfo*> vectorReviewer;
 
+#include"parsing.cpp"
+
 \end
 
 \User functions:
@@ -198,55 +200,11 @@ _______________________________________________________________*/
    * Using those constructor and logic          *
    * ********************************************/
   
-  /* Test Keywords list*/
-  std::vector<std::string> keySetPaper1;
-  std::vector<std::string> keySetPaper2;
-  std::vector<std::string> keySetPaper3;
-  
-  /* Empty vector for reviewer preference (wanted/unwanted)*/
-  std::vector<int> empty;
-  
-  /* Fill the keyword vector */
-  keySetPaper1.push_back("a");
-  keySetPaper1.push_back("b");
-  keySetPaper1.push_back("c");
-  
-  keySetPaper2.push_back("d");
-  keySetPaper2.push_back("e");
-  keySetPaper2.push_back("f");
-  
-  keySetPaper3.push_back("a");
-  keySetPaper3.push_back("e");
-  keySetPaper3.push_back("c");
-
-  /* Test paper */
-  vectorPaper.push_back(new Paper(0, "test1", "toto1", "inst1", keySetPaper1));
-  vectorPaper.push_back(new Paper(1, "test2", "toto2", "inst1", keySetPaper2));
-  vectorPaper.push_back(new Paper(2, "test3", "toto3", "inst1", keySetPaper3));
-  vectorPaper.push_back(new Paper(3, "test4", "toto1", "inst2", keySetPaper1));
-  vectorPaper.push_back(new Paper(4, "test5", "toto2", "inst2", keySetPaper2));
-  vectorPaper.push_back(new Paper(5, "test6", "toto6", "inst2", keySetPaper3));
-  vectorPaper.push_back(new Paper(6, "test7", "toto1", "inst3", keySetPaper1));
-  vectorPaper.push_back(new Paper(7, "test8", "toto2", "inst3", keySetPaper2));
-  vectorPaper.push_back(new Paper(8, "test9", "toto9", "inst3", keySetPaper3));
-  vectorPaper.push_back(new Paper(9, "test10", "toto10", "inst4", keySetPaper1));
-  vectorPaper.push_back(new Paper(10, "test11", "toto11", "inst4", keySetPaper2));
-  
-  /* Test reviewer */
-  vectorReviewer.push_back(new ReviewerInfo(0, "name1", "inst8", keySetPaper1, empty, empty));
-  vectorReviewer.push_back(new ReviewerInfo(1, "name2", "inst9", keySetPaper2, empty, empty));
-  vectorReviewer.push_back(new ReviewerInfo(2, "name3", "inst8", keySetPaper1, empty, empty));
-  vectorReviewer.push_back(new ReviewerInfo(3, "name4", "inst5", keySetPaper2, empty, empty));
-  vectorReviewer.push_back(new ReviewerInfo(4, "name5", "inst9", keySetPaper1, empty, empty));
-  vectorReviewer.push_back(new ReviewerInfo(5, "name6", "inst1", keySetPaper1, empty, empty));
-  vectorReviewer.push_back(new ReviewerInfo(6, "name7", "inst3", keySetPaper3, empty, empty));
-  vectorReviewer.push_back(new ReviewerInfo(7, "name8", "inst2", keySetPaper1, empty, empty));
-  vectorReviewer.push_back(new ReviewerInfo(8, "name9", "inst2", keySetPaper2, empty, empty));
-  vectorReviewer.push_back(new ReviewerInfo(9, "name10", "inst2", keySetPaper2, empty, empty));
-  vectorReviewer.push_back(new ReviewerInfo(10, "name11", "inst3", keySetPaper3, empty, empty));
-  vectorReviewer.push_back(new ReviewerInfo(11, "name12", "inst4", keySetPaper2, empty, empty));
-  vectorReviewer.push_back(new ReviewerInfo(12, "name13", "inst5", keySetPaper1, empty, empty));
-\end
+	parsePapers("papers.txt");
+	parseWilling("willing.txt");
+	parseUnwilling("unwilling.txt");
+	parseReviewer("review.txt");
+  \end
 
 
 \After everything else function:
@@ -461,15 +419,16 @@ _______________________________________________________________*/
 \end
 
 
-\User Makefile options: 
+\User Makefile options:
+CXXFLAGS+= -std=c++11
 \end
 
 
 \Default run parameters :               // Please let the parameters appear in this order
   Number of generations : 100           // NB_GEN
   Time limit: 0 			                  // In seconds, 0 to deactivate
-  Population size : 1024			          // POP_SIZE
-  Offspring size : 1024                 // or a xx%
+  Population size : 4096			          // POP_SIZE
+  Offspring size : 4096                 // or a xx%
   Mutation probability : 1              // MUT_PROB
   Crossover probability : 1             // XOVER_PROB
   Evaluator goal : maximize             // maximise
