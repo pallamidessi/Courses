@@ -1,52 +1,225 @@
 \documentclass{article}
-\usepackage[french]{babel}
+%\usepackage[french]{babel}
 \usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+
+\makeatletter
+\def\BState{\State\hskip-\ALG@thistlm}
+\makeatother
+
 \begin{document}
-  \title{Combinationary optimisation: \\
-    \large Automatic paper/reviewer assignation for academic conferences}
+  
+  \title{Combinatorary optimisation: \\
+    \large Automatic paper assignement for the futur CS-DC'15 conference}
   \author{PALLAMIDESSI Joseph, ERSFELD Thomas}
   \maketitle
-  
-  \section{Abstract} % (fold)
-  \label{sec:Abstract}
-    \paragraph{} % (fold)
-    \label{par:}
-    
-    % paragraph  (end)
-  % section Abstract (end)
-
-  \section{Keywords} % (fold)
-  \label{sec:Keyword}
-    \paragraph{} % (fold)
-    \label{par:}
-    
-    % paragraph  (end)
-  % section Keyword (end)
   
   \section{Introduction} % (fold)
   \label{sec:Intr}
     \paragraph{} % (fold)
     \label{par:}
-    
+    The goal of this project is to provided a fast and efficient automatic
+    assignement of paper and reviewer for the CS-DC'15 conference. 
+    This work is a continuation of the PPSN\cite{} publishe in the early 2000's. 
+    Using a BRKGA\cite{}-like single objective genetic algorithm, the assignement will
+    take care of avoiding assigning paper issued from the same institution that a
+    reviewer come from, assigning too many paper to a reviewer and other similar
+    use-case. All the parameters can be user defined to match specific needs. 
+
+    %Gaussian
     % paragraph  (end)
   % section Intr (end)
 
   \section{Implementation} % (fold)
   \label{sec:Implementation}
-    \paragraph{} % (fold)
-    \label{par:}
+    \subsubsection{Genome definition} % (fold)
+    \label{ssub:Genome definition}
+      
+      \paragraph{} % (fold)
+      \label{par:}
+        The genome is defined as an array of paper, with each paper having an array of
+        reviewer. This genome definition come from the need that a paper must have a
+        certain number of reviewer (by default 3, but this value can be choosed by
+        the user). The genome's array only contain identifier of the problem's
+        papers and reviewer, to limit the size of the genome, to provide more
+        flexibility  as well as to have as
+        little as possible problem specific code in the implementation of the gentic
+        opererators.
+      % paragraph  (end)
+      
+      \paragraph{} % (fold)
+      \label{par:}
+        For the rest of this report, we will refer to the each cell of the different
+        array as \textit{genes}.
+      % paragraph  (end)
     
-    % paragraph  (end)
+    % subsubsection Genome definition (end)
+    \subsubsection{Initialization} % (fold)
+    \label{ssub:initialization}
+      
+      \paragraph{} % (fold)
+      \label{par:}
+      For each individuals, we initialize each paper array (there is a much paper
+      array in the genome than papers in the problem) with random reviewer
+      identifier. On large population, we assume that the random distribution is
+      uniform and each possible reviewer is assigned some individuals. 
+      % paragraph  (end)
+      
+       % subsubsection initialization (end)
+
+    \subsubsection{Evaluation} % (fold)
+    \label{ssub:Evaluation}
+      
+      \paragraph{} % (fold)
+      \label{par:}
+
+        The evaluation is the most specialize genetic operator of this project. 
+        For each individuals, before evaluating them, we \textit{decode} them, in
+        order to obtains the real data of theirs papers and reviewers.
+
+        The fitness is then computed by following differents criteria:
+        \\
+
+        \begin{itemize}
+          \item nbMatch: Number of match 
+          \begin{itemize}
+            \item Malus when no keywords is found
+          \end{itemize}
+          \item preference: The preference of the reviewer
+          \begin{itemize}
+            \item Malus when the reviewer is not unwilling to do the specific paper
+            \item Bonus when the reviewer is willing to do the specific paper
+          \end{itemize}
+
+          \item instMalus: Institutions that issued the paper
+          \begin{itemize}
+            \item Malus if a reviewer come from a same institution  
+          \end{itemize}
+          \item sameMalus: The same reviewer is used in a paper 
+        \end{itemize}
+
+        
+        fitness = $\sum_{t=1}^{nb_individuals} (\sum_{j=1}^{nb_reviewer_per_paper}( nbMatch +
+        preference + instMalus + sameMalus)) $
+        \\
+        \\
+      % paragraph  (end)
+
+    % subsubsection Evaluation (end)
+    
+    \subsubsection{Crossover} % (fold)
+    \label{ssub:Crossover}
+      
+      \paragraph{} % (fold)
+      \label{par:}
+      The crossover used is a simple one point one. A random papers position is
+      choosed and the resulting individuals is the mix between the first parent
+      until this random selected point and the second parent after it.
+      % paragraph  (end)
+      
+      \begin{algorithm}
+      \caption{One point crossover}\label{pseudo1}
+      \begin{algorithmic}[1]
+      \Procedure{Crossover}{}
+      \State $alpha\gets random(0.,nbPaper)$ 
+      \For{i from 1 to nbPaper}
+        
+        \If{i < alpha}
+          \State $Child.gene[i]\gets Parent1.gene[i]$
+        \Else
+          \State $Child.gene[i]\gets Parent2.gene[i]$
+        \EndIf
+
+      \EndFor
+      \EndProcedure
+      \end{algorithmic}
+      \end{algorithm}
+
+    
+    % subsubsection Crossover (end)
+    
+    \subsubsection{Mutator} % (fold)
+    \label{ssub:Mutator}
+    
+      \paragraph{} % (fold)
+      \label{par:}
+      Once again a simple method is used. For each reviewer identifier in a
+      individuals, giving the mutation probability, a random one contained in the
+      range of the possible reviewer is choosed.
+      % paragraph  (end)
+
+      \begin{algorithm}
+      \caption{Random key swap mutator}\label{pseudo2}
+      \begin{algorithmic}[2]
+      \Procedure{Mutator}{}
+      \State $alpha\gets random(0.,nbPaper)$ 
+        \For{i from 1 to nbPaper}
+          \For{j from 1 to nbReviewerPerPaper}
+            \State $Child.gene[i].reviewer[j]\gets random(0., nbReviewer)$
+          \EndFor
+        \EndFor
+      \EndProcedure
+      \end{algorithmic}
+      \end{algorithm}
+
+      % subsubsection Mutator (end)
   % section Implementation (end)
 
-  \section{Result} % (fold)
-  \label{sec:Result}
+  \section{Preliminary results} % (fold)
+  \label{sec:Preliminaty Result}
+    
     \paragraph{} % (fold)
     \label{par:}
-    
+      Given the ppsn data set, we observed on average a fitness value which is
+      negative.
     % paragraph  (end)
+    
   % section Result (end)
+   
+   \section{Results} % (fold)
+   \label{sec:Result}
+   \paragraph{} % (fold)
+   
+     \label{par:}
+       Here are the observed results, averaged on 30 runs:
+     % paragraph  (end)
+    
+    \begin{figure}
+    \begin{small} 
+    \begin{tabular}{lrrr}
+      Parameter &  \\
+      \hline
+      Nb of generations & 1000 \\
+      Population size & 4096  \\
+      Crossover probability & 1 \\
+      Paper per reviewer & 3 \\
+      Reviewer per paper & 3 \\
+      Mutation probability & 0.01\\
+      Surviving parents & 100\%  \\
+      Surviving offspring& 100\% \\
+      Elitism & Strong \\
+      Elite & 1 \\ \hline
+      \emph{Result} & -2.03e-03 \\
+      \hline 
+      \end{tabular}
+      \caption{Parameters for one run}  
+      \end{small}
+      \end{figure}
+   % section Result (end)
 
+   \section{Further analysis and development} % (fold)
+   \label{sec:section name}
+   \paragraph{} % (fold)
+   \label{par:}
+   
+   % paragraph  (end)
+     We didn't test this implementation on GPGPU cards, and because of the
+     simplicity of the genome, we can expect tremendious speedup. On a i5 core at
+     3Ghz with only 2 core allocated the optimisation took on average around 20 minutes. 
+   % section section name (end)
   
 
 \end{document}
