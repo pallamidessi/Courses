@@ -21,12 +21,12 @@
   \label{sec:Intr}
     \paragraph{} % (fold)
     \label{par:}
-    The goal of this project is to provided a fast and efficient automatic
-    assignement of paper and reviewer for the CS-DC'15 conference. 
+    The goal of this project is to provide a fast and efficient automatic
+    assignement of papers to reviewers for the CS-DC'15 conference. 
     This work is a continuation of the PPSN\cite{} publishe in the early 2000's. 
     Using a BRKGA\cite{}-like single objective genetic algorithm, the assignement will
-    take care of avoiding assigning paper issued from the same institution that a
-    reviewer come from, assigning too many paper to a reviewer and other similar
+    take care of avoiding assigning a paper issued from the same institution as a
+    reviewer come from, assigning too many papers to a reviewer, and other similar
     use-case. All the parameters can be user defined to match specific needs. 
 
     %Gaussian
@@ -40,20 +40,19 @@
       
       \paragraph{} % (fold)
       \label{par:}
-        The genome is defined as an array of paper, with each paper having an array of
-        reviewer. This genome definition come from the need that a paper must have a
+        The genome is defined as an array of papers, with each paper having an array of
+        reviewers. This genome definition come from the need that a paper must have a
         certain number of reviewer (by default 3, but this value can be choosed by
-        the user). The genome's array only contain identifier of the problem's
-        papers and reviewer, to limit the size of the genome, to provide more
-        flexibility  as well as to have as
-        little as possible problem specific code in the implementation of the gentic
-        opererators.
+        the user). The genome's array only contain identifiers of the problem's
+        papers and reviewers, to limit the size of the genome, to provide more
+        flexibility as well as to have as little as possible problem specific code
+        in the implementation of the genetic opererators.
       % paragraph  (end)
       
       \paragraph{} % (fold)
       \label{par:}
-        For the rest of this report, we will refer to the each cell of the different
-        array as \textit{genes}.
+        For the rest of this report, we will refer to the cells of the different
+        arrays as \textit{genes}.
       % paragraph  (end)
     
     % subsubsection Genome definition (end)
@@ -62,9 +61,9 @@
       
       \paragraph{} % (fold)
       \label{par:}
-      For each individuals, we initialize each paper array (there is a much paper
-      array in the genome than papers in the problem) with random reviewer
-      identifier. On large population, we assume that the random distribution is
+      For each individual, we initialize each papers array (there are more papers
+      arrays in the genome than papers in the problem) with random reviewer
+      identifiers. On a large population, we assume that the random distribution is
       uniform and each possible reviewer is assigned some individuals. 
       % paragraph  (end)
       
@@ -76,9 +75,9 @@
       \paragraph{} % (fold)
       \label{par:}
 
-        The evaluation is the most specialize genetic operator of this project. 
-        For each individuals, before evaluating them, we \textit{decode} them, in
-        order to obtains the real data of theirs papers and reviewers.
+        The evaluation is the most specialized genetic operator of this project. 
+        For each individual, before evaluating it, we \textit{decode} it in
+        order to obtain the real data of their papers and reviewers.
 
         The fitness is then computed by following differents criteria:
         \\
@@ -90,15 +89,15 @@
           \end{itemize}
           \item preference: The preference of the reviewer
           \begin{itemize}
-            \item Malus when the reviewer is not unwilling to do the specific paper
+            \item Malus when the reviewer is not willing to do the specific paper
             \item Bonus when the reviewer is willing to do the specific paper
           \end{itemize}
 
-          \item instMalus: Institutions that issued the paper
+          \item instMalus: Institutions that have issued the paper
           \begin{itemize}
-            \item Malus if a reviewer come from a same institution  
+            \item Malus if a reviewer come from the same institution as the paper
           \end{itemize}
-          \item sameMalus: The same reviewer is used in a paper 
+          \item sameMalus: The same reviewer is assigned twice or more to a paper 
         \end{itemize}
 
         
@@ -115,9 +114,9 @@
       
       \paragraph{} % (fold)
       \label{par:}
-      The crossover used is a simple one point one. A random papers position is
-      choosed and the resulting individuals is the mix between the first parent
-      until this random selected point and the second parent after it.
+      The crossover used is a simple one point one. A random paper position is
+      choosed and the resulting individual is the mix between the first parent
+      (until this random selected point) and the second parent after it.
       % paragraph  (end)
       
       \begin{algorithm}
@@ -146,9 +145,9 @@
     
       \paragraph{} % (fold)
       \label{par:}
-      Once again a simple method is used. For each reviewer identifier in a
-      individuals, giving the mutation probability, a random one contained in the
-      range of the possible reviewer is choosed.
+      Once again a simple method is used. For each reviewer identifier in an
+      individual's ones, giving the mutation probability, we choose a random
+      indentifier in the range of the possible reviewers.
       % paragraph  (end)
 
       \begin{algorithm}
@@ -173,7 +172,7 @@
     
     \paragraph{} % (fold)
     \label{par:}
-      Given the ppsn data set, we observed on average a fitness value which is
+      Given the ppsn data set, we observed an average fitness value that is
       negative.
     % paragraph  (end)
     
@@ -195,11 +194,11 @@
       Nb of generations & 1000 \\
       Population size & 4096  \\
       Crossover probability & 1 \\
-      Paper per reviewer & 3 \\
-      Reviewer per paper & 3 \\
+      Papers per reviewer & 3 \\
+      Reviewers per paper & 3 \\
       Mutation probability & 0.01\\
       Surviving parents & 100\%  \\
-      Surviving offspring& 100\% \\
+      Surviving offspring & 100\% \\
       Elitism & Strong \\
       Elite & 1 \\ \hline
       \emph{Result} & -2.03e-03 \\
@@ -218,7 +217,7 @@
    % paragraph  (end)
      We didn't test this implementation on GPGPU cards, and because of the
      simplicity of the genome, we can expect tremendious speedup. On a i5 core at
-     3Ghz with only 2 core allocated the optimisation took on average around 20 minutes. 
+     3Ghz with only 2 core allocated, the optimisation took on average around 20 minutes. 
    % section section name (end)
   
 
