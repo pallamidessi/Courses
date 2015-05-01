@@ -42,7 +42,7 @@ _______________________________________________________________*/
 #include <string>
 #include <algorithm>
 #define MAX_PAPER_PER_REVIEWER 3
-#define REVIEWER_CAPACITY 3
+#define REVIEWER_CAPACITY 6
 #define MAX_REVIEWER 200
   
   float pMutPerGene = 0.01;
@@ -411,8 +411,8 @@ _______________________________________________________________*/
   for(std::map<int, int>::iterator iter = countParticipation.begin(); iter != countParticipation.end(); ++iter){
     overload = iter->second - REVIEWER_CAPACITY;
 
-    if(overload > 0)
-      score -= (1000 * (iter->second - REVIEWER_CAPACITY));
+    if(overload > 0);
+      //score -= (1000 * (iter->second - REVIEWER_CAPACITY));
   }
 
   return score;
