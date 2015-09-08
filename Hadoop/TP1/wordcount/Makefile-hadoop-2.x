@@ -19,16 +19,22 @@
 
 JAVACC=javac
 JAR=jar
-DIR_CLASSES=wordcount_classes  # a dir to store classes and not mix too many files with sources
+DIR_CLASSES=hadoop_classes  # a dir to store classes and not mix too many files with sources
+INFO="-> run with 'hadoop jar $@ WordCount input output' (make sure you have 'input' and 'output' does not exist yet)"
+TARGET=wordcount.jar
+MAIN=WordCount
 
+all: $(TARGET)
 
-all: wordcount.jar
-
-wordcount.jar: WordCount.class 
+$(TARGET): $(MAIN).class
 	mkdir -p $(DIR_CLASSES)
 	$(JAR) -cvf $@ -C $(DIR_CLASSES) .
 	@echo "* JAR READY *"
-	@echo "-> run with 'hadoop jar $@ WordCount input output' (make sure you have 'input' and 'output' does not exist yet)"
+	@echo $(INFO)
 
-WordCount.class: WordCount.java
-	hadoop com.sun.tools.javac.Main -d $(DIR_CLASSES) $< 
+%.class: %.java
+	hadoop com.sun.tools.javac.Main -d $(DIR_CLASSES) $<
+
+clean:
+	rm -rf output/ $(DIR_CLASSES)/*
+
