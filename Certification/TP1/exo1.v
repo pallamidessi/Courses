@@ -88,6 +88,15 @@ H_skip: forall p:assert, Hoare p Skip p
 | H_seq: forall p1 p2 p3:assert, forall i1 i2:instr, 
 Hoare p1 i1 p2 -> Hoare p2 i2 p3 -> Hoare p1 (Seq i1 i2) p3.
 
+(*
+           ---------------------
+x>0=>x=1>0 {x+1>0} x:=x+1  {x>0} x>0 => x>0
+---------------------------------------------
+{x>0} x:=x=1 {x>0}
+*)
+
+Definition valid(p: assert): Prop := forall g:string->Z, Heval g p.
+
 
   
 
