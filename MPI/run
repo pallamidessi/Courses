@@ -1,0 +1,25 @@
+#!/bin/bash
+
+write_num_process() { sed -i 's/SIZE\/[0-9]*/SIZE\/'$1'/' main.h; }
+run() { mpirun -np $1 MatrixProduct -k $2; }
+filter_run_output() { grep -ie gigaflop -e loop | tr '.' ','; }
+
+main() {
+  [ "$1" = "-k" ] && kernel="$2" || kernel="0 1"
+  for k in $kernel; do
+    echo "Kernel $k"
+    echo
+    for p in {1..8} 16 32; do
+      write_num_process $p
+      make 2>/dev/null 1>&2 || {
+        echo Compilation error >&2
+        make; exit 1; }
+      echo "    Processes: $p"
+      run $p $k | filter_run_output
+      echo
+    done
+  done
+}
+
+# usage: ./run [-k KERNEL_ID]
+main "$@"

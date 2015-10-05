@@ -14,9 +14,9 @@
 //#define SIZE              1024
 #define SIZE              (3*5*7*32)
 
-//#define LOCAL_SIZE        (SIZE/1)             // 1 MPI process
-//#define LOCAL_SIZE        (SIZE/2)             // 2 MPI processes
-#define LOCAL_SIZE        (SIZE/16)             // 4 MPI processes
+//#define LOCAL_SIZE        (SIZE/32)             // 1 MPI process
+//#define LOCAL_SIZE        (SIZE/32)             // 2 MPI processes
+#define LOCAL_SIZE        (SIZE/32)             // 4 MPI processes
 
 
 // Constant for computation configuration 
