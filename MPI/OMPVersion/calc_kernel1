@@ -1,0 +1,400 @@
+    Processes: 1
+    Threads: 1
+	PE0: Elapsed time of the loop = 5,607078(s)
+	PE0: Total Gigaflops = 13,530418
+
+    Processes: 1
+    Threads: 2
+	PE0: Elapsed time of the loop = 2,910213(s)
+	PE0: Total Gigaflops = 26,068920
+
+    Processes: 1
+    Threads: 3
+	PE0: Elapsed time of the loop = 2,057659(s)
+	PE0: Total Gigaflops = 36,870106
+
+    Processes: 1
+    Threads: 4
+	PE0: Elapsed time of the loop = 1,579777(s)
+	PE0: Total Gigaflops = 48,023304
+
+    Processes: 1
+    Threads: 5
+	PE0: Elapsed time of the loop = 2,340257(s)
+	PE0: Total Gigaflops = 32,417854
+
+    Processes: 1
+    Threads: 6
+	PE0: Elapsed time of the loop = 2,329372(s)
+	PE0: Total Gigaflops = 32,569344
+
+    Processes: 1
+    Threads: 7
+	PE0: Elapsed time of the loop = 2,002890(s)
+	PE0: Total Gigaflops = 37,878323
+
+    Processes: 1
+    Threads: 8
+	PE0: Elapsed time of the loop = 1,829638(s)
+	PE0: Total Gigaflops = 41,465096
+
+    Processes: 2
+    Threads: 1
+	PE0: Elapsed time of the loop = 2,960617(s)
+	PE0: Total Gigaflops = 25,625103
+
+    Processes: 2
+    Threads: 2
+	PE0: Elapsed time of the loop = 1,606566(s)
+	PE0: Total Gigaflops = 47,222530
+
+    Processes: 2
+    Threads: 3
+	PE0: Elapsed time of the loop = 2,332110(s)
+	PE0: Total Gigaflops = 32,531101
+
+    Processes: 2
+    Threads: 4
+	PE0: Elapsed time of the loop = 1,859267(s)
+	PE0: Total Gigaflops = 40,804314
+
+    Processes: 2
+    Threads: 5
+	PE0: Elapsed time of the loop = 1,959863(s)
+	PE0: Total Gigaflops = 38,709908
+
+    Processes: 2
+    Threads: 6
+	PE0: Elapsed time of the loop = 1,899170(s)
+	PE0: Total Gigaflops = 39,946983
+
+    Processes: 2
+    Threads: 7
+	PE0: Elapsed time of the loop = 1,893747(s)
+	PE0: Total Gigaflops = 40,061375
+
+    Processes: 2
+    Threads: 8
+	PE0: Elapsed time of the loop = 1,896627(s)
+	PE0: Total Gigaflops = 40,000546
+
+    Processes: 3
+    Threads: 1
+	PE0: Elapsed time of the loop = 2,090336(s)
+	PE0: Total Gigaflops = 36,293739
+
+    Processes: 3
+    Threads: 2
+	PE0: Elapsed time of the loop = 2,412215(s)
+	PE0: Total Gigaflops = 31,450809
+
+    Processes: 3
+    Threads: 3
+	PE0: Elapsed time of the loop = 1,982080(s)
+	PE0: Total Gigaflops = 38,276009
+
+    Processes: 3
+    Threads: 4
+	PE0: Elapsed time of the loop = 1,916902(s)
+	PE0: Total Gigaflops = 39,577465
+
+    Processes: 3
+    Threads: 5
+	PE0: Elapsed time of the loop = 1,934946(s)
+	PE0: Total Gigaflops = 39,208385
+
+    Processes: 3
+    Threads: 6
+	PE0: Elapsed time of the loop = 1,966100(s)
+	PE0: Total Gigaflops = 38,587109
+
+    Processes: 3
+    Threads: 7
+	PE0: Elapsed time of the loop = 1,965795(s)
+	PE0: Total Gigaflops = 38,593094
+
+    Processes: 3
+    Threads: 8
+	PE0: Elapsed time of the loop = 1,962255(s)
+	PE0: Total Gigaflops = 38,662720
+
+    Processes: 4
+    Threads: 1
+	PE0: Elapsed time of the loop = 1,682423(s)
+	PE0: Total Gigaflops = 45,093369
+
+    Processes: 4
+    Threads: 2
+	PE0: Elapsed time of the loop = 1,933359(s)
+	PE0: Total Gigaflops = 39,240574
+
+    Processes: 4
+    Threads: 3
+	PE0: Elapsed time of the loop = 1,956780(s)
+	PE0: Total Gigaflops = 38,770897
+
+    Processes: 4
+    Threads: 4
+	PE0: Elapsed time of the loop = 1,966509(s)
+	PE0: Total Gigaflops = 38,579079
+
+    Processes: 4
+    Threads: 5
+	PE0: Elapsed time of the loop = 1,982402(s)
+	PE0: Total Gigaflops = 38,269791
+
+    Processes: 4
+    Threads: 6
+	PE0: Elapsed time of the loop = 1,979039(s)
+	PE0: Total Gigaflops = 38,334824
+
+    Processes: 4
+    Threads: 7
+	PE0: Elapsed time of the loop = 2,079724(s)
+	PE0: Total Gigaflops = 36,478935
+
+    Processes: 4
+    Threads: 8
+	PE0: Elapsed time of the loop = 2,182697(s)
+	PE0: Total Gigaflops = 34,757965
+
+    Processes: 5
+    Threads: 1
+	PE0: Elapsed time of the loop = 2,902162(s)
+	PE0: Total Gigaflops = 26,141239
+
+    Processes: 5
+    Threads: 2
+	PE0: Elapsed time of the loop = 2,030359(s)
+	PE0: Total Gigaflops = 37,365860
+
+    Processes: 5
+    Threads: 3
+	PE0: Elapsed time of the loop = 2,015561(s)
+	PE0: Total Gigaflops = 37,640194
+
+    Processes: 5
+    Threads: 4
+	PE0: Elapsed time of the loop = 2,004851(s)
+	PE0: Total Gigaflops = 37,841274
+
+    Processes: 5
+    Threads: 5
+	PE0: Elapsed time of the loop = 2,009492(s)
+	PE0: Total Gigaflops = 37,753872
+
+    Processes: 5
+    Threads: 6
+	PE0: Elapsed time of the loop = 2,073758(s)
+	PE0: Total Gigaflops = 36,583881
+
+    Processes: 5
+    Threads: 7
+	PE0: Elapsed time of the loop = 2,129744(s)
+	PE0: Total Gigaflops = 35,622173
+
+    Processes: 5
+    Threads: 8
+	PE0: Elapsed time of the loop = 2,138314(s)
+	PE0: Total Gigaflops = 35,479408
+
+    Processes: 6
+    Threads: 1
+	PE0: Elapsed time of the loop = 2,532663(s)
+	PE0: Total Gigaflops = 29,955078
+
+    Processes: 6
+    Threads: 2
+	PE0: Elapsed time of the loop = 2,020233(s)
+	PE0: Total Gigaflops = 37,553150
+
+    Processes: 6
+    Threads: 3
+	PE0: Elapsed time of the loop = 2,046216(s)
+	PE0: Total Gigaflops = 37,076298
+
+    Processes: 6
+    Threads: 4
+	PE0: Elapsed time of the loop = 2,066518(s)
+	PE0: Total Gigaflops = 36,712048
+
+    Processes: 6
+    Threads: 5
+	PE0: Elapsed time of the loop = 2,103528(s)
+	PE0: Total Gigaflops = 36,066128
+
+    Processes: 6
+    Threads: 6
+	PE0: Elapsed time of the loop = 2,287601(s)
+	PE0: Total Gigaflops = 33,164051
+
+    Processes: 6
+    Threads: 7
+	PE0: Elapsed time of the loop = 2,256737(s)
+	PE0: Total Gigaflops = 33,617615
+
+    Processes: 6
+    Threads: 8
+	PE0: Elapsed time of the loop = 2,277239(s)
+	PE0: Total Gigaflops = 33,314957
+
+    Processes: 7
+    Threads: 1
+	PE0: Elapsed time of the loop = 2,239924(s)
+	PE0: Total Gigaflops = 33,869949
+
+    Processes: 7
+    Threads: 2
+	PE0: Elapsed time of the loop = 2,081931(s)
+	PE0: Total Gigaflops = 36,440266
+
+    Processes: 7
+    Threads: 3
+	PE0: Elapsed time of the loop = 2,172360(s)
+	PE0: Total Gigaflops = 34,923363
+
+    Processes: 7
+    Threads: 4
+	PE0: Elapsed time of the loop = 2,163332(s)
+	PE0: Total Gigaflops = 35,069103
+
+    Processes: 7
+    Threads: 5
+	PE0: Elapsed time of the loop = 2,271600(s)
+	PE0: Total Gigaflops = 33,397655
+
+    Processes: 7
+    Threads: 6
+	PE0: Elapsed time of the loop = 2,266827(s)
+	PE0: Total Gigaflops = 33,467976
+
+    Processes: 7
+    Threads: 7
+	PE0: Elapsed time of the loop = 2,373646(s)
+	PE0: Total Gigaflops = 31,961847
+
+    Processes: 7
+    Threads: 8
+	PE0: Elapsed time of the loop = 2,415764(s)
+	PE0: Total Gigaflops = 31,404602
+
+    Processes: 8
+    Threads: 1
+	PE0: Elapsed time of the loop = 2,092200(s)
+	PE0: Total Gigaflops = 36,261410
+
+    Processes: 8
+    Threads: 2
+	PE0: Elapsed time of the loop = 2,156220(s)
+	PE0: Total Gigaflops = 35,184772
+
+    Processes: 8
+    Threads: 3
+	PE0: Elapsed time of the loop = 2,408365(s)
+	PE0: Total Gigaflops = 31,501085
+
+    Processes: 8
+    Threads: 4
+	PE0: Elapsed time of the loop = 2,374446(s)
+	PE0: Total Gigaflops = 31,951080
+
+    Processes: 8
+    Threads: 5
+	PE0: Elapsed time of the loop = 2,411241(s)
+	PE0: Total Gigaflops = 31,463512
+
+    Processes: 8
+    Threads: 6
+	PE0: Elapsed time of the loop = 2,446498(s)
+	PE0: Total Gigaflops = 31,010086
+
+    Processes: 8
+    Threads: 7
+	PE0: Elapsed time of the loop = 2,552117(s)
+	PE0: Total Gigaflops = 29,726736
+
+    Processes: 8
+    Threads: 8
+	PE0: Elapsed time of the loop = 2,578357(s)
+	PE0: Total Gigaflops = 29,424208
+
+    Processes: 16
+    Threads: 1
+	PE0: Elapsed time of the loop = 2,478602(s)
+	PE0: Total Gigaflops = 30,608427
+
+    Processes: 16
+    Threads: 2
+	PE0: Elapsed time of the loop = 2,863502(s)
+	PE0: Total Gigaflops = 26,494171
+
+    Processes: 16
+    Threads: 3
+	PE0: Elapsed time of the loop = 3,038928(s)
+	PE0: Total Gigaflops = 24,964764
+
+    Processes: 16
+    Threads: 4
+	PE0: Elapsed time of the loop = 3,496141(s)
+	PE0: Total Gigaflops = 21,699957
+
+    Processes: 16
+    Threads: 5
+	PE0: Elapsed time of the loop = 3,806041(s)
+	PE0: Total Gigaflops = 19,933079
+
+    Processes: 16
+    Threads: 6
+	PE0: Elapsed time of the loop = 4,205286(s)
+	PE0: Total Gigaflops = 18,040655
+
+    Processes: 16
+    Threads: 7
+	PE0: Elapsed time of the loop = 4,248013(s)
+	PE0: Total Gigaflops = 17,859200
+
+    Processes: 16
+    Threads: 8
+	PE0: Elapsed time of the loop = 4,402622(s)
+	PE0: Total Gigaflops = 17,232029
+
+    Processes: 32
+    Threads: 1
+	PE0: Elapsed time of the loop = 3,747300(s)
+	PE0: Total Gigaflops = 20,245539
+
+    Processes: 32
+    Threads: 2
+	PE0: Elapsed time of the loop = 4,380231(s)
+	PE0: Total Gigaflops = 17,320116
+
+    Processes: 32
+    Threads: 3
+	PE0: Elapsed time of the loop = 5,479468(s)
+	PE0: Total Gigaflops = 13,845526
+
+    Processes: 32
+    Threads: 4
+	PE0: Elapsed time of the loop = 5,739492(s)
+	PE0: Total Gigaflops = 13,218263
+
+    Processes: 32
+    Threads: 5
+	PE0: Elapsed time of the loop = 6,846243(s)
+	PE0: Total Gigaflops = 11,081423
+
+    Processes: 32
+    Threads: 6
+	PE0: Elapsed time of the loop = 7,235603(s)
+	PE0: Total Gigaflops = 10,485112
+
+    Processes: 32
+    Threads: 7
+	PE0: Elapsed time of the loop = 8,164112(s)
+	PE0: Total Gigaflops = 9,292635
+
+    Processes: 32
+    Threads: 8
+	PE0: Elapsed time of the loop = 9,224512(s)
+	PE0: Total Gigaflops = 8,224403
+
