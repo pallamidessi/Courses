@@ -32,7 +32,8 @@ void OneLocalProduct(int step)
 
   // Kernel 0 : Optimized code implemented by an application developer
   case 0 :
-    #pragma omp parallel for 
+    #pragma omp parallel private(i, j, k)
+    {
     for (i = 0; i < LOCAL_SIZE; i++) {
       for (j = 0; j < LOCAL_SIZE; j++) {
         double accu[8];
@@ -54,16 +55,43 @@ void OneLocalProduct(int step)
                                        accu[4] + accu[5] + accu[6] + accu[7];
       }
     }
+    }
     break;
 
   // Kernel 1 : Very optimized computing kernel implemented in a HPC library
   case 1 :
-    cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
-                LOCAL_SIZE, LOCAL_SIZE, SIZE,
-                1.0, &A_Slice[0][0], SIZE, 
-                &B_Slice[0][0], LOCAL_SIZE,
-                0.0, &C_Slice[OffsetStepLigC][0], LOCAL_SIZE);
-    break;
+
+		#pragma omp parallel 
+    { 
+			int numThreads = omp_get_num_threads();
+			int tid = omp_get_thread_num();
+ 			int chunk_size = LOCAL_SIZE / numThreads;
+			int res = 0;
+
+			if ((res = LOCAL_SIZE % numThreads) != 0) {
+				chunk_size = (LOCAL_SIZE - res) / numThreads;
+			}
+			
+			if (tid == numThreads - 1) {
+				chunk_size += res;
+			}
+				
+			cblas_dgemm(CblasRowMajor,
+									CblasNoTrans,
+								  CblasNoTrans,
+                	chunk_size,
+ 								  LOCAL_SIZE, 
+									SIZE,
+                	1.0,
+									&A_Slice[0 + tid * chunk_size][0],
+								  SIZE, 
+                	&B_Slice[0][0],
+									LOCAL_SIZE,
+                	0.0,
+									&C_Slice[OffsetStepLigC + tid * chunk_size][0],
+									LOCAL_SIZE);
+  	}  
+	break;
 
   default :
     fprintf(stderr,"Error: kernel %d not implemented!\n",KernelId);

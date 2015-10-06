@@ -32,9 +32,13 @@ void OneLocalProduct(int step)
 
   // Kernel 0 : Optimized code implemented by an application developer
   case 0 :
+<<<<<<< Updated upstream
 #pragma omp parallel
 {
     #pragma omp for private(i)
+=======
+    #pragma omp parallel for 
+>>>>>>> Stashed changes
     for (i = 0; i < LOCAL_SIZE; i++) {
       for (j = 0; j < LOCAL_SIZE; j++) {
         double accu[8];
