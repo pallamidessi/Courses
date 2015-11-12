@@ -62,9 +62,14 @@ void ComputationAndCirculation()
 void OneStepCirculation(int step)
 {
  MPI_Status   status;
- 
- MPI_Sendrecv_replace(A_Slice, SIZE * LOCAL_SIZE, MPI_DOUBLE, ((Me - 1) + NbPE) % NbPE, 0,
-                      (Me + 1) % NbPE , 0, MPI_COMM_WORLD, &status);
+
+ if (Me == 0) { 
+   MPI_Ssend(A_Slice, SIZE * LOCAL_SIZE, MPI_DOUBLE, ((Me - 1) + NbPE) % NbPE, 0, MPI_COMM_WORLD);
+   MPI_Recv(A_Slice, SIZE * LOCAL_SIZE, MPI_DOUBLE, ((Me + 1)) % NbPE, 0, MPI_COMM_WORLD, &status);
+ } else {
+   MPI_Recv(A_Slice, SIZE * LOCAL_SIZE, MPI_DOUBLE, ((Me + 1)) % NbPE, 0, MPI_COMM_WORLD, &status);
+   MPI_Ssend(A_Slice, SIZE * LOCAL_SIZE, MPI_DOUBLE, ((Me - 1) + NbPE) % NbPE, 0, MPI_COMM_WORLD);
+ }
 
 /******************************** TO DO ******************************************/
 }
