@@ -30,7 +30,7 @@ public class Levenstein {
     return distanceMatrix[s1.length()][s2.length()];
   }
 
-  private void printDebug(int[][] distanceMatrix, int sizeRow, int sizeCol) {
+  private static void printDebug(int[][] distanceMatrix, int sizeRow, int sizeCol) {
     for (int i = 0; i < sizeRow + 1; i++) {
       for (int j = 0; j < sizeCol + 1; j++) {
         System.out.print(distanceMatrix[i][j] + " ");

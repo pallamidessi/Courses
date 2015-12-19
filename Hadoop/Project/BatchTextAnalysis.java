@@ -16,12 +16,22 @@ public class BatchTextAnalysis {
 
     public static class BucketMapper
             extends Mapper<Object, Text, IntWritable, Text> {
+        private Text word = new Text();
 
         public void map(Object key, Text value, Context context
         ) throws IOException, InterruptedException {
-            int bucket = value.getLength() / 10;
-            IntWritable size = new IntWritable(bucket);
-            context.write(size, value);
+            StringTokenizer itr = new StringTokenizer(value.toString(), "\n");
+            while (itr.hasMoreTokens()) {
+                String tmp = itr.nextToken();
+                System.out.println(tmp);
+                word.set(tmp);
+
+                int bucket = word.getLength() / 10;
+                System.out.println(bucket);
+                IntWritable size = new IntWritable(bucket);
+
+                context.write(size, word);
+            }
         }
     }
 
@@ -64,6 +74,13 @@ public class BatchTextAnalysis {
                 }
             }
 
+            for(int val: matches) {
+                System.out.println(val);
+            }
+
+            printDebug(distanceMatrix, count, count);
+
+            createDistinctClass(matches, context, tmpValues);
             greedyClassCreation(count, matches, distanceMatrix, tmpValues, context);
         }
 
@@ -97,11 +114,33 @@ public class BatchTextAnalysis {
             }
         }
 
+        private boolean isMatrixEmpty(boolean[][] mat, int size) {
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    if(mat[i][j]) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        private void createDistinctClass (int[] matches, Context context, List<Text> values)
+                throws IOException, InterruptedException {
+            int cnt = 0;
+            for(int value : matches) {
+                if(value == 0 ) {
+                    context.write(values.get(cnt), result);
+                }
+                cnt++;
+            }
+        }
+
         private int findMaxMatches(int[] matches) {
             int max = 0;
             int index = 0;
             if (matches.length == 0) {
-                return index;
+                return -1;
             }
 
             for (int i = 0; i < matches.length; i++) {
@@ -117,20 +156,30 @@ public class BatchTextAnalysis {
             return index;
         }
 
+        private void printDebug(boolean[][] distanceMatrix, int sizeRow, int sizeCol) {
+            for (int i = 0; i < sizeRow; i++) {
+                for (int j = 0; j < sizeCol; j++) {
+                    System.out.print(distanceMatrix[i][j] + " ");
+                }
+                System.out.println();
+            }
+        }
         private void greedyClassCreation(int size, int[] matches, boolean[][] mat, List<Text> values, Context context)
                 throws IOException, InterruptedException {
             int max = 0;
 
-            while ((max = findMaxMatches(matches)) > 0) {
+            while (!isMatrixEmpty(mat, size)) {
+                max = findMaxMatches(matches);
                 context.write(values.get(max), result);
-                invalidateRow(max, size, mat);
                 invalidateColumn(max, size, mat);
+                invalidateRow(max, size, mat);
                 recomputeMatches(matches, mat, size);
             }
         }
 
-        public static class Classifyreducer
+        public static class ClassifyReducer
                 extends Reducer<Text, IntWritable, Text, Text> {
+
 
             public void reduce(Text key, IntWritable values,
                                Context context
@@ -150,20 +199,39 @@ public class BatchTextAnalysis {
                     result = new Text("null");
                 }
 
-                context.write(key, result);
+                context.write(result, key);
             }
         }
+
+        public static class StatReducer
+                extends Reducer<Text, Text, Text, IntWritable> {
+            private IntWritable result = new IntWritable();
+
+            public void reduce(Text key, Iterable<IntWritable> values,
+                               Context context
+            ) throws IOException, InterruptedException {
+                int sum = 0;
+                for (IntWritable val : values) {
+                    sum ++;
+                }
+
+                result.set(sum);
+                context.write(key, result);
+
+            }
+        }
+
 
     }
 
     public static void main(String[] args) throws Exception {
         Configuration conf = new Configuration();
-        Job job = Job.getInstance(conf, "word count");
+        Job job = Job.getInstance(conf, "Batch text analysis");
         job.setJarByClass(BatchTextAnalysis.class);
         job.setMapperClass(BucketMapper.class);
-        job.setCombinerClass(LevensteinReducer.class);
+        //job.setCombinerClass(LevensteinReducer.class);
         job.setReducerClass(LevensteinReducer.class);
-        job.setOutputKeyClass(Text.class);
+        job.setOutputKeyClass(IntWritable.class);
         job.setOutputValueClass(Text.class);
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
