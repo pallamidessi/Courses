@@ -17,8 +17,34 @@
   </div>
   <div class="main container clearfix">
 
-<p><%= JSON.stringify(ret) %></p>
+    <canvas id="myChart" width="400" height="400"></canvas>
   </div>
 </div>
+
+<script src="/js/Chart.js"></script>
+
+<script type="text/javascript">
+
+  var data = [
+    {
+      value: '<%= sad %>',
+      color:"#F7464A",
+      highlight: "#FF5A5E",
+      label: "Sad"
+    },
+    {
+      value: '<%= happy %>',
+      color: "#46BFBD",
+      highlight: "#5AD3D1",
+      label: "Happy"
+    }
+  ];
+
+  // Get the context of the canvas element we want to select
+  var ctx = document.getElementById("myChart").getContext("2d");
+  // For a pie chart
+  var myPieChart = new Chart(ctx).Pie(data);
+</script>
+
 
 

@@ -5,9 +5,6 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-
-
-
 var Twitter = require('twitter');
 
 var client = new Twitter({
@@ -59,7 +56,7 @@ module.exports = {
           console.log("The file was saved!");
         });
 
-        return res.view('tweets', { ret: tweetsStr })
+        return res.view('tweets', { ret: tweetsStr, sad: 30, happy: 70 });
       }
     });
   }
