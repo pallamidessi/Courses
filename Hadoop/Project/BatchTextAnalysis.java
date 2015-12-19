@@ -15,30 +15,30 @@ import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
 public class BatchTextAnalysis {
 
     public static class BucketMapper
-            extends Mapper<Object, Text, Text, IntWritable> {
+            extends Mapper<Object, Text, IntWritable, Text> {
 
         public void map(Object key, Text value, Context context
         ) throws IOException, InterruptedException {
             int bucket = value.getLength() / 10;
             IntWritable size = new IntWritable(bucket);
-            context.write(value, size);
+            context.write(size, value);
         }
     }
 
     public static class LevensteinReducer
-            extends Reducer<Text, IntWritable, Text, IntWritable> {
+            extends Reducer<IntWritable, Text, Text, IntWritable> {
 
         private final static IntWritable result = new IntWritable(0);
-        private MultipleOutputs mos;
         public int distanceThreshold = 5;
 
-        public void reduce(Text key, Iterable<IntWritable> values,
+        public void reduce(IntWritable key, Iterable<Text> values,
                            Context context
         ) throws IOException, InterruptedException {
             int count = 0;
-
-            for (IntWritable val : values) {
+            Vector<Text> tmpValues = new Vector<Text>();
+            for (Text val : values) {
                 count++;
+                tmpValues.add(val);
             }
 
             boolean[][] distanceMatrix = new boolean[count][count];
@@ -54,7 +54,7 @@ public class BatchTextAnalysis {
             // Compute Levenstein distance between every message of a bucket
             for (int i = 0; i < count; i++) {
                 for (int j = 0; j < count; j++) {
-                    int distance = Levenstein.levensteinDistance(values[i], values[j]);
+                    int distance = Levenstein.levensteinDistance(tmpValues.get(i).toString(), tmpValues.get(j).toString());
                     if (distance < distanceThreshold) {
                         distanceMatrix[i][j] = true;
                         matches[i] = matches[i] + 1;
@@ -64,7 +64,7 @@ public class BatchTextAnalysis {
                 }
             }
 
-            greedyClassCreation(count, matches, distanceMatrix);
+            greedyClassCreation(count, matches, distanceMatrix, tmpValues, context);
         }
 
         private void invalidateColumn(int row, int size, boolean[][] mat) {
@@ -117,16 +117,43 @@ public class BatchTextAnalysis {
             return index;
         }
 
-        private void greedyClassCreation(int size, int[] matches, boolean[][] mat) {
+        private void greedyClassCreation(int size, int[] matches, boolean[][] mat, List<Text> values, Context context)
+                throws IOException, InterruptedException {
             int max = 0;
 
             while ((max = findMaxMatches(matches)) > 0) {
-                mos.write(values[max], result);
+                context.write(values.get(max), result);
                 invalidateRow(max, size, mat);
                 invalidateColumn(max, size, mat);
                 recomputeMatches(matches, mat, size);
             }
         }
+
+        public static class Classifyreducer
+                extends Reducer<Text, IntWritable, Text, Text> {
+
+            public void reduce(Text key, IntWritable values,
+                               Context context
+            ) throws IOException, InterruptedException {
+                Runtime r = Runtime.getRuntime();
+                Process classifier = r.exec("");
+
+                int returnCode = classifier.waitFor();
+
+                Text result;
+
+                if (returnCode == 0) {
+                    result = new Text("pos");
+                } else if (returnCode == 1) {
+                    result = new Text("neg");
+                } else {
+                    result = new Text("null");
+                }
+
+                context.write(key, result);
+            }
+        }
+
     }
 
     public static void main(String[] args) throws Exception {
@@ -137,7 +164,7 @@ public class BatchTextAnalysis {
         job.setCombinerClass(LevensteinReducer.class);
         job.setReducerClass(LevensteinReducer.class);
         job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(IntWritable.class);
+        job.setOutputValueClass(Text.class);
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
         System.exit(job.waitForCompletion(true) ? 0 : 1);
