@@ -4,6 +4,7 @@ import java.util.*;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -19,24 +20,33 @@ public class BatchTextAnalysis {
 
     public static class IdemMapperLevenstein
             extends Mapper<Object, Text, Text, IntWritable> {
-        private Text word = new Text();
+
         private final static IntWritable result = new IntWritable(0);
 
         public void map(Object key, Text value, Context context
         ) throws IOException, InterruptedException {
-            System.out.println(value.toString());
             context.write(value, result);
         }
     }
 
 
     public static class IdemMapperClassifier
-            extends Mapper<Object, Text, Text, Text> {
-        private Text word = new Text();
+            extends Mapper<Object, Text, Text, NullWritable> {
+
+        private final static NullWritable result = NullWritable.get();
 
         public void map(Object key, Text value, Context context
         ) throws IOException, InterruptedException {
-            context.write(value, value);
+
+            StringTokenizer itr = new StringTokenizer(value.toString(), "\n");
+            while (itr.hasMoreTokens()) {
+                String tmp = itr.nextToken();
+
+                String[] splittedLine = tmp.split("\t");
+
+
+                context.write(new Text(splittedLine[0]), result);
+            }
         }
     }
 
@@ -50,11 +60,9 @@ public class BatchTextAnalysis {
             StringTokenizer itr = new StringTokenizer(value.toString(), "\n");
             while (itr.hasMoreTokens()) {
                 String tmp = itr.nextToken();
-                System.out.println(tmp);
                 word.set(tmp);
 
                 int bucket = word.getLength() / 10;
-                System.out.println(bucket);
                 IntWritable size = new IntWritable(bucket);
 
                 context.write(size, word);
@@ -63,20 +71,20 @@ public class BatchTextAnalysis {
     }
 
     public static class LevensteinReducer
-            extends Reducer<IntWritable, Text, Text, IntWritable> {
+            extends Reducer<IntWritable, Text, Text, NullWritable> {
 
-        private final static IntWritable result = new IntWritable(0);
+        private final static NullWritable result = NullWritable.get();
         public int distanceThreshold = 5;
 
         public void reduce(IntWritable key, Iterable<Text> values,
                            Context context
         ) throws IOException, InterruptedException {
-            System.out.println("Hey!");
             int count = 0;
-            Vector<Text> tmpValues = new Vector<Text>();
+            Vector<String> tmpValues = new Vector<String>();
+
             for (Text val : values) {
                 count++;
-                tmpValues.add(val);
+                tmpValues.add(val.toString());
             }
 
             boolean[][] distanceMatrix = new boolean[count][count];
@@ -92,7 +100,7 @@ public class BatchTextAnalysis {
             // Compute Levenstein distance between every message of a bucket
             for (int i = 0; i < count; i++) {
                 for (int j = 0; j < count; j++) {
-                    int distance = Levenstein.levensteinDistance(tmpValues.get(i).toString(), tmpValues.get(j).toString());
+                    int distance = Levenstein.levensteinDistance(tmpValues.get(i), tmpValues.get(j));
                     if (distance < distanceThreshold) {
                         distanceMatrix[i][j] = true;
                         matches[i] = matches[i] + 1;
@@ -100,10 +108,6 @@ public class BatchTextAnalysis {
                         distanceMatrix[i][j] = false; // Impossible distance
                     }
                 }
-            }
-
-            for (int val : matches) {
-                System.out.println(val);
             }
 
             printDebug(distanceMatrix, count, count);
@@ -153,12 +157,12 @@ public class BatchTextAnalysis {
             return true;
         }
 
-        private void createDistinctClass(int[] matches, Context context, List<Text> values)
+        private void createDistinctClass(int[] matches, Context context, List<String> values)
                 throws IOException, InterruptedException {
             int cnt = 0;
             for (int value : matches) {
                 if (value == 0) {
-                    context.write(values.get(cnt), result);
+                    context.write(new Text(values.get(cnt)), result);
                 }
                 cnt++;
             }
@@ -193,13 +197,13 @@ public class BatchTextAnalysis {
             }
         }
 
-        private void greedyClassCreation(int size, int[] matches, boolean[][] mat, List<Text> values, Context context)
+        private void greedyClassCreation(int size, int[] matches, boolean[][] mat, List<String> values, Context context)
                 throws IOException, InterruptedException {
             int max = 0;
 
             while (!isMatrixEmpty(mat, size)) {
                 max = findMaxMatches(matches);
-                context.write(values.get(max), result);
+                context.write(new Text(values.get(max)), result);
                 invalidateColumn(max, size, mat);
                 invalidateRow(max, size, mat);
                 recomputeMatches(matches, mat, size);
@@ -210,8 +214,8 @@ public class BatchTextAnalysis {
     public static class ClassifyReducer
             extends Reducer<Text, IntWritable, Text, Text> {
 
-
-        public void reduce(Text key, IntWritable values,
+        @Override
+        public void reduce(Text key, Iterable<IntWritable> values,
                            Context context
         ) throws IOException, InterruptedException {
             //Runtime r = Runtime.getRuntime();
@@ -230,22 +234,23 @@ public class BatchTextAnalysis {
                 result = new Text("null");
             }
             */
-            System.out.println("Hey");
-            System.out.println(key.toString());
+
             Text result = new Text("pos");
             context.write(result, key);
         }
     }
 
     public static class StatReducer
-            extends Reducer<Text, Text, Text, IntWritable> {
+            extends Reducer<Text, NullWritable, Text, IntWritable> {
         private IntWritable result = new IntWritable();
 
-        public void reduce(Text key, Iterable<IntWritable> values,
+        @Override
+        public void reduce(Text key, Iterable<NullWritable> values,
                            Context context
         ) throws IOException, InterruptedException {
             int sum = 0;
-            for (IntWritable val : values) {
+
+            for (NullWritable val : values) {
                 sum++;
             }
 
@@ -258,7 +263,8 @@ public class BatchTextAnalysis {
 
     public static void main(String[] args) throws Exception {
         Configuration conf = new Configuration();
-        FileSystem fs = FileSystem.newInstance(conf);
+        String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
+
 
         Job job = new Job(conf, "Batch text analysis Levenstein");
         job.setJarByClass(BatchTextAnalysis.class);
@@ -267,8 +273,8 @@ public class BatchTextAnalysis {
         job.setReducerClass(LevensteinReducer.class);
         job.setOutputKeyClass(IntWritable.class);
         job.setOutputValueClass(Text.class);
-        FileInputFormat.addInputPath(job, new Path(args[0]));
-        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+        FileInputFormat.addInputPath(job, new Path(otherArgs[0]));
+        FileOutputFormat.setOutputPath(job, new Path(otherArgs[1]));
         job.waitForCompletion(true);
 
         args[0] = args[1];
@@ -276,7 +282,7 @@ public class BatchTextAnalysis {
 
         Configuration conf2 = new Configuration();
         String[] otherArgs2 = new GenericOptionsParser(conf2, args).getRemainingArgs();
-        FileSystem fs2 = FileSystem.newInstance(conf2);
+
 
         Job job2 = new Job(conf2, "Batch text analysis Levenstein Classifier");
         job2.setJarByClass(BatchTextAnalysis.class);
@@ -294,5 +300,28 @@ public class BatchTextAnalysis {
         FileOutputFormat.setOutputPath(job2, new Path(otherArgs2[1]));
 
         job2.waitForCompletion(true);
+
+        args[0] = otherArgs[1] + "2";
+        args[1] = otherArgs[1] + "3";
+
+        Configuration conf3 = new Configuration();
+        String[] otherArgs3 = new GenericOptionsParser(conf3, args).getRemainingArgs();
+
+        Job job3 = new Job(conf2, "Batch text analysis Stat Classifier");
+        job3.setJarByClass(BatchTextAnalysis.class);
+
+        job3.setMapperClass(IdemMapperClassifier.class);
+        job3.setReducerClass(StatReducer.class);
+
+        job3.setMapOutputKeyClass(Text.class);
+        job3.setMapOutputValueClass(NullWritable.class);
+
+        job3.setOutputKeyClass(Text.class);
+        job3.setOutputValueClass(IntWritable.class);
+
+        FileInputFormat.addInputPath(job3, new Path(otherArgs3[0] + "/part-r-00000"));
+        FileOutputFormat.setOutputPath(job3, new Path(otherArgs3[1]));
+
+        job3.waitForCompletion(true);
     }
 }
