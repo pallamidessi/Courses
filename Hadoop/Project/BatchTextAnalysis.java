@@ -74,7 +74,7 @@ public class BatchTextAnalysis {
             extends Reducer<IntWritable, Text, Text, NullWritable> {
 
         private final static NullWritable result = NullWritable.get();
-        public int distanceThreshold = 5;
+        public int distanceThreshold = 2;
 
         public void reduce(IntWritable key, Iterable<Text> values,
                            Context context
@@ -101,7 +101,7 @@ public class BatchTextAnalysis {
             for (int i = 0; i < count; i++) {
                 for (int j = 0; j < count; j++) {
                     int distance = Levenstein.levensteinDistance(tmpValues.get(i), tmpValues.get(j));
-                    if (distance < distanceThreshold) {
+                    if (distance < distanceThreshold * (key.get() + 1)) {
                         distanceMatrix[i][j] = true;
                         matches[i] = matches[i] + 1;
                     } else {
@@ -218,24 +218,22 @@ public class BatchTextAnalysis {
         public void reduce(Text key, Iterable<IntWritable> values,
                            Context context
         ) throws IOException, InterruptedException {
-            //Runtime r = Runtime.getRuntime();
-            //Process classifier = r.exec("");
+            Runtime r = Runtime.getRuntime();
+            Process classifier = r.exec(System.getProperty("user.home") + "/.virtualenvs/twitter/bin/python2.7 trained_classifier/classify.py " + key.toString());
 
-            /*
+
             int returnCode = classifier.waitFor();
 
             Text result;
 
             if (returnCode == 0) {
-                result = new Text("pos");
-            } else if (returnCode == 1) {
                 result = new Text("neg");
+            } else if (returnCode == 1) {
+                result = new Text("pos");
             } else {
                 result = new Text("null");
             }
-            */
 
-            Text result = new Text("pos");
             context.write(result, key);
         }
     }
