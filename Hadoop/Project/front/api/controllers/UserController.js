@@ -15,6 +15,7 @@ var client = new Twitter({
 });
 
 var fs = require('fs');
+require('shelljs/global');
 
 
 module.exports = {
@@ -30,11 +31,11 @@ module.exports = {
 
 
     if (q === 'undefined'){
-      ret = 'Query undefined';
+      return res.view('500', {error: 'Query undefined'});
     }
 
     if (count === 'undefined'){
-      ret = 'Count undefined';
+      return res.view('500', {error: 'Count undefined'});
     }
 
     client.get('search/tweets', {q: q, count: count}, function(error, tweets, response){
@@ -48,13 +49,33 @@ module.exports = {
           tweetsStr += tweets.statuses[i].text + '\n';
         }
 
-        fs.writeFile("tweetToAnalyze.txt", tweetsStr, function(err) {
+        fs.writeFile("input", tweetsStr, function(err) {
           if(err) {
-            return console.log(err);
+            console.log(err);
+            return res.view('500', {error: 'Error when writing tweets file'});
           }
 
           console.log("The file was saved!");
         });
+
+
+        cp('input', '../input');
+
+        if (exec('../make.sh').code !== 0) {
+          return res.view('500', {error: 'Error when calling hadoop script'});
+        }
+
+        var resFilename = '../output3/part-r-00000';
+
+        cp('../output3/part-r-00000', 'part-r-00000');
+
+        fs.readFile('part-r-00000', function (err, data) {
+          if (err) {
+            return res.view('500', {error: 'Error when reading file'});
+          }
+          console.log(data);
+        });
+
 
         return res.view('tweets', { ret: tweetsStr, sad: 30, happy: 70 });
       }
