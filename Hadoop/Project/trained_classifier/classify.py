@@ -59,3 +59,6 @@ if result == 'negative':
   sys.exit(0) 
 elif result == 'positive':
   sys.exit(1)
+
+
+  sys.exit(0) 

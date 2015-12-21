@@ -15,6 +15,7 @@ var client = new Twitter({
 });
 
 var fs = require('fs');
+var fsExtra = require('fs-extra');
 require('shelljs/global');
 
 
@@ -39,7 +40,9 @@ module.exports = {
     }
 
     client.get('search/tweets', {q: q, count: count}, function(error, tweets, response){
-
+            if (count == 0) {
+            return res.view('500', {error: 'No tweets'});
+      }
       if (!error){
 
         var tweetsStr = '';
@@ -49,17 +52,9 @@ module.exports = {
           tweetsStr += tweets.statuses[i].text + '\n';
         }
 
-        fs.writeFile("input", tweetsStr, function(err) {
-          if(err) {
-            console.log(err);
-            return res.view('500', {error: 'Error when writing tweets file'});
-          }
+        fs.writeFileSync("input", tweetsStr);
 
-          console.log("The file was saved!");
-        });
-
-
-        cp('input', '../input');
+        cp('-f', 'input', '../input');
 
         if (exec('../make.sh').code !== 0) {
           return res.view('500', {error: 'Error when calling hadoop script'});
@@ -67,17 +62,29 @@ module.exports = {
 
         var resFilename = '../output3/part-r-00000';
 
-        cp('../output3/part-r-00000', 'part-r-00000');
+        cp('-f', '../output3/part-r-00000', 'part-r-00000');
+        
+        var sadResult = "0";
+        var happyResult = "0";
 
         fs.readFile('part-r-00000', function (err, data) {
           if (err) {
             return res.view('500', {error: 'Error when reading file'});
           }
-          console.log(data);
+          console.log("file data" + data);
+          data = data + " "
+          var result = data.split("\n");
+          console.log(result);
+          sadResult = result[0].split("\t")[1];
+          if (result.length > 1 && result[1] != ' ') {
+            happyResult = result[1].split("\t")[1];
+          }
+          console.log(parseInt(sadResult));
+          console.log(parseInt(happyResult));
+        return res.view('tweets', { ret: tweetsStr, sad: sadResult, happy: happyResult });
         });
 
 
-        return res.view('tweets', { ret: tweetsStr, sad: 30, happy: 70 });
       }
     });
   }
