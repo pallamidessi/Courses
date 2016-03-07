@@ -1,0 +1,118 @@
+2016-02-01 15:20:31.336 UTC INFOS [admin1] Initializing PRIMARY Admin for store: kvstore
+2016-02-01 15:20:31.337 UTC INFOS [admin1] Created new admin environment dir: ./kvroot/kvstore/sn1/admin1/env
+2016-02-01 15:20:31.337 UTC INFOS [admin1] JVM Runtime maxMemory (bytes): 1840250880
+2016-02-01 15:20:31.358 UTC INFOS [admin1] Non-default JE properties for environment: {je.rep.vlsn.logCacheSize=128, je.rep.envUnknownStateTimeout=10 s, je.log.faultReadSize=4096, je.rep.vlsn.distance=1000000, je.rep.replicaTimeout=10 s, je.env.runEvictor=true, je.cleaner.minUtilization=40, je.rep.replicaAckTimeout=5 s, je.lock.nLockTables=97, je.cleaner.threads=2, je.rep.replayMaxOpenDbHandles=100, je.log.writeQueueSize=2097152, je.evictor.criticalPercentage=20, je.log.iteratorReadSize=1048576, je.log.numBuffers=16, je.rep.feederTimeout=10 s, je.nodeMaxEntries=128, je.lock.timeout=10 s, je.rep.bindInaddrAny=true, je.rep.preHeartbeatTimeoutMs=5000000000, je.rep.consistencyPolicy=NoConsistencyRequiredPolicy, je.checkpointer.bytesInterval=500000000, je.txn.durability=write_no_sync,write_no_sync,simple_majority, je.cleaner.readSize=1048576, je.rep.ignoreSecondaryNodeId=true, je.rep.txnRollbackLimit=10, je.log.fileCacheSize=2000, je.log.fileMax=1073741824}
+2016-02-01 15:20:31.365 UTC INFOS [admin1] DataChannelFactory: basic
+2016-02-01 15:20:31.367 UTC INFOS [admin1] AdminStateTracker thread start: admin1
+2016-02-01 15:20:31.627 UTC INFOS [admin1] JE recovery: POPULATE_UTILIZATION_PROFILE
+2016-02-01 15:20:31.642 UTC INFOS [admin1] JE recovery: REMOVE_TEMP_DBS
+2016-02-01 15:20:31.655 UTC INFOS [admin1] JE recovery: CKPT
+2016-02-01 15:20:31.669 UTC INFOS [admin1] JE recovery: RECOVERY_FINISHED
+2016-02-01 15:20:31.684 UTC INFOS [admin1] JE: Started ServiceDispatcher. HostPort=pcj305:5005
+2016-02-01 15:20:31.684 UTC INFOS [admin1] JE: DataChannel factory: com.sleepycat.je.rep.utilint.net.SimpleChannelFactory
+2016-02-01 15:20:31.736 UTC INFOS [admin1] JE: Current group size: 0
+2016-02-01 15:20:31.736 UTC INFOS [admin1] JE: New node 1(-1) unknown to rep group
+2016-02-01 15:20:31.737 UTC INFOS [admin1] JE: Master changed to 1
+2016-02-01 15:20:31.737 UTC INFOS [admin1] JE: Nascent group. 1 is master by virtue of being the first node.
+2016-02-01 15:20:31.747 UTC INFOS [admin1] JE: Successfully added node:1(1) HostPort = pcj305: 5005 [ELECTABLE]
+2016-02-01 15:20:31.748 UTC INFOS [admin1] JE: Refreshed 0 monitors.
+2016-02-01 15:20:31.751 UTC INFOS [admin1] JE recovery: BECOME_CONSISTENT
+2016-02-01 15:20:31.751 UTC INFOS [admin1] JE: Node 1 started
+2016-02-01 15:20:31.752 UTC INFOS [admin1] JE: Feeder manager accepting requests.
+2016-02-01 15:20:31.753 UTC INFOS [admin1] JE: Joining group as master
+2016-02-01 15:20:31.754 UTC INFOS [admin1] JE: Refreshed 0 monitors.
+2016-02-01 15:20:31.755 UTC INFOS [admin1] State change event: Mon Feb 01 16:20:31 CET 2016, State: MASTER, Type: PRIMARY, Master: 1
+2016-02-01 15:20:31.756 UTC INFOS [admin1] AdminStateTracker queue added:MASTER
+2016-02-01 15:20:31.762 UTC INFOS [admin1] Initializing Admin Schema to schema version 4/NoSQL DB 12cR1.3.5.2 2015-12-03 08:34:31 UTC  Build id: 0c693aa1a5a0
+2016-02-01 15:20:31.814 UTC INFOS [admin1] Open Admin entity DB: AdminPlanDatabase
+2016-02-01 15:20:31.815 UTC INFOS [admin1] Admin plan database initialized
+2016-02-01 15:20:31.815 UTC INFOS [admin1] Initialized plan store to PlanDatabaseStore
+2016-02-01 15:20:31.815 UTC INFOS [admin1] Shutting down monitor collector
+2016-02-01 15:20:31.879 UTC INFOS [admin1] Initializing Admin database
+2016-02-01 15:20:31.966 UTC INFOS [admin1] Admin database initialized
+2016-02-01 15:20:31.975 UTC INFOS [admin1] Replicated environment handle established. Cache size: 1104150528, State: MASTER
+2016-02-01 15:20:31.976 UTC INFOS [admin1] Configured Admin for store: kvstore
+2016-02-01 15:20:31.977 UTC INFOS [admin1] Starting Web service on port 5001
+2016-02-01 15:20:32.006 UTC INFOS [admin1] jetty-7.4.0.v20110414
+2016-02-01 15:20:32.090 UTC INFOS [admin1] Extract jar:file:/adhome/p/pa/pallamidessi/TDR/kv-3.5.2/lib/kvstore.jar!/war/KVAdminUI/ to /adhome/p/pa/pallamidessi/TDR/kv-3.5.2/kvroot/kvstore/sn1/admin1/webapp/webapp
+2016-02-01 15:20:33.085 UTC INFOS [admin1] NO JSP Support for /, did not find org.apache.jasper.servlet.JspServlet
+2016-02-01 15:20:33.104 UTC INFOS [admin1] started o.e.j.w.WebAppContext{/,file:/adhome/p/pa/pallamidessi/TDR/kv-3.5.2/kvroot/kvstore/sn1/admin1/webapp/webapp/},jar:file:/adhome/p/pa/pallamidessi/TDR/kv-3.5.2/lib/kvstore.jar!/war/KVAdminUI
+2016-02-01 15:20:33.122 UTC INFOS [admin1] Started SelectChannelConnector@0.0.0.0:5001 STARTING
+2016-02-01 15:20:33.151 UTC INFOS [admin1] Plan 1[Deploy KVLite] approved
+2016-02-01 15:20:33.155 UTC INFOS [admin1] Plan 1[Deploy KVLite]: started, 1 tasks
+2016-02-01 15:20:33.185 UTC INFOS [admin1] Plan 1[Deploy KVLite]: task 1 [DeployDatacenter zone=KVLite] started
+2016-02-01 15:20:33.189 UTC INFOS [admin1] Plan 1[Deploy KVLite]: task 1 [DeployDatacenter zone=KVLite] ended, state=SUCCEEDED
+2016-02-01 15:20:33.192 UTC INFOS [admin1] Plan 1[Deploy KVLite]: ended, state=SUCCEEDED
+2016-02-01 15:20:33.193 UTC INFOS [admin1] Waiting for Plan 1[Deploy KVLite] ended, state=SUCCEEDED
+2016-02-01 15:20:33.213 UTC INFOS [admin1] Plan 2[Deploy Storage Node] approved
+2016-02-01 15:20:33.214 UTC INFOS [admin1] Plan 2[Deploy Storage Node]: started, 1 tasks
+2016-02-01 15:20:33.217 UTC INFOS [admin1] Plan 2[Deploy Storage Node]: task 1 [DeploySN sn1(pcj305:5000)] started
+2016-02-01 15:20:33.307 UTC INFOS [admin1] Monitor collector: adding sn1 to monitoring
+2016-02-01 15:20:33.311 UTC INFOS [admin1] Plan 2[Deploy Storage Node]: task 1 [DeploySN sn1(pcj305:5000)] ended, state=SUCCEEDED
+2016-02-01 15:20:33.315 UTC INFOS [admin1] Plan 2[Deploy Storage Node]: ended, state=SUCCEEDED
+2016-02-01 15:20:33.315 UTC INFOS [admin1] Waiting for Plan 2[Deploy Storage Node] ended, state=SUCCEEDED
+2016-02-01 15:20:33.320 UTC INFOS [admin1] [sn1] Service status: RUNNING 2016-02-01 15:20:33 UTC
+2016-02-01 15:20:33.345 UTC INFOS [admin1] Plan 3[Deploy Admin Service] approved
+2016-02-01 15:20:33.346 UTC INFOS [admin1] Plan 3[Deploy Admin Service]: started, 2 tasks
+2016-02-01 15:20:33.356 UTC INFOS [admin1] Plan 3[Deploy Admin Service]: task 1 [DeployAdmin AdminId[admin1] on SNId[sn1]] started
+2016-02-01 15:20:33.387 UTC INFOS [admin1] newParameters called for Monitor
+2016-02-01 15:20:33.389 UTC INFOS [admin1] Plan 3[Deploy Admin Service]: task 1 [DeployAdmin AdminId[admin1] on SNId[sn1]] ended, state=SUCCEEDED
+2016-02-01 15:20:33.389 UTC INFOS [admin1] Plan 3[Deploy Admin Service]: task 2 [WaitForAdminState waits for Admin admin1 to reach RUNNING state] started
+2016-02-01 15:20:33.395 UTC INFOS [admin1] Plan 3[Deploy Admin Service]: task 2 [WaitForAdminState waits for Admin admin1 to reach RUNNING state] ended, state=SUCCEEDED
+2016-02-01 15:20:33.397 UTC INFOS [admin1] Plan 3[Deploy Admin Service]: ended, state=SUCCEEDED
+2016-02-01 15:20:33.397 UTC INFOS [admin1] Waiting for Plan 3[Deploy Admin Service] ended, state=SUCCEEDED
+2016-02-01 15:20:33.400 UTC INFOS [admin1] Created Storage Node Pool: KVLitePool
+2016-02-01 15:20:33.406 UTC INFOS [admin1] Added Storage Node sn1 to pool: KVLitePool
+2016-02-01 15:20:33.418 UTC INFOS [admin1] oracle.kv.impl.admin.topo.TopologyCandidate@db0fd5d has nothing to rebalance
+2016-02-01 15:20:33.488 UTC INFOS [admin1] Plan 4[Deploy KVStore] approved
+2016-02-01 15:20:33.491 UTC INFOS [admin1] Plan 4[Deploy KVStore] deploying topology candidate KVLite.
+2016-02-01 15:20:33.493 UTC INFOS [admin1] Current topology: store=kvstore  numPartitions=0 sequence=2
+  zn: id=zn1 name=KVLite repFactor=1 type=PRIMARY
+
+  sn=[sn1] zn:[id=zn1 name=KVLite] pcj305:5000
+
+
+2016-02-01 15:20:33.493 UTC INFOS [admin1] Preview of changes to be executed by Plan 4[Deploy KVStore]:
+Topology transformation from current deployed topology to KVLite:
+Create 1 shard 
+Create 1 RN 
+Create 10 partitions 
+
+shard rg1
+  1 new RN : rg1-rn1 
+  10 new partitions 
+
+2016-02-01 15:20:33.494 UTC INFOS [admin1] Target topology candidate: KVLite
+store=kvstore  numPartitions=10 sequence=14
+  zn: id=zn1 name=KVLite repFactor=1 type=PRIMARY
+
+  sn=[sn1] zn:[id=zn1 name=KVLite] pcj305:5000
+    [rg1-rn1]
+
+  shard=[rg1] num partitions=10
+    [rg1-rn1] sn=sn1
+
+2016-02-01 15:20:33.494 UTC INFOS [admin1] Plan 4[Deploy KVStore]: started, 8 tasks
+2016-02-01 15:20:33.496 UTC INFOS [admin1] Plan 4[Deploy KVStore]: task 1 [UpdateDatacenterV2 zone=zn1] started
+2016-02-01 15:20:33.498 UTC INFOS [admin1] Plan 4[Deploy KVStore]: task 1 [UpdateDatacenterV2 zone=zn1] ended, state=SUCCEEDED
+2016-02-01 15:20:33.499 UTC INFOS [admin1] Plan 4[Deploy KVStore]: task 2 [DeployShard on [sn1] zn:[id=zn1 name=KVLite] pcj305:5000 ] started
+2016-02-01 15:20:33.508 UTC INFOS [admin1] Plan 4[Deploy KVStore]: task 2 [DeployShard rg1 on [sn1] zn:[id=zn1 name=KVLite] pcj305:5000 ] ended, state=SUCCEEDED
+2016-02-01 15:20:33.509 UTC INFOS [admin1] Plan 4[Deploy KVStore]: task 3 [DeployNewRN on sn1(pcj305:5000)] started
+2016-02-01 15:20:33.513 UTC INFOS [admin1] Creating rg1-rn1 on sn1 haPort=pcj305:5 006 helpers=pcj305:5006 storage directory=null heapMB=unspecified cacheSize=unspecified -XX:ParallelGCThreads=4
+2016-02-01 15:20:34.641 UTC INFOS [admin1] Monitor collector: adding rg1-rn1 to monitoring
+2016-02-01 15:20:34.644 UTC INFOS [admin1] Plan 4[Deploy KVStore]: task 3 [DeployNewRN rg1-rn1 on sn1(pcj305:5000)] ended, state=SUCCEEDED
+2016-02-01 15:20:34.644 UTC INFOS [admin1] Plan 4[Deploy KVStore]: task 4 [UpdateNthRNHelperHost] started
+2016-02-01 15:20:34.647 UTC INFOS [admin1] Plan 4[Deploy KVStore]: task 4 [UpdateNthRNHelperHost] ended, state=SUCCEEDED
+2016-02-01 15:20:34.647 UTC INFOS [admin1] Plan 4[Deploy KVStore]: task 5 [NewNthRNParameters] started
+2016-02-01 15:20:34.649 UTC INFOS [admin1] [rg1-rn1] Service status: RUNNING 2016-02-01 15:20:33 UTC
+2016-02-01 15:20:34.657 UTC INFOS [admin1] Plan 4[Deploy KVStore]: task 5 [NewNthRNParameters] ended, state=SUCCEEDED
+2016-02-01 15:20:34.657 UTC INFOS [admin1] Plan 4[Deploy KVStore]: task 6 [BroadcastTopo] started
+2016-02-01 15:20:34.658 UTC INFOS [admin1] Broadcasting topology seq# 4, changes for BroadcastTopo
+2016-02-01 15:20:34.662 UTC INFOS [admin1] Plan 4[Deploy KVStore]: task 6 [BroadcastTopo] ended, state=SUCCEEDED
+2016-02-01 15:20:34.662 UTC INFOS [admin1] Plan 4[Deploy KVStore]: task 7 [BroadcastMetadata] started
+2016-02-01 15:20:34.664 UTC INFOS [admin1] Plan 4[Deploy KVStore]: task 7 [BroadcastMetadata] ended, state=SUCCEEDED
+2016-02-01 15:20:34.664 UTC INFOS [admin1] Plan 4[Deploy KVStore]: task 8 [AddPartitions totalPartitions = 10] started
+2016-02-01 15:20:34.671 UTC INFOS [admin1] Broadcasting topology seq# 14, changes for Initializing new partitions
+2016-02-01 15:20:34.699 UTC INFOS [admin1] Plan 4[Deploy KVStore]: task 8 [AddPartitions totalPartitions = 10] ended, state=SUCCEEDED
+2016-02-01 15:20:34.700 UTC INFOS [admin1] Plan 4[Deploy KVStore]: ended, state=SUCCEEDED
+2016-02-01 15:20:34.700 UTC INFOS [admin1] Waiting for Plan 4[Deploy KVStore] ended, state=SUCCEEDED
