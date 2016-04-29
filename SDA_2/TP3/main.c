@@ -1,0 +1,7 @@
+#include"rel.h"
+
+
+int main(){
+	
+	return 0;	
+}

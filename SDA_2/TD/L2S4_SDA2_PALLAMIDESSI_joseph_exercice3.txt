@@ -1,0 +1,320 @@
+
+/*a)----------*/
+
+	/*Specification recusive*/
+		
+		specif Arbin eg_rec (arbin a)
+			operation:
+				eg_rec: Arbin -> Arbin
+			precondition:
+				pre(eg_rec(a))=!v(a)
+			axiome:
+				eg_rec(e(a1,x,a2))=Si v(ag(a1))
+														alors a1
+														sinon eg(a1)
+														finsi
+
+		specif Arbin ed_rec (arbin a)
+			operation:
+				ed_rec: Arbin -> Arbin
+			precondition:
+				pre(ed_rec(a))=!v(a)
+			axiome:
+				ed_rec(e(a1,x,a2))=Si v(ad(a1))
+														alors a1
+														sinon ed(a1)
+														finsi
+
+	/*Specification iterative*/
+
+		specif Arbin ed_ite (arbin a)
+			operation:
+				ed_ite: Arbin -> Arbin
+			precondition:
+				pre(ed_ite(a))=!v(a)
+			axiome:
+				ed_ite(a)=avec b=a
+										tant que !v(ad(b))
+											repeter 
+												b=ad(b)
+										finrepeter
+
+		specif Arbin eg_ite (arbin a)
+			operation:
+				eg_ite: Arbin -> Arbin
+			precondition:
+				pre(eg_ite(a))=!v(a)
+			axiome:
+				eg_ite(a)=avec b=a
+										tant que !v(ag(b))
+											repeter 
+												b=ag(b)
+										finrepeter
+
+	/*Programation recursive*/
+
+		arbin eg_rec(arbin a){
+		
+			if(v(ag(a)))
+				return a;
+			else 
+				return eg_rec(a->ag);
+		}
+
+		arbin ed_rec(arbin a){
+	
+			if(v(ad(a)))
+				return a;
+			else 
+				return ed_rec(a->ad);
+		}
+
+	/*Programation iterative*/
+
+		arbin eg_ite (arbin a){
+	
+			while(!v(ag(a)))
+				a=ag(a);
+
+			return a;
+		}
+
+		arbin ed_ite (arbin a){
+	
+			while(!v(ad(a)))
+				a=ad(a);
+
+			return a;
+}
+
+
+
+/*b)----------*/
+
+	/*Specification recusive*/
+	
+		specif Arbin insf_rec (arbin a,S x)
+			operation:
+				insf_rec: Arbin S -> Arbin
+			precondition:
+				pre(insf_rec(a,x))=!v(a)
+			axiome:
+				insf_(a1,x,a2,y)=
+										Si y>x
+											alors si v(a1)
+												alors e((^,y,^),x,a2)
+												sinon e(a1,x,insf_rec(a2,y))
+												finsi
+										Sinon si v(a2)
+											alors (a1,x,e(^,x,^))
+												sinon e(insf_rec(a1,y),x,a2)
+												finsi
+										finsi	
+
+
+	/*Specification iterative*/
+	
+		specif Arbin insf_ite (arbin a,S x)
+			operation:
+				insf_rec: Arbin S -> Arbin
+			precondition:
+				pre(insf_ite(a,x))=!v(a)
+			axiome:
+				insf_ite(a,x)=
+												tant que !f(a) 
+													Si r(a)>x
+													alors si v(ag(a))
+														alors e((^,e,^),a,ad(a))
+															b=ag(b)
+															finsi
+													Sinon si v(ad(a))
+														alors (ag(a),a,e(^,x,^))
+															b=ad(b)
+
+
+	/*Programation iterative*/
+		
+		arbin insf_ite(arbin a,S x){
+			arbin racine=a;
+
+			while(!f(a)){
+				if(r(a)>x){
+					if(v(ag(a))){
+						e((^,x,^),a,ad(a));
+						a=ag(a);
+					}
+				}else 
+					if(v(ad(a))){
+						e(ag(a),a,e(^,x,^));
+						a=ad(a);
+					}
+			}
+			return racine;
+		}
+
+
+
+/*c)----------*/
+
+	/*Specification recusive*/
+
+		specif Arbin otermin_rec(arbin a)
+			operation:
+				otermin_rec: Arbin  -> Arbin
+			precondition:
+			axiome:
+				otermin(a)=si v(a)
+										alors ^
+									sinon 
+										otermin1(a)
+
+		specif Arbin otermin1_rec(arbin a)
+			operation:
+				otermin1_rec: Arbin  -> Arbin
+			precondition:
+				pre(otermin1_rec(a))=!v(a)
+			axiome:
+				otermin1_rec(e(a1,x,a2))=si v(ag(a1))
+															alors e(ad(a1),x,a2)
+														sinon 
+															e(otermin1_rec(a1),x,a2)
+
+	/*Specification iterative*/
+
+		specif Arbin otermin_ite(arbin a)
+			operation:
+				otermin_ite: Arbin  -> Arbin
+			precondition:
+				pre(otermin_ite(a))=!v(a)
+			axiome:
+				otermin_ite(a)=avec b=a
+												tantque !v(ag(ag(b)))
+													b=ag(b)
+											 	fintantque
+															alors e(ad(ag(a)),r(a),ad(a))
+														sinon 
+
+
+	/*Programation iterative*/
+		arbin otermin_ite(arbin a){
+			arbin racine=a;
+			arbin tmp;
+
+			while(!v(ag(ag(a)))
+				a=ag(a);
+
+
+			tmp=ad(ag(a));
+			free(a->ag);
+			a->ag=tmp;
+
+		return racine;
+		}
+	
+
+/*d)----------*/
+
+	/*Specification recusive*/
+	
+		specif Arbin sup_rec(arbin a,S x)
+			operation:
+				sup_rec: Arbin S -> Arbin
+			precondition:
+				pre(sup_rec(a)))=!v(a)
+			axiome:
+				sup_rec(e(a1,x,a2),y)=
+										Si y>x
+											alors si v(a2)
+												alors e(a1,x,a2)
+												sinon e(a1,x,sup_rec(a2,y))
+												finsi
+										Sinon si y<x
+											alors si v(a1)
+												alors (a1,x,a2)
+												sinon e(sup_rec(a1,y),x,a2)
+												finsi
+										Sinon si x==y
+											alors e(a1,r(eg(a2)),otermin(a2))
+
+
+	/*Specification iterative*/
+	
+	/*Programation iterative*/
+	
+		arbin sup_ite(arbin a,S x){
+			int chemin;
+			arbin racine=a;
+			arbin pere;
+
+			while(x!=r(a){
+				if (x>r(a)){
+					pere=a;
+					a=ad(a);
+					chemin=1;
+				}
+			else{
+				pere=a;
+				a=ag(a);
+				chemin=0;
+			}
+
+			nouv_racine=r(eg(ad(a)));
+			otermin(ad(a));
+
+			if(chemin==0)
+				pere->ag=e(ag(a),nouv_racine,ad(a)))
+			else
+				pere->ad=e(ag(a),nouv_racine,ad(a)))
+
+			free(a);		
+
+		return racine;
+	}		
+
+/*e)---------*/
+
+	/*Specification recusive*/
+	
+	specif Arbin rechinsf(arbin a,S x)
+		operation:
+			rechinsf: Arbin S -> Arbin
+		precondition:
+		axiome:
+			rechinsf(a,x)=avec b=a 
+									tantque !f(b)
+										si r(b)>x
+											alors b=ag(b)
+										sinon b=ad(b)
+										fsi
+									fin tant que
+	
+										si r(ag(b))>x
+											alors ug(e(^,x,^),b)
+										sinon si r(ag(b))<x 
+											alors ud(e(^,x,^),b)
+										sinon 
+										 a
+										finsi finsi	
+		
+	/*Programation iterative*/
+
+		arbin rechinsf(arbin a,S x){
+			arbin racine=a;
+
+			while(!f(a)){
+				if (x>r(a)){
+					a=ad(a);
+				}
+				else{
+					a=ag(a);
+				}
+			}
+
+			if(r(ag(a))>x)
+				ag(a)=e(^,x,^);
+			else if(r(ag(a))<x)
+				ad(a)=e(^,x,^);
+ 
+			return racine
+
+		}
