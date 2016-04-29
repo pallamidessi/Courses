@@ -1,0 +1,22 @@
+Il faut creer un repertoire obj pour pouvoir compiler (Pas de possibilite de mettre un repertoire vide sur GitHub)
+le projet est entierement commentee avec la syntaxe doxygen.
+
+make:cree la version ncurses et cairo
+make doxy:cree la doc
+make clean: nettoye le repertoire obj/ et les executables ainsi que la doc
+
+L'utilisateur doit donner un nom de fichier present dans le repertoire courant. Cela peut
+etre un document texte contenant un tableau de '.' et de '+', ou une image en format ppm.
+
+Pour la transcription de l'image en logigraphe, je fais la moyenne de toutes les valeurs des
+pixels de l'image, ce qui me donne un seuil. Tout les pixels dont la valeur est superieure au
+seuil sont des '+', les autres des '.'.
+Si la taille de l'image est superieur a 70 en hauteur et/ou largeur elle est tronquee a 70
+pour la version ncurses, a 15 pour la version cairo.
+
+
+L'utilisateur indique ,pour la version ncurses, qu'il a fini et pour la version cairo,si
+le logigraphe est trouve, le programme se ferme automatiquement et l'indique dans la
+console.
+L'utilisateur modifie le logigraphe en cliquant sur les cases en surbrillance pour la
+version cairo et avec des entrees clavier pour la version ncurses.
