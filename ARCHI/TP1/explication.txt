@@ -1,0 +1,14 @@
+Exercice 2
+
+	On obtient les meme valeur moins 1 pour la limite des entiers signes. Il s'agit en fqit
+	du codage du zero.
+
+Exercice 3
+	
+	On pourrais s'attendre a voir 1001 mais la valeur est 1000,9...
+	Cela vient du fait que la representation en memoire de 0.1 donne un patern infini lors
+	de la creation de la mantisse, donc la valeurs n'est pas exact, donc le resultat du
+	calcul non plus.
+	Avec des double on obtient finalement 1001. car la mantisse est plus grande (23 bit vs
+	52) donc la valeur est plus "precise", donc le resultat du calcul aussi
+	

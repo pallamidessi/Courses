@@ -1,0 +1,24 @@
+a)
+	A+B+C
+
+b) 
+	A -> !(BC)
+	!A+!(BC)
+
+c)
+	!B->!C
+	B+!C
+
+d)
+	(X,Y)->X==A||Y==A
+	A+!B+!C
+e)
+	!C->!B
+	C+!B
+
+
+D'ou la formule:
+
+Coupable(A,B,C)=(A+B+C)*(!A+!(BC))*(B+!C)*(A+!B+!C)*(C+!B)
+
+
