@@ -1,0 +1,6 @@
+	Le programme cree un fils,qui affiche son pid qui boucle indefiniment.Le pere affiche son
+pid et essaye d'envoye un SIGUSR1 au fils (message d'erreur en cas d'echec).
+
+	A la reception de SIGUSR1,le fils affiche qu'il a recu le signal et meurt en revoyant 0.Le pere attend
+la fin de son fils et affiche avec quel status il est parti.
+

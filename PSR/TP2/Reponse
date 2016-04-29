@@ -1,0 +1,17 @@
+
+
+Exercice 1)
+	
+	1) il n'y a pas de wait dans le cas du pere,donc suivant l'utilisation de la machine a un
+			instant t, le printf("Fils") peut s'afficher devant le pere.
+
+	2) Jamais, n'y a pas de partage de la memoire entre les deux processus, juste duplication 
+
+
+Exercice 2)
+	1)	Le buffer de printf ne s'est pas vider entre les appel des processus differents,
+	d'ou les deux "Bonjours!"
+
+
+
+
