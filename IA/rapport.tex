@@ -1,0 +1,71 @@
+\documentclass{article}
+\usepackage[francais]{babel}
+\usepackage[utf8]{inputenc}
+\begin{document}
+
+\title{Rapport de TP d'IA}
+\author{Pallamidessi Joseph 
+}
+\maketitle
+\newpage
+
+\section{Intro} % (fold)
+\label{sec:Intro}
+\paragraph{} % (fold)
+\label{par:}
+
+Le sujet a été realisé dans son integralité. Les valeurs trouvées par le programme ont été
+verifié grâce à des outils externes tel que : identify de la suite imagemagick, pour les
+valeurs de l'histogramme et des scripts de calcul d'entropie. Le TP a été écrit en C++ et
+utilise bien le paradigme objets.
+% paragraph  (end)
+
+\paragraph{} % (fold)
+\label{par:}
+Il n'y a pas de fuite mémoire (vérification avec valgrind), ou d'erreurs quelconques, ni à la
+compilation, ni à l'execution.\\
+Le code est entièrement commenté. Je m'excuse cependant du faite qu'une partie des
+commentaires soit en anglais et l'autre en francais.
+% paragraph  (end)
+% section Intro (end)
+
+\section{Mise en place} % (fold)
+\label{sec:Mise en place}
+\paragraph{} % (fold)
+\label{par:}
+Il suffit de faire un simple make pour compiler les TPs. Une commande make clean est
+également disponible.\\
+Le programme se lance de la façon suivante: dans le répertoire bin, ./main [nom du bmp en
+niveau de gris].\\
+% paragraph  (end)
+\paragraph{} % (fold)
+\label{par:}
+Le programme va alors calculer l'entropie de l'image, puis rechercher de manière exhaustive
+le meilleur couple, puis enfin lancer l'algorithme génétique de recherche du meilleurs
+couple.
+% paragraph  (end)
+
+\section{Remarques diverses} % (fold)
+\label{sec:Remarque}
+\paragraph{} % (fold)
+\label{par:}
+
+  La recherche exhaustive fonctionne bien et est relativement rapide, la valeurs trouvée
+  est cohérente et constante selon l'image (algo déterministe).\\
+  La recheche par l'algorithme génétique est elle aussi cohérente et efficace, le couple
+  trouvé au bout de 100 génération est des fois le même que celui de l'algorithme
+  exhaustif, ou s'il est différent, a une entropie très proche.
+
+  \paragraph{} % (fold)
+  \label{par:}
+  Il n'y a malheuresement pas de détection de la convergence, il est donc fortement
+  possible que la recherche génétique finisse (converge) bien avant les 100 générations
+  imposées.
+  % paragraph  (end)
+
+% paragraph  (end)
+% section Fonstionnement et remarque  (end)
+% section Mise en place (end)
+
+\end{document}
+\end{article}
