@@ -1,0 +1,27 @@
+
+
+# novembre 2012
+#
+# pour executer les exemples directement sans passer par ant ni par eclipse
+#
+# usage:
+#         source config-java-classpath-kvlite.txt
+#
+
+here="`pwd`"
+
+export CLASSPATH=$CLASSPATH:.:"$here"/examples
+
+
+for p in "$here"/lib/*.jar
+do 
+  export CLASSPATH=$CLASSPATH:"$p"
+done
+
+echo la variable CLASSPATH vaut :
+echo $CLASSPATH
+
+# puis 
+# cd examples
+# javac PPP/Fichier.java (avec PPP le nom du package)
+# java PPP.Fichier

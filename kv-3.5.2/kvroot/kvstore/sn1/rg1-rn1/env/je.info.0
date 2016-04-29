@@ -1,0 +1,12 @@
+2016-02-01 15:20:33.726 UTC INFOS [rg1-rn1] Started ServiceDispatcher. HostPort=pcj305:5006
+2016-02-01 15:20:33.726 UTC INFOS [rg1-rn1] DataChannel factory: com.sleepycat.je.rep.utilint.net.SimpleChannelFactory
+2016-02-01 15:20:33.734 UTC INFOS [rg1-rn1] Current group size: 0
+2016-02-01 15:20:33.735 UTC INFOS [rg1-rn1] New node rg1-rn1(-1) unknown to rep group
+2016-02-01 15:20:33.735 UTC INFOS [rg1-rn1] Master changed to rg1-rn1
+2016-02-01 15:20:33.735 UTC INFOS [rg1-rn1] Nascent group. rg1-rn1 is master by virtue of being the first node.
+2016-02-01 15:20:33.741 UTC INFOS [rg1-rn1] Successfully added node:rg1-rn1(1) HostPort = pcj305: 5006 [ELECTABLE]
+2016-02-01 15:20:33.742 UTC INFOS [rg1-rn1] Refreshed 0 monitors.
+2016-02-01 15:20:33.744 UTC INFOS [rg1-rn1] Node rg1-rn1 started
+2016-02-01 15:20:33.744 UTC INFOS [rg1-rn1] Feeder manager accepting requests.
+2016-02-01 15:20:33.744 UTC INFOS [rg1-rn1] Joining group as master
+2016-02-01 15:20:33.745 UTC INFOS [rg1-rn1] Refreshed 0 monitors.

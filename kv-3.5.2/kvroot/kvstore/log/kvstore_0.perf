@@ -1,0 +1,7 @@
+
+                                        --------------------------------- Interval ---------------------------------        --------------------------- Cumulative ---------------------------
+Resource   Time yy-mm-dd UTC Op Type    TotalOps PerSec    TotalReq    Min    Max    Avg   95th   99th  ReplicaLagMs        TotalOps PerSec        TotalReq    Min    Max    Avg   95th   99th
+rg1-rn1    16-02-01 15:41:00  single           2      1           2      1      2    1,5      1      1             0               2      1               2      1      2    1,5      1      1
+rg1-rn1    16-02-01 15:51:00  single           2      1           2      0      1    0,5      0      0             0               4      1               4      0      2    1,0      1      1
+rg1-rn1    16-02-01 16:05:00  single           1      1           1      1      1    0,8      1      1             0               5      1               5      0      2    0,9      1      1
+rg1-rn1    16-02-01 16:06:00  single           2      1           2      1      1    0,7      1      1             0               7      1               7      0      2    0,9      1      1
