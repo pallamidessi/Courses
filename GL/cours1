@@ -1,0 +1,31 @@
+		Génie logiciel
+
+Plein d'outils de conception: UML,Makefile,SVN,GIT,réseaux de Petri, etc ...
+Conception de logiciels.
+
+1°) UML
+
+	
+	Norme (langage) de modélisation d'objet. Uniformisation de modélisation des différente
+	facette d'un programme.
+	
+	Vue statique        /    Vue dynamique.
+	Abstrait-->Concret       Intéraction interne du programme.
+	"Côté client"
+
+	1) Langage graphique et structurel.
+
+	cf. slide
+
+	Difficulté : trouver une bonne représentation graphique (trop/pas assez détaillé, etc ),
+	extraire le nécessaire d'un énoncé.
+
+	Acteur : capteur/humain, i/o.
+
+	Condition : mettre entre accolade.
+	:: --> héritage.
+
+	Diagramme de composant:
+
+	Architecture physique de l'application: code source,librairie, etc ...
+	L'UML n'est qu'un outil de communication.
