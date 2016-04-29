@@ -1,0 +1,259 @@
+			
+			Systèmes Distribués
+
+
+1) RPC
+
+	Architecture client-serveur, dit middleware. RPC fonctionnent avec des sockets. Question
+	fondamentale, comment standardisé des appels distants ?
+
+	ex. int *f(int* a){
+				static int q; ------> BSS (global)
+				q=*a* *a;
+				return &q;
+				}
+				main(){
+					int b=1;
+					printf(""res=%d\n",*r,*f(&b));
+				}
+
+										client            Serveur
+1) déf f()            |               
+encodage parametre		|     parametre
+/args							(   >----)---------(---->   )  1) déf de f() décodage des args et encodage des résultats
+									(        )         (    |   )  2) déf de la f() distant
+2)appel distant		(   <----)---------(----<   )  3) Enregistrement du service 
+						 					|
+										  |
+
+	Encodage/décodage	pour communiquer entre toute les machine (big endian/little endian).
+	Encodage de RPC inventé par Sun et nommé xDR (external Data Representation).
+
+	ex.
+	bool_t xdr_type(xdr_handle,pobj)
+	XDR *xdr_handle;
+	type *pobj;
+
+	xdr_bool,xdr_char,xdr_int,xdr_long,xdr_short
+	bool_t xdr_string(xdr_handle,ptr/* char** */,lgmax)
+
+	Effet de bord au niveau du serveur sur les arguments des appels (valeur des argument
+	incoherent entre client et serveur lors de l'execution d'une fonction sur le serveur). 
+
+
+				Client                        | 
+                                      |
+			|client -----> client  |        |
+			|       <----  stab    |        |
+			|______________/_ ^____|        |
+			|             /  /     |        |
+			|   			   v  /      |        |
+			|couche transport<-----|------->|
+                                      |
+                                      |
+				Serveur                       |
+                                      |
+		   |Serveur -----> Serveur|       |
+		   |       <----  stab    |       |
+		 	 |______________/_ ^____|_      |
+			 |             /  /     |       |
+			 |						v  /      |       |
+			 |couche transport<-----|------>|
+
+	Le "stab" encode/décode les messages.
+
+serveur.c
+
+#include "include.h"
+entiers2 *divide(entiers2 *e) {
+	static entiers2 res;
+	res.x=(e->x)/(e->y);
+	res.y=(e->x)%(e->y);
+	return &res;
+}
+
+int main(){
+	bool_t stat;
+	stat=registerrpc(PROGNUM,VERSNUM,PROCNUM,divide,(xdrproc_t)xdr_entiers2,(xdrproc_t)xdr_entiers2)
+	
+	if(stat!=0){
+	 fprintf(stderr,"Echec");
+	 exit(1);
+	
+	}
+	svc_un();
+	return(0);
+}
+
+include.h
+#ifndef INCRPC
+#define INCRPC
+#include <rpc/types.h>
+#include <rpc/xdr.h>
+#include <rpc/rpc.h>
+#include <rpc/.h>
+#define PROGNUM 0x2000 0100
+#define VERSNUM 1 
+#define PROCNUM 1
+
+typedef struct{int x;int y;} entiers2;
+bool_t xdr_entiers2(xdr*,entiers2*)
+#endif
+
+bool_t xdr_entiers2(xdr*h,entiers2* e){
+	return xdr_int(h,&(e->x))&&xdr_int(h,&(e->y));
+}
+
+client.c
+
+#include "include.h"
+
+int main(int argc,char** argv){
+	char* host=argv[1];
+	enum clnt_stat stat;
+	entiers2 res;
+	entiers2 donnee={13,5};
+	stat=callrpc(host,PROGNUM,VERSNUM,PROCNUM,(xdrproc_t)
+	xdr_entiers2,(char*)&donnees,(xdrproc_t)xdr_entiers2,(char*)&res);
+	if(stat!=0){
+	 fprintf(stderr,"Echec");
+	 clnt_perror(stat);
+	}else{
+		printf("res=%d,%d,res.x,res.y");
+	}
+}
+
+Code pris par sun pour les valeur de PROGNUM/PROCNUM
+
+0x00 00 00 00 -0x1F FF FF FF ~réservé
+0x20 00 00 00 -0x3F FF FF FF ~libre
+
+
+0x00 10 00 00 port mappev 
+0x00 10 00 02 rusersd 
+0x00 10 00 03 nfs
+0x00 10 00 04 ypserv
+0x00 10 00 05 mountd
+0x00 10 00 07 yploind
+0x00 10 00 09 yppasswd
+
+rpcinfo -p......
+rpcinfo -u
+
+Si le client ne reçoit pas de réponse, il renvoye la requête au serveur.
+
+	2) RMI
+I)Présentation
+
+Remote Method Invocation,création de sun pour Java. Le principe est d'invoque des méthode
+distante sur des objets. il s'agit d'une architecture client-serveur.
+
+Point faible:
+	-Propriété de Sun (aujourd'hui oracle)
+	-Pas d'interopérabilité entre les langages
+	-Lent
+
+
+Point fort:
+	-Facile à mettre en oeuvre
+	-DGC : Distribued Garbage Collector
+	-Gestion de la sécurité
+
+	Client 										Serveur
+  __________                _______________________ 
+	Machine1  |               Machine2              |
+	________  |                                     |
+	(Proxy D)-|---------------(squelette D)         |
+	(_(Stub)) |               (___________)         |
+	          |                            \        |
+	__________|                             \
+																					 \_____
+																					 |Objet|
+																					 |__D__|
+	Marshalling (cf. wiki)
+
+II)réalisation d'une application
+
+   _______________                                                                                                                        
+  |java.rmi.remote|   |java.rmi.server.UnicastRemote|                                                                       
+  |____^__________|             ^                                                     
+       |                        |                                      
+       |               _________|_____                                     
+  (Distant E) <_______ ||DistanteImpl||                              
+     ^                 ||_____^______||                                    
+     I                        ||                                               
+   DistaneImplStub        DistanteImpl_skel
+     ^^                               ^^
+     ||                               ||
+	||Client||                        ||Serveur||
+
+	Message.java
+
+	import java.rmi.Remote;
+	import java.rmi.RemoteException;
+                                                                                   																																										
+	public interface Message extends remote{
+		public String messageDistant() throws RemoteException;
+	}	
+
+	MessageImpl.java
+
+	import java.rmi.server.UnicastRemoteObject;
+	import java.rmi.RemoteException;
+
+	public class MessageImpl extends UnicastRemoteObjet implements Message{
+		public MessageImpl() throws remoteException{
+			super();
+		}
+		
+		public StringmessageDistant() throws RemoteException{
+			return("message:Salut !");
+		}
+
+	}
+
+	Serveur.java
+
+	import java.net.*;
+	import java.rmi.*;
+
+	public class Serveur {
+		public static void main(String[] args){
+			try{
+				messageImpl objlocal=new messageImpl();
+				Naming.rebind("rm://localhost:1099/Message",objLocal);
+				System.out.println[("Serveur pret");
+			} catch(RemoteException re){
+				system.out.println(re);	
+			} catch(Malformed URLException e){
+				system.out.println( e);	
+			}
+		}
+	}
+
+	Client.java
+
+	import java.rmi.*;
+	import java.net.MalformedURLEXception;
+
+	public class Client{
+	public static void main{String[] args}{
+		try{
+			Message b=(message)Naming.lookup("//"+args[0]+"/Message");
+			System.out.println("Client reçoit:"+b.messageDistant());
+		}catch(NotBoundException re){System.out.println(re);}
+		}catch(RemoteException re){System.out.println(re);}
+		}catch(MalformedURLException e){System.out.println(e);}
+
+
+Déploiment de rmi
+
+	javac *.java
+	rmic messageImpl
+	rmiregistry <--------- Serveur
+	java Serveur
+	java Client <machine Serveur(IP)> <------ Client 
+
+		}	
+	}
+

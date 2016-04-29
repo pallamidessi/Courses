@@ -1,0 +1,5 @@
+rm -f *~
+(for i in serveur.c xdr_entier2.c include.h client.c ; do echo "======"; echo $i; echo "====="; cat $i ; done) > pok~
+mv pok~ pok.c
+a2ps -1 -R --line-numbers=5 -b" " --left-title=" " --left-footer=" " --center-title="Division entiere avec RPC" -l 90 --right-footer=" " pok.c -o pok.ps
+mv pok.c pok.c~

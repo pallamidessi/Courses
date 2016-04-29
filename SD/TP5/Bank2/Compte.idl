@@ -1,0 +1,10 @@
+module Comptes{  
+  interface Compte{
+    //long solde;
+    //readonly attribute float solde;
+    void deposeBillets(in float depot);
+    boolean retireBillets(in float retrait);
+    float afficheMontant();
+    boolean virementCompteaCompte(in float somme, in Compte destinataire);
+  };
+};

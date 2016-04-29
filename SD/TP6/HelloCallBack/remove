@@ -1,0 +1,6 @@
+/bin/rm -rf HelloApp orb.db
+/bin/rm -f *.class *~ \#* .\#*
+
+
+
+

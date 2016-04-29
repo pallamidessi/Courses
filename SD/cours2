@@ -1,0 +1,65 @@
+Passage de paramètre
+
+	-Valeurs primitives
+
+	int,char,float... ---> passage par copie.
+
+	-Objets serialiables
+
+	Qui implémentent java.io.Serializable ---> passage par copie.
+
+	-Objets à distance
+
+	Qui implémentent java.rmi.Remote ---> passage par référence;
+
+	-Autre cas
+
+	Provoque une Exception => java.rmi.MashalException
+
+Timeout
+	Au bout de 30 secondes.
+
+cf fig.1
+	
+	On peut demander un objet par référence ou par lookup (nom/label)
+
+	java.rmi
+	java.rmi.server
+	java.rmi.registry
+	java.rmi.dgc
+
+	Toute l'api standard est sérialisable.
+
+
+	CORBA
+
+	Plusieurs limites:
+
+	-goulot d'étranglement
+	-difficulté d'écrire des traitement complexe (=> plusieurs client simultanés,exclusion
+	mutuelle)
+	-Tolérance au pannes
+	-gestion des versions
+
+	Modèle à trois niveaux:
+
+	Il a un intermédiaire entre le client et le serveur, le midleware corba.
+
+	Avantage:
+	+Thétérogénéité
+	+Intégration de codes existants
+	+Intéropérabilité
+
+	DCOM,SOAP,web service.
+
+	Performant,intéressant mais voué à disparaître à long terme.
+
+	CORBA => Common Object Request Broker Architecture.
+	Travail de OMG( Object Management group) et de chercheurs.
+	OMA(Object Management Architecture).
+
+	Même principe de fonctionnement que rmi.
+	IDL(=> Interface Description language).
+
+	L'objet qui implémente l'interface IDL s'appele un servant. Le serveur "héberge" des
+	servant.

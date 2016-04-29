@@ -1,0 +1,9 @@
+#!/bin/bash
+rm *.class
+rm -r Comptes/
+rm *Helper.java
+rm *Holder.java
+rm *Operations.java
+rm *Stub.java
+rm *POA.java
+rm Compte.java

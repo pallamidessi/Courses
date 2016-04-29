@@ -1,0 +1,142 @@
+Exercices Initiation Corba
+--------------------------
+
+Pour tous les exercices, vous ferez attention a toujours lancer
+les applications serveur et cliente sur deux machines DIFFERENTES.
+
+
+Exercice 1
+----------
+
+* Etape 1 : Rendez-vous dans le repertoire Carre/
+
+* Etape 2 : 
+
+  Realiser la projection de l'interface IDL : 
+      idlj -fall -oldImplBase Icarre.idl
+
+  Notez tous les fichiers *.java qui sont generes automatiquement. 
+  Puis lancer la compilation complete par './compile'.
+
+  IMPORTANT : ouvrir les fichiers Icarre.java et IcarreOperations.java.
+              C'EST CE DERNIER FICHIER *Operations.java QUI VOUS DONNE 
+              L'INTERFACE JAVA QUE VOUS DEVREZ UTILISEZ POUR VOTRE 
+              IMPLEMENTATION.
+              A chaque fois que vous ecrirez ou utiliserez une
+              interface IDL, il faudra regarder le fichier *Operations.java.
+
+* Etape 3 : Lancer l'application en commencant par le serveur :
+	     java Serveur 
+  qui normalement affiche son IOR (Interoperable Object Reference).
+  (ATTENTION : la chaine "IOR:" fait partie de l'IOR du serveur)
+
+  Puis lancer le client :
+   	     java Client <IOR_du_serveur> <nombre>
+
+ 
+* Etape 4 : Lancez le Serveur sur une machine : `java Serveur`
+            Executer le Client sur une autre machine, 
+                      exemple : `java Client <IOR:...> 4`
+
+            Question : Comment le Client arrive-t-il a savoir sur quelle
+                       machine se trouve le Serveur ? (voir le cours)
+le IOR est l'encapsulation de l'ip, du hostname etc ...
+* Etape 5 : N'oublier pas de tuer le serveur en vous deconnectant !
+
+
+Exercice 2
+----------
+
+* Etape 1 : Recopier Carre/ dans un nouveau rerpertoire
+            que vous appelerez Carre_HOLDER 
+            (utiliser la commande 'cp -r')
+            Et munissez vous de la feuille distribue'e en cours 
+            (Exemple 2).
+
+* Etape 2 : Modifier la fonction "long carre(in long source)" afin
+            de faire passer le resultat de la fonction en
+            second parametre. La nouvelle signature de la fonction
+            devient donc "void carre(in long source, out long resultat)".
+
+	    Pour cela vous interviendrez sur les codes de :
+	    Icarre.idl, puis IcarreImpl.java, puis Client.java
+
+Exercice 3
+----------
+
+* Etape 1 : Recopier Carre/ dans un nouveau rerpertoire
+            que vous appelerez Carre_POA.
+            (utiliser la commande 'cp -r')
+            Et munissez vous de la feuille distribue'e en cours.
+            (Exemple 3).
+
+* Etape 2 : Utiliser le Portable Object Adaptor (POA) dans cette nouvelle
+            version. Par rapport a l'exercice 1, un itermediaire appele'
+            POA se place entre le squelette de l'objet distant et l'ORB
+	    au niveau du serveur. Ce POA normalise' permet de faire 
+            interoperer le serveur avec differents ORBs (pas uniquement 
+            celui de java SUN).
+
+            Vous modifierez le fichier 'compile' en enlevant l'option 
+            '-oldImplbase' lorsque vous appelez 'idlj'.
+
+            Vous ferez ATTENTION que la projection IDL vers java
+            change alors (le squelette ge'ne'r'e n'est plus
+            '_IcarreImplBase' mais 'IcarrePOA'). 
+
+
+Exercice 4
+----------
+
+* Le fichier OpMatrice.idl definit l'interface IDL
+  d'un service proposant la multiplication de 2 matrices.
+  En projetant l'interface idl grace a l'outil 'idlj'.
+  Regarder en quel type Java est projete' le type IDL 'long'.
+
+  Proposer une implementation CORBA de ce service equivalente
+  a ce que l'on a fait precedemment avec RMI dans le TP3.
+  Cette fois ci on pourra multiplier des matrices rectangulaires
+  quelconques : 'a' de dimension n*k et 'b' de dimension k*m.
+  Vous utiliserez obligatoirement le POA.
+
+  Votre Client demandera au service distant de multiplier
+  les deux matrices a et b telles que 
+        int[][] a = { {1, 0, 0}, {0, 2, 0}, {0, 0, 3}, {0, 0, 4} };
+        int[][] b = { {1, 2, 3}, {1, 2, 3}, {1, 2, 3} };
+  
+  Vous devez bien sur trouver : res = a*b =
+                    { {1, 2, 3}, {2, 4, 6}, {3, 6, 9}, {4, 8, 12} };
+
+// Remarque : Pour eviter de faire un copier/coller de l'IOR a partir 
+//           du shell, on peut ecrire l'IOR dans un fichier avec le 
+//           Serveur puis le lire depuis le Client. 
+//           Dans le fichier IDL est defini une constante "iorfile"
+//           contenant le nom du fichier ou l'on va stocker l'IOR.
+//
+//   Dans le serveur pour ecrire l'IOR dans un fichier utiliser le code :
+//          import java.io.*;
+//           ...
+//	    FileOutputStream file = new FileOutputStream(iorfile.value);
+//	    PrintWriter out = new PrintWriter(file);
+//	    out.println(ior);out.flush();
+//	    file.close();
+//
+//  Dans le client pour lire l'IOR dans un fichier utiliser le code :
+//          import java.io.*;
+//           ...
+//	    FileReader file = new FileReader(iorfile.value);
+//	    BufferedReader in = new BufferedReader(file);
+//	    ior = in.readLine();
+//	    file.close();
+//
+
+Exercice 5
+----------
+
+* Le fichier Annuaire.idl definit l'interface IDL d'un service 
+  d'annuaire. Proposer une implementation CORBA de ce service 
+  equivalente a celle vue avec RMI.
+  Pour cela, vous utiliserez le POA.
+  (Pour demarrer, vous pouvez utiliser la correction de l'exercice
+  RMI dans le repertoire TelephoneExerciceRMI)
+   

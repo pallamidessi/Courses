@@ -1,0 +1,67 @@
+Exercice 1
+----------
+ 
+* Se rendre dans le repertoire ExoCallBack.
+
+* Examiner les fichiers *.java.
+
+* Compiler le code en executant le script "./compile".
+
+* Executer le serveur et le client. Comprendre le deroulement de 
+  l'execution.
+
+* Vous modifierez le Serveur pour 
+  qu'il mette a disposition le service suivant :
+    - Le client s'inscrit aupres du serveur avec la methode 
+          inscription(Afficheur peer)
+    - Le serveur fait afficher toutes les secondes la valeur
+      de l'accumulateur au niveau du client.  
+  Vous developperez un client qui utilise ce service.
+
+
+Exercice 2
+----------
+ 
+* Se rendre dans le repertoire TelephoneExo.
+
+* Examiner les fichiers *.java.
+
+* Compiler le code en executant le script "./compile".
+
+* Executer le serveur et les clients. 
+
+* Transformer ces codes afin d'avoir uniquement des appels 
+  distants non bloquants. 
+  Pour les deux premieres methodes du fichier Annuaire.idl, cela 
+  impliquera necessairement de passer par un mecanisme de CallBack. 
+  Vous pourrez utilisez un objet de rappel du type suivant :
+     interface Afficheur {
+       oneway void afficheRes(in string res);
+       oneway void arreteORB();
+     };
+
+
+Exercice 3
+----------
+
+* Se rendre dans le repertoire ServeurDiscussion.
+
+* Examiner les fichiers *.java.
+
+* Compiler le code en executant le script "./compile".
+
+* Executer le serveur et le client (qui ne fonctionnent pas encore bien !):
+$ tnameserv -ORBInitialPort 1050 &   
+$ java ServeurDiscImpl machine_serveur_de_nom
+$ java ClientDiscImpl machine_serveur_de_nom
+
+ 
+* Completer les methodes "login" et "chat" dans ServeurDiscImpl.
+
+* Executer le serveur. Puis lancer plusieurs clients.
+
+* Que se passe-t-il si l'un des clients est tue' (par Control-C par 
+  exemple) et qu'un autre client connecte' emet un message ? 
+
+* Resoudre le probleme que cela pose !
+

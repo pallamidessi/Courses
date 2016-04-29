@@ -1,0 +1,7 @@
+const string iorfile = "annu.ior";
+interface Annuaire {
+  string chercheNom(in string nom);
+  string listerNoms();
+  void enleveNom(in string nom);
+  void ajouteNom(in string nom, in string num);
+};

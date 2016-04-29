@@ -1,0 +1,5 @@
+set -v
+idlj -fall OpMatrice.idl
+javac OpMatriceImpl.java 
+javac Serveur.java 
+javac Client.java 

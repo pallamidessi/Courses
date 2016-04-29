@@ -1,0 +1,16 @@
+Exercice 1
+----------
+
+1)
+  La variable compteur est statique, danc lorsque les different threads l'incrémentent, il
+  y a accès concurrent. Le comportement du programme n'est donc pas déterministe et est
+  modifié par l'etat de la machine (consommation ressource processeur ) lors de
+  l'execution.
+
+2)
+  Lorsqu'un threads fait un appel à wait(), il attend soit un notify() qui lui est destiné
+  directement, soit un notifyAll() qui le réveille ainsi que tout les autres threads du
+  programme qui attend sur ce moniteur.
+
+
+  

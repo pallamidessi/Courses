@@ -1,0 +1,5 @@
+rm -f *~
+(for i in serveur.c include.h client.c ; do echo "======"; echo $i; echo "====="; cat $i ; done) > pok~
+mv pok~ pok.c
+a2ps -2 --line-numbers=5 -b" " --left-title=" " --left-footer=" " --footer=" " --center-title="Exemple simple de RPC" -l 78 --right-footer=" " pok.c -o PremierExercice.ps
+mv pok.c pok.c~

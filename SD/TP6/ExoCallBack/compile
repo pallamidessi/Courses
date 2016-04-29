@@ -1,0 +1,5 @@
+mkdir Callback
+idlj -fall Callback.idl
+javac Callback/*.java
+javac *.java
+

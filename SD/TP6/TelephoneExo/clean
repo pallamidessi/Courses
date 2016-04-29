@@ -1,0 +1,7 @@
+rm -rf orb.db
+rm -f *.class *~ \#* .\#*
+rm -f *Operations.java *Helper.java *Holder.java Annuaire.java *POA.java _*.java iorfile.java annu.ior
+
+
+
+

@@ -1,0 +1,12 @@
+module Callback {
+  interface Afficheur;
+  interface Calculant {
+    oneway void faitLeCalcul (in double val, in Afficheur peer);
+    oneway void inscription (in Afficheur peer);
+  };
+  interface Afficheur {
+    oneway void afficheRes(in string res);
+    oneway void arreteORB();
+  };
+};
+

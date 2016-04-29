@@ -1,0 +1,3 @@
+       accumulateur+=val;
+        peer.afficheRes("la valeur courante est "+accumulateur);
+        peer.arreteORB();

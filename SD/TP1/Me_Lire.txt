@@ -1,0 +1,78 @@
+Appel de procedure a distance (RPC)
+------------------------------------
+
+Exercice 1
+----------
+
+Compiler puis tester l'exemple vu en cours se trouvant dans
+le repertoire 'PremierExemple/'.
+Constater que votre serveur est enregistre' au niveau
+du serveur de liaison avec la commande : '/usr/sbin/rpcinfo -p'.
+Le numero de programme en decimal de cotre service est "536871168"
+
+Exercice 2
+----------
+
+Definir un appel RPC qui permette de calculer, de facon distante, la division
+entiere d'un nombre par un autre. Le serveur de calcul (qui est responsable de
+la division) se trouvera sur VOTRE machine. 
+Vous executerez le client depuis une autre machine. Pour cela, 
+il est possible de garder en permanence une fenetre sur cette autre
+machine avec la commande "ssh votre_login@machine_du_voisin".
+Vous editerez, compilerez les fichiers sources sur VOTRE machine.
+Les sources pour debuter cet exercice se trouve dans le repertoire
+'DiviseExercice/'.
+
+Exercice 3
+----------
+
+On desire implanter un serveur de calcul sur des matrices 2X2 
+a coefficients reels qui offre comme service :
+ - la multiplication de deux matrices.
+
+Mettre en place un tel serveur sur votre machine. 
+
+Exercice 4
+----------
+
+Ajouter le service : addition de deux matrices.
+Le client offrira la possibilite' d'appeler le service
+de multiplication ou d'addition, au choix.
+
+
+Exercice 5
+----------
+
+Reprenez les Exercice 4 et 5 en conside'rant que les matrices 
+`a multiplier peuvent etre n*n.
+Mettez en evidence qu'il existe un time-out (au niveau du client) 
+et une retransmission lorsque l'appel de fonction distant 
+prend un peu de temps.
+
+Rappels
+-------
+
+* Enregistrement d'un service :
+
+int  registerrpc(u_long prognum, u_long versnum, u_long procnum,
+                 char *(*procname)(), xdrproc_t inproc, xdrproc_t outproc);
+
+* Appel d'un service : 
+
+int  callrpc(char *host, u_long prognum, u_long versnum,
+             u_long procnum, xdrproc_t inproc, char *in,
+             xdrproc_t outproc, char *out);
+
+* Mise en attente d'un serveur  : 
+
+svc_run()
+
+* Utiliser les pages de manuel : "man registerrpc" "man xdr_string"
+  Regarder les fichiers rpc.h et xdr.h du repertoire /usr/include/rpc
+
+
+
+
+
+
+

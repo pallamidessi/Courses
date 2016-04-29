@@ -1,0 +1,49 @@
+Dans le repertoire Nommage, vous trouvez un exemple d'utilisation du service de noms. Cet exemple est compilable (commande './compile') et executable (les commandes a executer sont presente'ees dans les fichiers Serveur.java et Client*.java).
+
+A travers les questions suivantes, on vous demande de mettre au point certains services pour une banque.
+
+Question 1) Fabriquer un fichier Compte.idl dans lequel sont definis les services suivants qui peuvent s'appliquer a un certain Compte client : 
+
+// depose un certain montant sur un compte 
+      void deposeBillets(Flottant); 
+// retrait d'argent du compte (mais vous n'autorisez pas le decouvert !)
+      Boolean retireBillets(Flottant); 
+// affiche le montant depose' sur le compte
+      Flottant afficheMontant(); 
+// vire une somme du compte courant vers le compte specifie en parametre 
+// si le montant du compte est insuffisant l'operation n'est pas realise
+// et false est retourne'
+      Boolean virementCompteaCompte(Flottant, Compte); 
+
+Question 2) Realiser une implémentation CompteImpl.java pour l'interface Compte.idl.
+            Créer un fichier "./compile" qui vous permet de compiler l'interface Compte.idl et le fichier CompteImpl.java
+
+Question 3) Realiser un Serveur (Serveur.java) qui cre'e'e deux comptes clients et les publie sur le serveur de nom. Le nom de la machine hebergeant le serveur de noms sera passe' en argument du programme.
+
+Question 4) Realiser un Client (Client.java) qui :
+    - ajoute une somme sur les deux comptes du Serveur,
+    - retire une autre somme sur chaque compte du Serveur,
+    - fait un virement d'un compte a l'autre.
+ Entre chaque operation vous afficherez un message affiche les montants sur les deux comptes.
+
+Question 5) Construire un deuxieme Serveur (Serveur2.java) qui cre'e'e un contexte. Celui-ci correpond a un nom d'agence bancaire. Dans cette agence bancaire, vous creerez deux contextes correspondants a deux noms de clients differents. Vous creerez enfin deux comptes par client qui seront associe's a des objet CORBA de type Compte.
+
+Question 6) Realiser un Client (Client2.java) qui utilise le Serveur2 et :
+    - ajoute une somme sur les 4 comptes du Serveur,
+    - retire une autre somme sur chaque compte du Serveur,
+    - fait un virement d'un compte vers un autre.
+ Entre chaque operation vous afficherez un message affiche les montants sur les quatres comptes.
+
+Question 7) Realiser un petit Client (Client3.java) qui permet de lister les differentes agences puis les clients qui se trouvent dans ces agences (le nom de l'agence sera passe' en argument de Client3). Vous utiliserez pour cela la methode 'list' de la classe 'NamingContext' (voir l'API java).
+
+Question 8) Verifiez vos solutions dans la configuration suivante :
+                      le serveur de noms (tnameserv) sur perceval,
+                      le Serveur sur mordred,
+                      le Client sur lancelot.
+             
+Question 9) Comprendre et essayer les programmes Client et Serveur du repertoire 'Mystere'.
+            Expliquez succintement ce que font les deux programmes.
+            Expliquez comment cela ce fait-il que la commande suivante renvoie un resultat valide :
+
+                 java Client localhost 3000 rep1/rep3/rep3/rep1/rep3/rep3/rep2/et2
+                   Resultat trouve' : Lesmemealamaison Leon-Jay
