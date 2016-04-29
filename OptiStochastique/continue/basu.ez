@@ -1,0 +1,326 @@
+/* vim:syntax=cpp:filetype=cpp
+*/
+
+/*_____________________________________________________________
+
+Template for an EASEA evolutionary algorithm for easea v1.0.3
+_______________________________________________________________*/
+
+\User declarations : // This section is copied on top of the output file
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#define  kTR1(parameters)        (parameters[0])
+#define  KA1(parameters)         (parameters[1])
+#define  nA1(parameters)         (parameters[2])
+#define  dmRNA1(parameters)      (parameters[3])
+#define  kTL1(parameters)        (parameters[4])
+#define  dLaclI(parameters)      (parameters[5])
+#define  KTL1_prime(parameters)  (parameters[6])
+#define  dCI(parameters)         (parameters[7])
+#define  kTR2(parameters)        (parameters[8])
+#define  KR2(parameters)         (parameters[9])
+#define  nR2(parameters)         (parameters[10])
+#define  dmRNA2(parameters)      (parameters[11])
+#define  kTL2(parameters)        (parameters[12])
+#define  dLacl(parameters)       (parameters[13])
+#define  kTR3(parameters)        (parameters[14])
+#define  KR3(parameters)         (parameters[15])
+#define  nR3(parameters)         (parameters[16])
+#define  KR3_prime(parameters)   (parameters[17])
+#define  nR3_prime(parameters)   (parameters[18])
+#define  dmRNA3(parameters)      (parameters[19])
+#define  kTL3(parameters)        (parameters[20])
+#define  dGFP(parameters)        (parameters[21])
+
+#define MAX(x,y) ((x)>(y)?(x):(y))
+#define MIN(x,y) ((x)<(y)?(x):(y))
+#define SAMPLING_RATE 100
+#define AHL_MIN 1
+#define AHL_MAX 1.8
+
+  typedef struct bounds_str {
+    double min;
+    double max;
+
+  } bounds_t;
+ 
+ bounds_t magnitude[22];
+ double* gaussianValue; 
+ float pMutPerGene = 0.01;
+\end
+
+\User functions:
+  
+  /* Generic gaussian function 
+   * http://en.wikipedia.org/wiki/Gaussian_function
+   * */
+  double gaussian(double b, double c, double x){
+    double a = ((double) (1.0)) / (c * sqrt(2.0 * (double) (M_PI)));
+    return 10.0 * (a * exp(-(pow((x - b), 2.0)/(2.0 * (pow(c, 2.0))))));
+  }
+  
+  double formula(double ahl,double parameters[22]){
+
+    double part1 = pow((((kTL1(parameters)/dLaclI(parameters))
+                   * (kTR1(parameters)/((1.0 + pow((KA1(parameters)/ahl), nA1(parameters))) 
+                   * dmRNA1(parameters)))/KR3(parameters))), nR3(parameters));
+                   
+    double part2 = pow((((kTL2(parameters)/dLaclI(parameters)) 
+                  * kTR2(parameters)/((1.0 + pow((((kTL1(parameters)/dCI(parameters))  
+                  * kTR1(parameters)/((1.0 + pow((KA1(parameters)/ahl), nA1(parameters)))
+                  * dmRNA1(parameters)))/KR2(parameters)), nR2(parameters))) 
+                  * dmRNA2(parameters)))/KR3_prime(parameters)), nR3_prime(parameters));
+
+
+    return (kTL3(parameters)/dGFP(parameters)) * kTR3(parameters)/((1 + part1 + part2) * dmRNA3(parameters));
+  }
+
+  /* Use a function pointer instead of having the whole formula her */
+  double* samplingFormula(double start, double end, int rate, double parameters[22]){
+    double* result = (double*) malloc( sizeof(double) * rate);
+    double step = (double) (((end - start)) / ((double) (rate)));
+    int i;
+
+    for (i = 0; i < rate; i++) {
+      result[i] = formula(start + (step * i), parameters);
+    }
+    
+    return result;
+  }
+  
+  double* samplingGaussian(double start, double end, int rate){
+    double* result = (double*) malloc( sizeof(double) * rate);
+    double step = (double) (((end - start)) / ((double) (rate)));
+    int i;
+    
+    for (i = 0; i < rate; i++) {
+      result[i] = gaussian(1.5, 0.2, start + (step * i));
+    }
+    
+    return result;
+  }
+  
+
+  double rmse(double start, double end, int rate, double parameters[22]){
+    double* formula;
+    double coefficient = 0.0;
+    int i;
+
+    formula = samplingFormula(start, end, rate, parameters);
+    
+    for (i = 0; i < rate; i++) {
+      //coefficient += abs((formula[i] - gaussianValue[i]));
+      coefficient += pow((gaussianValue[i] - formula[i]), 2.0);
+    }
+    
+    coefficient /= (double) (rate);
+    coefficient = sqrt(coefficient);
+
+    free(formula);
+    return coefficient;
+  }
+
+\end
+
+\User CUDA:
+\end
+
+\User classes :
+
+GenomeClass { 
+  double parameters[22];
+}
+
+\end
+
+\Before everything else function:
+  // Use C++11 coumpound initializer instead
+  magnitude[0].min = 0.001;
+  magnitude[0].max = 1000000;
+  magnitude[1].min = 0.0001,   
+  magnitude[1].max = 1000;
+  magnitude[2].min = 1;        
+  magnitude[2].max = 4;
+  magnitude[3].min = 0.001;        
+  magnitude[3].max = 0.1;
+  magnitude[4].min = 0.0000001;      
+  magnitude[4].max = 0.00001;
+  magnitude[5].min = 0.0001;        
+  magnitude[5].max = 0.01;
+  magnitude[6].min = 0.0000001;      
+  magnitude[6].max = 0.00001;
+  magnitude[7].min = 0.0001;        
+  magnitude[7].max = 0.01;
+  magnitude[8].min = 0.001;     
+  magnitude[8].max = 1000000;
+  magnitude[9].min = 0.0001;  
+  magnitude[9].max = 1000;
+  magnitude[10].min = 1;    
+  magnitude[10].max = 4;
+  magnitude[11].min = 0.001;        
+  magnitude[11].max = 0.1;
+  magnitude[12].min = 0.0000001;     
+  magnitude[12].max = 0.00001;
+  magnitude[13].min = 0.0001;      
+  magnitude[13].max = 0.01;
+  magnitude[14].min = 0.001;    
+  magnitude[14].max = 1000000;
+  magnitude[15].min = 0.0001;  
+  magnitude[15].max = 1000;
+  magnitude[16].min = 1;         
+  magnitude[16].max = 4;
+  magnitude[17].min = 0.0001;
+  magnitude[17].max = 1000;
+  magnitude[18].min = 1;          
+  magnitude[18].max = 4;
+  magnitude[19].min = 0.001;       
+  magnitude[19].max = 0.01;
+  magnitude[20].min = 0.0000001;     
+  magnitude[20].max = 0.00001;
+  magnitude[21].min = 0.0001;       
+  magnitude[21].max = 0.01;
+
+  gaussianValue = samplingGaussian(AHL_MIN, AHL_MAX, SAMPLING_RATE);
+\end
+
+
+\At the beginning of each generation function:
+\end
+
+\At the end of each generation function:
+\end
+
+\After everything else function:
+
+  IndividualImpl* indiv= ((IndividualImpl *)population->parents[0]);
+  double* parameters = indiv->parameters;
+  ofstream plot;
+
+  plot.open("plot.gnu");
+
+  if (plot.is_open()) {
+    plot << "#!/usr/bin/gnuplot" << std::endl; 
+
+    plot << "set terminal pngcairo nocrop enhanced size 800,600 font \"arial,8\"" << std::endl;
+    plot << "set output 'basu.png'" << std::endl;
+    plot << "set title \"Basu Plots\"" << std::endl;
+    plot << "set title  font \",20\" norotate" << std::endl;
+    plot << "set samples 100" << std::endl;
+   
+    plot << "kTR1 = "  << kTR1(parameters) << std::endl;
+    plot << "KA1 = " << KA1(parameters) << std::endl;
+    plot << "nA1 = " << nA1(parameters) << std::endl;
+    plot << "dmRNA1 = " << dmRNA1(parameters) << std::endl;
+    plot << "kTL1 = " << kTL1(parameters) << std::endl;
+    plot << "dLaclI = " << dLaclI(parameters) << std::endl;
+    plot << "KTL1_prime = " << KTL1_prime(parameters) << std::endl;
+    plot << "dCI = " << dCI(parameters) << std::endl;
+    plot << "kTR2 = " << kTR2(parameters) << std::endl;
+    plot << "KR2 = " << KR2(parameters) << std::endl;
+    plot << "nR2 = " << nR2(parameters) << std::endl;
+    plot << "dmRNA2 =" << dmRNA2(parameters) << std::endl;
+    plot << "kTL2 =" << kTL2(parameters) << std::endl;
+    plot << "dLacl =" << dLacl(parameters) << std::endl;
+    plot << "kTR3 = " << kTR3(parameters) << std::endl;
+    plot << "KR3 = " << KR3(parameters) << std::endl;
+    plot << "nR3 = " << nR3(parameters) << std::endl;
+    plot << "KR3_prime = " << KR3_prime(parameters) << std::endl;
+    plot << "nR3_prime = " << nR3_prime(parameters) << std::endl;
+    plot << "dmRNA3 = " << dmRNA3(parameters) << std::endl;
+    plot << "kTL3 = " << kTL3(parameters) << std::endl;
+    plot << "dGFP = " << dGFP(parameters) << std::endl;
+
+    plot << "plot [0.0001:10] ((kTL3/dGFP) * kTR3/((1 +  (((((kTL1/dLaclI) * \
+    kTR1/((1 + ((KA1/x)** nA1)) * dmRNA1))/KR3))** nR3 ) + (((((kTL2/dLaclI) * kTR2/((1.0 \
+    + ((((kTL1/dCI) * kTR1/((1.0 + ((KA1/x))**nA1) * dmRNA1))/KR2))**nR2) * dmRNA2))/ \
+    KR3_prime))**nR3_prime)) * dmRNA3)) lt rgb \"blue\" , \\" << std::endl;
+    plot << "10.0 * (((1) / (0.2 * sqrt(2 * pi))) * (exp((-(x - (1.5))**2)/(2.0 * ((0.2)**2))))) lt rgb \"red\"" << std::endl;
+    
+    plot.close();
+  }
+
+\end
+
+\At each generation before reduce function:
+\end
+
+\GenomeClass::display:
+\end
+
+\GenomeClass::initialiser : 
+  int i;
+
+  /* The random values are bounded by the order of magnitude +- 1 */
+  for (i = 0; i < 22; i++) {
+    Genome.parameters[i] = random(magnitude[i].min, magnitude[i].max);
+  }
+
+\end
+
+\GenomeClass::crossover : 
+  int i;
+  float alpha;
+  
+  /* The simplest possible crossover */
+  for (i = 0; i < 22; i++) {
+    alpha = (float)random(0.,1.); // barycentric crossover
+    child.parameters[i] = alpha*parent1.parameters[i] + (1.-alpha)*parent2.parameters[i];
+  }
+
+\end
+
+\GenomeClass::mutator : 
+  int i;
+
+  for (i = 0; i < 22; i++) {
+    if (tossCoin(pMutPerGene)) {
+      Genome.parameters[i] += Genome.parameters[i]*random(-0.5,0.5);
+      Genome.parameters[i] = MAX(magnitude[i].min, Genome.parameters[i]);
+      Genome.parameters[i] = MIN(magnitude[i].max, Genome.parameters[i]);
+    }
+  }
+  
+  return 0;
+\end
+
+\GenomeClass::evaluator : 
+  return rmse(AHL_MIN, AHL_MAX, SAMPLING_RATE, Genome.parameters);
+\end
+
+\User Makefile options: 
+\end
+
+\Default run parameters :        // Please let the parameters appear in this order
+  Number of generations : 10000   // NB_GEN
+  Time limit: 0 			           // In seconds, 0 to deactivate
+  Population size : 5000			   //POP_SIZE
+  Offspring size : 5000          // or a xx%
+  Mutation probability : 1    // MUT_PROB
+  Crossover probability : 1      // XOVER_PROB
+  Evaluator goal : minimise      // maximise
+  Selection operator: Tournament 2.0
+  Surviving parents: 100%        // Percentage or absolute  
+  Surviving offspring: 100%      // Percentage or absolute  
+  Reduce parents operator: Tournament 2.0
+  Reduce offspring operator: Tournament 2.0
+  Final reduce operator: Tournament 2.0
+  
+  Elitism: Strong			//Weak or Strong
+  Elite: 1
+
+  Print stats: true				       // Default: 1
+  Generate csv stats file:false			
+  Generate gnuplot script:false
+  Generate R script:false
+  Plot stats:true				         // Default: 0
+
+  Remote island model: false
+  IP file: ip.txt 			         // List of IP:PORT of islands to send individuals to
+  Migration probability: 0.33    // Probability of sending an individual per generation
+  Server port : 2929
+
+  Save population:true 
+  Start from file:false
+\end
+
